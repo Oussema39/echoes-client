@@ -4,9 +4,12 @@ import { AxiosRequestConfig } from "axios";
 import { IDocument } from "@/interface/IDocument";
 import { IBase } from "@/interface/IBase";
 
-export const getAllDocuments = async (config: AxiosRequestConfig) => {
+export const getAllDocuments = async (
+  config: AxiosRequestConfig
+): Promise<IDocument[] | null> => {
   const res = await apiClient.get(apiEndpoints.documents.getAll, config);
-  return res.data.data ?? res.data;
+  const documents = Array.isArray(res.data.data) ? res.data.data : [];
+  return documents;
 };
 
 export const createDocument = async (

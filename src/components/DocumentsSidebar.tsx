@@ -36,8 +36,7 @@ const DocumentsSidebar: React.FC<DocumentsSidebarProps> = ({
   onCreateDocument,
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
-
-  const filteredDocuments = documents.filter((doc) =>
+  const filteredDocuments = documents?.filter((doc) =>
     doc.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
