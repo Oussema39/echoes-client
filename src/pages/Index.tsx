@@ -5,6 +5,7 @@ import AiSuggestions from "@/components/AiSuggestions";
 import DocumentsProvider from "@/context/DocumentsProvider";
 import { useDocuments } from "@/hooks/useDocuments";
 import DocumentForm from "@/components/DocumentForm";
+import Loader from "@/components/ui/loader";
 
 const Documents = () => {
   const {
@@ -53,7 +54,7 @@ const Documents = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl">Loading...</div>
+        <Loader />
       </div>
     );
   }

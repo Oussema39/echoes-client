@@ -24,9 +24,11 @@ export const createDocument = async (
 
 export const updateDocument = async (doc: IDocument) => {
   const { _id: id, ...payload } = doc;
-  const { data } = await apiClient.patch(
-    apiEndpoints.documents.updateDocument(id),
-    { ...payload, id }
-  );
-  return data;
+  const res = await apiClient.patch(apiEndpoints.documents.updateDocument(id), {
+    ...payload,
+    id,
+  });
+  const document = res.data?.data ? res.data.data : null;
+
+  return document;
 };

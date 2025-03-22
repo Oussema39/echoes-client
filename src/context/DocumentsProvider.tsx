@@ -1,8 +1,5 @@
-import {
-  createDocument,
-  getAllDocuments,
-  updateDocument,
-} from "@/api/documentsApi";
+import { createDocument, getAllDocuments } from "@/api/documentsApi";
+import useUpdateDocumentMutation from "@/hooks/documents/useUpdateDocumentMutation";
 import { DocumentsContext } from "@/hooks/useDocuments";
 import { IDocument } from "@/interface/IDocument";
 import {
@@ -41,12 +38,6 @@ const DocumentsProvider = ({ children }: { children: ReactNode }) => {
     refetchOnWindowFocus: false,
   });
 
-  useEffect(() => {
-    if (isFetched) {
-      setSelectedDocument(documents?.[0]);
-    }
-  }, [isFetched, documents]);
-
   const handleSelectDocument = useCallback(
     (_id: string) => {
       const document = documents.find((doc) => doc._id === _id);
@@ -65,19 +56,9 @@ const DocumentsProvider = ({ children }: { children: ReactNode }) => {
     },
   });
 
-  const updateDocumentMutation = useMutation({
-    mutationFn: updateDocument,
-    onSuccess: (updatedDoc) => {
-      queryClient.setQueryData<IDocument[]>(["documents"], (oldDocs) => {
-        const index = oldDocs.findIndex((doc) => doc._id === updatedDoc._id);
-        if (index === -1) return oldDocs;
-        return [
-          ...oldDocs.slice(0, index),
-          updatedDoc,
-          ...oldDocs.slice(index + 1),
-        ];
-      });
-    },
+  const updateDocumentMutation = useUpdateDocumentMutation({
+    queryClient,
+    setSelectedDocument,
   });
 
   const value = useMemo(() => {
@@ -99,6 +80,13 @@ const DocumentsProvider = ({ children }: { children: ReactNode }) => {
     addDocumentMutation,
     updateDocumentMutation,
   ]);
+
+  useEffect(() => {
+    if (isFetched) {
+      setSelectedDocument(documents?.[0]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isFetched]);
 
   return (
     <DocumentsContext.Provider value={value}>

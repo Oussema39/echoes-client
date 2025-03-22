@@ -36,7 +36,6 @@ const DocumentForm = ({
   });
 
   const onSubmit = (data: FormData) => {
-    console.log({ data });
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     saveDocument && saveDocument(data);
   };
@@ -49,7 +48,7 @@ const DocumentForm = ({
   }, [selectedDocument, form]);
 
   return (
-    <Form {...form}>
+    <Form {...form} key={selectedDocument?._id}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         className="flex flex-col h-full w-full bg-white rounded-lg shadow-subtle overflow-hidden animate-fade-in"
