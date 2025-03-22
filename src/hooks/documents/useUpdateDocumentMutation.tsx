@@ -23,7 +23,7 @@ const useUpdateDocumentMutation = ({ queryClient }: Props) => {
         ];
       });
 
-      toast.success("Document updated successfully");
+      toast.success("Document updated");
     },
   });
   return updateDocumentMutation;

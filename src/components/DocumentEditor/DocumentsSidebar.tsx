@@ -21,6 +21,7 @@ interface Document {
 interface DocumentsSidebarProps {
   open: boolean;
   onToggle: () => void;
+  isLoading: boolean;
   documents: IDocument[];
   selectedDocument: IDocument | null;
   onSelectDocument: (id: string) => void;
@@ -30,6 +31,7 @@ interface DocumentsSidebarProps {
 const DocumentsSidebar: React.FC<DocumentsSidebarProps> = ({
   open,
   onToggle,
+  isLoading,
   documents,
   selectedDocument,
   onSelectDocument,
@@ -66,6 +68,7 @@ const DocumentsSidebar: React.FC<DocumentsSidebarProps> = ({
           onClick={onCreateDocument}
           variant="outline"
           className="w-full justify-start gap-2 bg-transparent hover:bg-muted/50"
+          disabled={isLoading}
         >
           <Plus size={16} />
           <span>New Document</span>

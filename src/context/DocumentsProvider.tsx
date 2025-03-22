@@ -1,9 +1,9 @@
-import { createDocument, getAllDocuments } from "@/api/documentsApi";
+import { getAllDocuments } from "@/api/documentsApi";
+import useCreateDocumentMutation from "@/hooks/documents/useCreateDocumentMutation";
 import useUpdateDocumentMutation from "@/hooks/documents/useUpdateDocumentMutation";
 import { DocumentsContext } from "@/hooks/useDocuments";
 import { IDocument } from "@/interface/IDocument";
 import {
-  useMutation,
   UseMutationResult,
   useQuery,
   useQueryClient,
@@ -16,7 +16,7 @@ export type TDocumentContextValue = {
   error: Error;
   isLoading: boolean;
   handleSelectDocument: (_id: string) => void;
-  addDocument: UseMutationResult;
+  createDocument: UseMutationResult;
   updateDocument: UseMutationResult;
 };
 
@@ -46,17 +46,12 @@ const DocumentsProvider = ({ children }: { children: ReactNode }) => {
     [documents]
   );
 
-  const addDocumentMutation = useMutation({
-    mutationFn: createDocument,
-    onSuccess: (newDoc) => {
-      queryClient.setQueryData<IDocument[]>(["documents"], (oldDocs = []) => [
-        ...oldDocs,
-        newDoc,
-      ]);
-    },
+  const updateDocumentMutation = useUpdateDocumentMutation({
+    queryClient,
+    setSelectedDocument,
   });
 
-  const updateDocumentMutation = useUpdateDocumentMutation({
+  const createDocumentMutation = useCreateDocumentMutation({
     queryClient,
     setSelectedDocument,
   });
@@ -68,7 +63,7 @@ const DocumentsProvider = ({ children }: { children: ReactNode }) => {
       error,
       isLoading,
       handleSelectDocument,
-      addDocument: addDocumentMutation,
+      createDocument: createDocumentMutation,
       updateDocument: updateDocumentMutation,
     };
   }, [
@@ -77,7 +72,7 @@ const DocumentsProvider = ({ children }: { children: ReactNode }) => {
     error,
     isLoading,
     handleSelectDocument,
-    addDocumentMutation,
+    createDocumentMutation,
     updateDocumentMutation,
   ]);
 

@@ -14,6 +14,7 @@ const Documents = () => {
     isLoading,
     handleSelectDocument,
     updateDocument,
+    createDocument,
   } = useDocuments();
 
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -31,7 +32,11 @@ const Documents = () => {
   };
 
   // Handle new document creation
-  const handleCreateDocument = () => {};
+  const handleCreateDocument = () => {
+    createDocument.mutate({
+      title: "Untitled Document",
+    });
+  };
 
   // Handle document save
   const handleSaveDocument = ({
@@ -73,6 +78,7 @@ const Documents = () => {
           selectedDocument={selectedDocument}
           onSelectDocument={handleSelectDocument}
           onCreateDocument={handleCreateDocument}
+          isLoading={createDocument.isPending}
         />
 
         <main className="flex-1 overflow-hidden">
