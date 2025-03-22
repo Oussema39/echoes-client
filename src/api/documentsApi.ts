@@ -21,3 +21,12 @@ export const createDocument = async (
   );
   return data;
 };
+
+export const updateDocument = async (doc: IDocument) => {
+  const { _id: id, ...payload } = doc;
+  const { data } = await apiClient.patch(
+    apiEndpoints.documents.updateDocument(id),
+    { ...payload, id }
+  );
+  return data;
+};

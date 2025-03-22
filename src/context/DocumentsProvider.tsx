@@ -1,7 +1,16 @@
-import { createDocument, getAllDocuments } from "@/api/documentsApi";
+import {
+  createDocument,
+  getAllDocuments,
+  updateDocument,
+} from "@/api/documentsApi";
 import { DocumentsContext } from "@/hooks/useDocuments";
 import { IDocument } from "@/interface/IDocument";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  UseMutationResult,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { ReactNode, useMemo, useState, useCallback, useEffect } from "react";
 
 export type TDocumentContextValue = {
@@ -10,7 +19,8 @@ export type TDocumentContextValue = {
   error: Error;
   isLoading: boolean;
   handleSelectDocument: (_id: string) => void;
-  addDocument: (doc: Partial<Partial<IDocument>>) => Promise<void>;
+  addDocument: UseMutationResult;
+  updateDocument: UseMutationResult;
 };
 
 const DocumentsProvider = ({ children }: { children: ReactNode }) => {
@@ -27,6 +37,8 @@ const DocumentsProvider = ({ children }: { children: ReactNode }) => {
   } = useQuery<IDocument[]>({
     queryKey: ["documents"],
     queryFn: getAllDocuments,
+    retry: false,
+    refetchOnWindowFocus: false,
   });
 
   useEffect(() => {
@@ -53,6 +65,21 @@ const DocumentsProvider = ({ children }: { children: ReactNode }) => {
     },
   });
 
+  const updateDocumentMutation = useMutation({
+    mutationFn: updateDocument,
+    onSuccess: (updatedDoc) => {
+      queryClient.setQueryData<IDocument[]>(["documents"], (oldDocs) => {
+        const index = oldDocs.findIndex((doc) => doc._id === updatedDoc._id);
+        if (index === -1) return oldDocs;
+        return [
+          ...oldDocs.slice(0, index),
+          updatedDoc,
+          ...oldDocs.slice(index + 1),
+        ];
+      });
+    },
+  });
+
   const value = useMemo(() => {
     return {
       documents,
@@ -60,7 +87,8 @@ const DocumentsProvider = ({ children }: { children: ReactNode }) => {
       error,
       isLoading,
       handleSelectDocument,
-      addDocument: addDocumentMutation.mutateAsync,
+      addDocument: addDocumentMutation,
+      updateDocument: updateDocumentMutation,
     };
   }, [
     documents,
@@ -69,6 +97,7 @@ const DocumentsProvider = ({ children }: { children: ReactNode }) => {
     isLoading,
     handleSelectDocument,
     addDocumentMutation,
+    updateDocumentMutation,
   ]);
 
   return (
