@@ -15,11 +15,10 @@ export const getAllDocuments = async (
 export const createDocument = async (
   doc: Partial<Omit<IDocument, keyof IBase>>
 ) => {
-  const { data } = await apiClient.post(
-    apiEndpoints.documents.addDocument,
-    doc
-  );
-  return data;
+  const res = await apiClient.post(apiEndpoints.documents.addDocument, doc);
+  const document = res.data?.data ? res.data.data : null;
+
+  return document;
 };
 
 export const updateDocument = async (doc: IDocument) => {

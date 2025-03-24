@@ -2,15 +2,9 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import {
-  Search,
-  Plus,
-  FileText,
-  CreditCard,
-  X,
-  InfinityIcon,
-} from "lucide-react";
+import { Search, Plus, CreditCard, X, InfinityIcon } from "lucide-react";
 import { IDocument } from "@/interface/IDocument";
+import DocumentPreviewCard from "../Cards/DocumentPreviewCard";
 
 interface Document {
   id: string;
@@ -38,9 +32,9 @@ const DocumentsSidebar: React.FC<DocumentsSidebarProps> = ({
   onCreateDocument,
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const filteredDocuments = documents?.filter((doc) =>
-    doc.title.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredDocuments = documents?.filter((doc) => {
+    return doc.title.toLowerCase().includes(searchQuery.toLowerCase());
+  });
 
   return (
     <aside
@@ -78,21 +72,12 @@ const DocumentsSidebar: React.FC<DocumentsSidebarProps> = ({
       <div className="flex-grow overflow-auto">
         <div className="px-3 py-2">
           {filteredDocuments.map((doc) => (
-            <button
+            <DocumentPreviewCard
+              document={doc}
+              onSelectDocument={onSelectDocument}
+              selectedDocument={selectedDocument}
               key={doc._id}
-              onClick={() => onSelectDocument(doc._id)}
-              className={cn(
-                "w-full text-left p-3 rounded-md mb-1 transition-colors document-card",
-                doc._id === selectedDocument?._id
-                  ? "bg-brand-light border border-brand-blue/20"
-                  : "hover:bg-muted/50"
-              )}
-            >
-              <div className="flex items-center gap-2">
-                <FileText size={16} className="text-muted-foreground" />
-                <span className="truncate">{doc.title}</span>
-              </div>
-            </button>
+            />
           ))}
         </div>
       </div>

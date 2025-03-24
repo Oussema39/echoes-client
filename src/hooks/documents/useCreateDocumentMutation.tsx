@@ -22,7 +22,7 @@ const useCreateDocumentMutation = ({
 
       setSelectedDocument(addedDoc);
 
-      toast.success("Document added");
+      toast.success("New document created");
     },
   });
   return updateDocumentMutation;

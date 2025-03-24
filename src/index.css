@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -143,7 +142,7 @@
 }
 
 .document-card:hover {
-  @apply shadow-hover -translate-y-1;
+  @apply shadow-hover;
 }
 
 /* Sidebar Animation */
