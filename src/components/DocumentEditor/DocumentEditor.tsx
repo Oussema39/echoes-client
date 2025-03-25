@@ -1,9 +1,10 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { DocumentEditorProps } from "@/interface/IDocumentEditor";
 import DocumentFooter from "./DocumentFooter";
 import { formats, modules } from "./config";
+import { countEditorWords } from "@/lib/utils";
 
 const DocumentEditor: React.FC<DocumentEditorProps> = ({
   hideFooter = false,
@@ -21,12 +22,8 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
       return;
     }
     if (content) {
-      const text = content.replace(/<[^>]*>/g, " ");
-      const words = text
-        .trim()
-        .split(/\s+/)
-        .filter((word) => word.length > 0);
-      setWordCount(words.length);
+      const length = countEditorWords(content);
+      setWordCount(length);
     }
   };
 
@@ -35,9 +32,13 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
     updateWordCount(content);
   };
 
+  useEffect(() => {
+    updateWordCount(value);
+  }, [value]);
+
   return (
     <>
-      <div className="flex-grow overflow-auto px-6">
+      <div className="flex-grow overflow-hidden px-6 pb-12">
         <ReactQuill
           ref={quillRef}
           theme="snow"
@@ -46,7 +47,7 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
           modules={modules}
           formats={formats}
           placeholder="Start writing something amazing..."
-          className="h-full border-none focus:outline-none"
+          className="h-full border-none focus:outline-none z-50"
           {...rest}
         />
       </div>

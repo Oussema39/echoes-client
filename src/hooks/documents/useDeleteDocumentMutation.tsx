@@ -9,12 +9,17 @@ type Props = {
   setSelectedDocument: Dispatch<SetStateAction<IDocument | null>>;
 };
 
-const useDeleteDocumentMutation = ({ queryClient }: Props) => {
+const useDeleteDocumentMutation = ({
+  queryClient,
+  setSelectedDocument,
+}: Props) => {
   const deleteDocumentMutation = useMutation({
     mutationFn: deleteDocument,
     onSuccess: (deletedDoc: IDocument) => {
       queryClient.setQueryData<IDocument[]>(["documents"], (oldDocs) => {
-        return oldDocs.filter((doc) => doc._id !== deletedDoc._id);
+        const updatedDocs = oldDocs.filter((doc) => doc._id !== deletedDoc._id);
+        setSelectedDocument(updatedDocs[0] || null);
+        return updatedDocs;
       });
 
       toast.success(`Document: ${deletedDoc.title} is removed`);

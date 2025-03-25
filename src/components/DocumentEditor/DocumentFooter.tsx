@@ -13,8 +13,13 @@ const DocumentFooter = ({
     <footer className="flex justify-between items-center px-6 py-2 border-t text-sm text-muted-foreground">
       <div className="flex items-center gap-2">
         <span>{wordCount} Words</span>
-        <Button variant="ghost" size="sm" className="text-xs h-6 gap-1">
-          <span>{wordCount > 0 ? wordCount : 286}</span>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-xs h-6 gap-1"
+          type="button"
+        >
+          <span>V1</span>
           <ChevronDown size={12} />
         </Button>
       </div>
@@ -24,6 +29,7 @@ const DocumentFooter = ({
         </Badge>
         <Button
           size="sm"
+          type="button"
           className="h-6 text-xs bg-brand-blue hover:bg-brand-dark"
         >
           Write Prompt for Selection

@@ -44,7 +44,7 @@ const DocumentPreviewCard = ({
       key={document._id}
       onClick={() => onSelectDocument(document._id)}
       className={cn(
-        "w-full text-left p-3 rounded-md mb-1 transition-colors document-card group",
+        "w-full text-left p-3 rounded-md mb-1 transition-colors document-card group cursor-pointer",
         document._id === selectedDocument?._id
           ? "bg-brand-light border border-brand-blue/20"
           : "hover:bg-muted/50"
