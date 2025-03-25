@@ -21,12 +21,19 @@ export const createDocument = async (
   return document;
 };
 
-export const updateDocument = async (doc: IDocument) => {
+export const updateDocument = async (doc: Partial<IDocument>) => {
   const { _id: id, ...payload } = doc;
   const res = await apiClient.patch(apiEndpoints.documents.updateDocument(id), {
     ...payload,
     id,
   });
+  const document = res.data?.data ? res.data.data : null;
+
+  return document;
+};
+
+export const deleteDocument = async (id: string) => {
+  const res = await apiClient.delete(apiEndpoints.documents.deleteDocument(id));
   const document = res.data?.data ? res.data.data : null;
 
   return document;

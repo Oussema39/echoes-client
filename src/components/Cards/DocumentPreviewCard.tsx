@@ -1,6 +1,6 @@
 import { IDocument } from "@/interface/IDocument";
 import { cn } from "@/lib/utils";
-import { FileText, Ellipsis, Trash } from "lucide-react";
+import { FileText, Ellipsis, Trash, Share } from "lucide-react";
 import { Button } from "../ui/button";
 import {
   DropdownMenu,
@@ -12,18 +12,32 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+import { useCallback, useMemo } from "react";
 
 type Props = {
   document: IDocument;
+  isLoadingDelete: boolean;
   selectedDocument: IDocument;
   onSelectDocument: (id: string) => void;
+  onDeleteDocument: (id: string) => void;
 };
 
 const DocumentPreviewCard = ({
   document,
+  isLoadingDelete,
   selectedDocument,
   onSelectDocument,
+  onDeleteDocument,
 }: Props) => {
+  const isDisabled = useMemo(() => {
+    return document._id === selectedDocument?._id && isLoadingDelete;
+  }, [document._id, isLoadingDelete, selectedDocument?._id]);
+
+  const handleDelete = useCallback(() => {
+    if (isDisabled) return; // Prevent multiple clicks
+    onDeleteDocument(document._id);
+  }, [document._id, isDisabled, onDeleteDocument]);
+
   return (
     <div
       title={document.title}
@@ -55,10 +69,24 @@ const DocumentPreviewCard = ({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem className="text-red-400 hover:text-red-400 hover:cursor-pointer">
+              <DropdownMenuItem
+                disabled={isDisabled}
+                onClick={handleDelete}
+                className="text-red-400 hover:text-red-400 hover:cursor-pointer"
+              >
                 Delete
                 <DropdownMenuShortcut>
                   <Trash size={16} />
+                </DropdownMenuShortcut>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                disabled={isDisabled}
+                onClick={(e) => e.stopPropagation()}
+                className=" hover:cursor-pointer"
+              >
+                Share
+                <DropdownMenuShortcut>
+                  <Share size={16} />
                 </DropdownMenuShortcut>
               </DropdownMenuItem>
             </DropdownMenuGroup>

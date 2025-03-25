@@ -16,10 +16,12 @@ interface DocumentsSidebarProps {
   open: boolean;
   onToggle: () => void;
   isLoading: boolean;
+  isLoadingDelete: boolean;
   documents: IDocument[];
   selectedDocument: IDocument | null;
   onSelectDocument: (id: string) => void;
   onCreateDocument: () => void;
+  onDeleteDocument: (id: string) => void;
 }
 
 const DocumentsSidebar: React.FC<DocumentsSidebarProps> = ({
@@ -30,6 +32,8 @@ const DocumentsSidebar: React.FC<DocumentsSidebarProps> = ({
   selectedDocument,
   onSelectDocument,
   onCreateDocument,
+  isLoadingDelete,
+  onDeleteDocument,
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const filteredDocuments = documents?.filter((doc) => {
@@ -77,6 +81,8 @@ const DocumentsSidebar: React.FC<DocumentsSidebarProps> = ({
               onSelectDocument={onSelectDocument}
               selectedDocument={selectedDocument}
               key={doc._id}
+              onDeleteDocument={onDeleteDocument}
+              isLoadingDelete={isLoadingDelete}
             />
           ))}
         </div>

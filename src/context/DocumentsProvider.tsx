@@ -1,5 +1,6 @@
 import { getAllDocuments } from "@/api/documentsApi";
 import useCreateDocumentMutation from "@/hooks/documents/useCreateDocumentMutation";
+import useDeleteDocumentMutation from "@/hooks/documents/useDeleteDocumentMutation";
 import useUpdateDocumentMutation from "@/hooks/documents/useUpdateDocumentMutation";
 import { DocumentsContext } from "@/hooks/useDocuments";
 import { IDocument } from "@/interface/IDocument";
@@ -18,6 +19,7 @@ export type TDocumentContextValue = {
   handleSelectDocument: (_id: string) => void;
   createDocument: UseMutationResult;
   updateDocument: UseMutationResult;
+  deleteDocument: UseMutationResult;
 };
 
 const DocumentsProvider = ({ children }: { children: ReactNode }) => {
@@ -56,6 +58,11 @@ const DocumentsProvider = ({ children }: { children: ReactNode }) => {
     setSelectedDocument,
   });
 
+  const deleteDocumentMutation = useDeleteDocumentMutation({
+    queryClient,
+    setSelectedDocument,
+  });
+
   const value = useMemo(() => {
     return {
       documents,
@@ -65,6 +72,7 @@ const DocumentsProvider = ({ children }: { children: ReactNode }) => {
       handleSelectDocument,
       createDocument: createDocumentMutation,
       updateDocument: updateDocumentMutation,
+      deleteDocument: deleteDocumentMutation,
     };
   }, [
     documents,
@@ -74,6 +82,7 @@ const DocumentsProvider = ({ children }: { children: ReactNode }) => {
     handleSelectDocument,
     createDocumentMutation,
     updateDocumentMutation,
+    deleteDocumentMutation,
   ]);
 
   useEffect(() => {

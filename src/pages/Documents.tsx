@@ -15,6 +15,7 @@ const Documents = () => {
     handleSelectDocument,
     updateDocument,
     createDocument,
+    deleteDocument,
   } = useDocuments();
 
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -79,6 +80,8 @@ const Documents = () => {
           onSelectDocument={handleSelectDocument}
           onCreateDocument={handleCreateDocument}
           isLoading={createDocument.isPending}
+          isLoadingDelete={deleteDocument.isPending}
+          onDeleteDocument={deleteDocument.mutate}
         />
 
         <main className="flex-1 overflow-hidden">
