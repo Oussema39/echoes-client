@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Search, Plus, CreditCard, X, InfinityIcon } from "lucide-react";
 import { IDocument } from "@/interface/IDocument";
-import DocumentPreviewCard from "../Cards/DocumentPreviewCard";
+import DocumentPreviewCard from "@/components/Cards/DocumentPreviewCard";
 
 interface Document {
   id: string;

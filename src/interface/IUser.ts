@@ -8,5 +8,4 @@ export interface IUser extends Partial<IBase> {
   age?: number;
   emailVerified?: boolean;
   refreshToken?: string;
-  verificationToken?: string;
 }

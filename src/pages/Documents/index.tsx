@@ -1,11 +1,11 @@
 import { useState } from "react";
 import AppNavbar from "@/components/AppNavbar";
-import DocumentsSidebar from "@/components/DocumentEditor/DocumentsSidebar";
 import AiSuggestions from "@/components/AiSuggestions";
 import DocumentsProvider from "@/context/DocumentsProvider";
 import { useDocuments } from "@/hooks/useDocuments";
-import DocumentForm from "@/components/DocumentForm";
+import DocumentForm from "@/pages/Documents/components/DocumentForm";
 import Loader from "@/components/ui/loader";
+import DocumentsSidebar from "./components/DocumentsSidebar";
 
 const Documents = () => {
   const {

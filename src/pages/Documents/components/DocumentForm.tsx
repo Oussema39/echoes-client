@@ -1,5 +1,5 @@
 import { Save, Share } from "lucide-react";
-import { Button } from "./ui/button";
+import { Button } from "../../../components/ui/button";
 import { useForm } from "react-hook-form";
 import {
   Form,
@@ -8,11 +8,15 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
-import DocumentEditor from "./DocumentEditor/DocumentEditor";
+import DocumentEditor from "../../../components/DocumentEditor/DocumentEditor";
 import { IDocument } from "@/interface/IDocument";
 import { useEffect, useState } from "react";
-import { Dialog, DialogContent } from "./ui/dialog";
-import { Input } from "./ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+} from "../../../components/ui/dialog";
+import ShareDialog from "./ShareDialog";
 
 type DocumentFormProps = {
   selectedDocument: IDocument | null;
@@ -25,6 +29,8 @@ type FormData = {
   content: string;
 };
 
+const options = [];
+
 const DocumentForm = ({
   selectedDocument,
   saveDocument,
@@ -36,7 +42,6 @@ const DocumentForm = ({
       content: selectedDocument?.content || "",
     },
   });
-
   const [shareDialogOpen, setShareDialogOpen] = useState<boolean>(false);
 
   const onSubmit = (data: FormData) => {
@@ -124,10 +129,21 @@ const DocumentForm = ({
         <DialogContent>
           <div className="flex flex-col gap-2">
             <div className="flex justify-between items-center">
-              <label>Share with</label>
+              <h2>Share with</h2>
             </div>
-            <Input type="email" className="outline-none border  !ring-0" />
+            <ShareDialog open={shareDialogOpen} setOpen={setShareDialogOpen} />
           </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShareDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button size="sm">Share</Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </>
