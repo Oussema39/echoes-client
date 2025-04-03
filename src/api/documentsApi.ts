@@ -3,6 +3,7 @@ import { apiClient } from "./axios";
 import { AxiosRequestConfig } from "axios";
 import { IDocument } from "@/interface/IDocument";
 import { IBase } from "@/interface/IBase";
+import { ICollaborator } from "@/interface/ICollaborator";
 
 export const getAllDocuments = async (
   config: AxiosRequestConfig
@@ -34,6 +35,19 @@ export const updateDocument = async (doc: Partial<IDocument>) => {
 
 export const deleteDocument = async (id: string) => {
   const res = await apiClient.delete(apiEndpoints.documents.deleteDocument(id));
+  const document = res.data?.data ? res.data.data : null;
+
+  return document;
+};
+
+export const shareDocument = async (payload: {
+  docId: string;
+  collaborators: ICollaborator[];
+}) => {
+  const res = await apiClient.post(
+    apiEndpoints.documents.shareDocument,
+    payload
+  );
   const document = res.data?.data ? res.data.data : null;
 
   return document;

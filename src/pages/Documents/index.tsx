@@ -16,6 +16,7 @@ const Documents = () => {
     updateDocument,
     createDocument,
     deleteDocument,
+    shareDocument,
   } = useDocuments();
 
   const [sidebarOpen, setSidebarOpen] = useState(true);

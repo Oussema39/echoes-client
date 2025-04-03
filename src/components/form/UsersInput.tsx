@@ -19,7 +19,7 @@ const UsersInput = () => {
       onSelectionChange={setValues}
       selectedValues={value}
       placeholder="Search users..."
-      loading
+      loading={isLoading}
     />
   );
 };
