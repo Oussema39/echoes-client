@@ -6,6 +6,7 @@ import { useDocuments } from "@/hooks/useDocuments";
 import DocumentForm from "@/pages/Documents/components/DocumentForm";
 import Loader from "@/components/ui/loader";
 import DocumentsSidebar from "./components/DocumentsSidebar";
+import { ICollaborator } from "@/interface/ICollaborator";
 
 const Documents = () => {
   const {
@@ -55,6 +56,17 @@ const Documents = () => {
     });
   };
 
+  // Handle share document
+  const handleShareDocument = (collaborators: ICollaborator[]) => {
+    shareDocument.mutate({
+      docId: selectedDocument?._id,
+      collaborators: collaborators.map((collab) => ({
+        userId: collab.userId,
+        permissionLevel: collab.permissionLevel ?? "owner",
+      })),
+    });
+  };
+
   // Apply AI suggestion to the editor
   const handleApplySuggestion = (text: string) => {};
 
@@ -89,6 +101,7 @@ const Documents = () => {
           {selectedDocument ? (
             <DocumentForm
               saveDocument={handleSaveDocument}
+              shareDocument={handleShareDocument}
               selectedDocument={selectedDocument}
               isLoading={updateDocument.isPending}
             />

@@ -9,15 +9,16 @@ export type Option = {
   label: string;
 };
 
-interface AutocompleteMultiSelectProps {
+export interface AutocompleteMultiSelectProps {
   options: Option[];
-  selectedValues: string[];
-  onSelectionChange: (values: string[]) => void;
+  selectedValues: string | string[];
+  onSelectionChange: (values: string | string[]) => void;
   placeholder?: string;
   className?: string;
   maxHeight?: number;
   disabled?: boolean;
   loading?: boolean;
+  multiple?: boolean;
 }
 
 export const Autocomplete = ({
@@ -28,6 +29,7 @@ export const Autocomplete = ({
   className,
   maxHeight = 250,
   disabled = false,
+  multiple = false,
   loading,
 }: AutocompleteMultiSelectProps) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -52,15 +54,23 @@ export const Autocomplete = ({
 
   // Handle toggle selection
   const toggleOption = (value: string) => {
-    if (selectedValues.includes(value)) {
-      onSelectionChange(selectedValues.filter((val) => val !== value));
+    if (multiple) {
+      if (selectedValues.includes(value)) {
+        onSelectionChange(
+          (selectedValues as string[]).filter((val) => val !== value)
+        );
+      } else {
+        onSelectionChange([...selectedValues, value]);
+      }
     } else {
-      onSelectionChange([...selectedValues, value]);
+      onSelectionChange([value]);
+      handlePopperOpen(false); // close dropdown on single select
     }
   };
 
   // Remove a selected option
   const removeOption = (value: string, e?: React.MouseEvent) => {
+    if (!multiple) return; // Skip in single select mode
     e?.stopPropagation();
     onSelectionChange(selectedValues.filter((val) => val !== value));
   };
@@ -68,7 +78,7 @@ export const Autocomplete = ({
   // Clear all selected options
   const clearAll = (e: React.MouseEvent) => {
     e.stopPropagation();
-    onSelectionChange([]);
+    onSelectionChange(multiple ? "" : []);
   };
 
   // Handle keyboard navigation
@@ -138,7 +148,7 @@ export const Autocomplete = ({
                       className="ml-1 rounded-full outline-none focus:ring-2"
                       onClick={(e) => removeOption(option.value, e)}
                     >
-                      <X className="h-3 w-3" />
+                      {multiple ? <X className="h-3 w-3" /> : null}
                       <span className="sr-only">Remove {option.label}</span>
                     </button>
                   </Badge>
@@ -149,7 +159,7 @@ export const Autocomplete = ({
                     className="ml-1 text-sm text-muted-foreground hover:text-foreground"
                     onClick={clearAll}
                   >
-                    Clear all
+                    Clear {multiple ? "all" : ""}
                   </button>
                 )}
               </>

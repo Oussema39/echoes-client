@@ -11,16 +11,14 @@ import {
 import DocumentEditor from "../../../components/DocumentEditor/DocumentEditor";
 import { IDocument } from "@/interface/IDocument";
 import { useEffect, useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-} from "../../../components/ui/dialog";
+import { Dialog, DialogContent } from "../../../components/ui/dialog";
 import ShareDialog from "./ShareDialog";
+import { ICollaborator } from "@/interface/ICollaborator";
 
 type DocumentFormProps = {
   selectedDocument: IDocument | null;
-  saveDocument: (data: FormData) => void;
+  saveDocument?: (data: FormData) => void;
+  shareDocument?: (collaborators: ICollaborator[]) => void;
   isLoading: boolean;
 };
 
@@ -34,6 +32,7 @@ const options = [];
 const DocumentForm = ({
   selectedDocument,
   saveDocument,
+  shareDocument,
   isLoading,
 }: DocumentFormProps) => {
   const form = useForm<FormData>({
@@ -60,6 +59,7 @@ const DocumentForm = ({
     <>
       <Form {...form} key={selectedDocument?._id}>
         <form
+          id="document-form"
           onSubmit={form.handleSubmit(onSubmit)}
           className="flex flex-col h-full w-full bg-white rounded-lg shadow-subtle overflow-hidden animate-fade-in"
         >
@@ -131,19 +131,12 @@ const DocumentForm = ({
             <div className="flex justify-between items-center">
               <h2>Share with</h2>
             </div>
-            <ShareDialog open={shareDialogOpen} setOpen={setShareDialogOpen} />
+            <ShareDialog
+              open={shareDialogOpen}
+              setOpen={setShareDialogOpen}
+              onSubmit={shareDocument}
+            />
           </div>
-
-          <DialogFooter>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShareDialogOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button size="sm">Share</Button>
-          </DialogFooter>
         </DialogContent>
       </Dialog>
     </>

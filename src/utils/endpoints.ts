@@ -1,5 +1,6 @@
 const documentsBase = "/document";
 const usersBase = "/user";
+const authBase = "/auth";
 
 export const apiEndpoints = {
   documents: {
@@ -11,5 +12,8 @@ export const apiEndpoints = {
   },
   users: {
     getAll: usersBase,
+  },
+  auth: {
+    login: `${authBase}/login`,
   },
 } as const;
