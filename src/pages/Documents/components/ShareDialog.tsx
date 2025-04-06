@@ -1,73 +1,177 @@
+import UserPermissionInput from "@/components/Cards/UserCard";
+import SelectInput from "@/components/form/SelectInput";
 import UsersInput from "@/components/form/UsersInput";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter } from "@/components/ui/dialog";
-import { FormControl, FormField } from "@/components/ui/form";
+import { Form, FormControl, FormField } from "@/components/ui/form";
 import { Separator } from "@/components/ui/separator";
-import { useForm } from "react-hook-form";
+import useUserQuery from "@/hooks/users/useUserQuery";
+import { ICollaborator } from "@/interface/ICollaborator";
+import { IDocument } from "@/interface/IDocument";
+import { permissionLevels } from "@/utils/selectOptions";
+import { useCallback, useEffect } from "react";
+import { useFieldArray, useForm } from "react-hook-form";
+import { toast } from "sonner";
 
-type ShareForm = {
+interface ShareForm {
   selectedParticipant: string;
   permissionLevel: string;
-};
+  collaborators: ICollaborator[];
+}
 
-const ShareDialog = ({ open, setOpen, saveDocument }) => {
-  const { handleSubmit, control } = useForm<ShareForm>({
+interface ShareDialogProps {
+  open: boolean;
+  isLoading: boolean;
+  shareDocument?: (collaborators: ICollaborator[]) => void;
+  setOpen: (open: boolean) => void;
+  selectedDocument: IDocument | null;
+}
+
+const ShareDialog = ({
+  open,
+  isLoading,
+  setOpen,
+  shareDocument,
+  selectedDocument,
+}: ShareDialogProps) => {
+  const { usersMap } = useUserQuery();
+
+  const form = useForm<ShareForm>({
     defaultValues: {
       selectedParticipant: "",
       permissionLevel: "viewer",
+      collaborators: selectedDocument.collaborators ?? [],
     },
   });
 
-  const onSubmit = (values: ShareForm) => {
-    saveDocument({
-      userId: values.selectedParticipant,
-      permissionLevel: values.permissionLevel,
+  const {
+    fields: collaborators,
+    append,
+    update,
+  } = useFieldArray({
+    control: form.control,
+    name: "collaborators",
+  });
+
+  const handleReset = useCallback(() => {
+    form.reset({
+      selectedParticipant: "",
+      permissionLevel: "viewer",
+      collaborators: selectedDocument.collaborators ?? [],
     });
-    // setOpen(false);
+  }, [form, selectedDocument]);
+
+  const onSubmit = (values: ShareForm) => {
+    console.log({ values });
+    shareDocument(values.collaborators);
   };
+
+  const handleAddCollab = () => {
+    const formValues = form.getValues();
+    const { selectedParticipant, permissionLevel } = formValues;
+
+    if (!selectedParticipant || !permissionLevel) {
+      toast.error("Please select a participant and a permission");
+    }
+
+    append({
+      userId: selectedParticipant,
+      permissionLevel,
+    } as ICollaborator);
+
+    form.reset({
+      selectedParticipant: "",
+      permissionLevel: "viewer",
+    });
+  };
+
+  const handleChangeCollabPermission = (field) => {
+    console.log({ field });
+  };
+
+  useEffect(() => {
+    handleReset();
+  }, [handleReset]);
+
+  useEffect(() => {
+    console.log({ collaborators });
+  }, [collaborators]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent title="">
-        <form id="share-form" onSubmit={handleSubmit(onSubmit)}>
-          <div className="flex flex-col gap-2">
-            <div className="flex justify-between items-center">
-              <h2 className="font-medium">Share with</h2>
+        <Form {...form}>
+          <form id="share-form" onSubmit={form.handleSubmit(onSubmit)}>
+            <div className="flex flex-col gap-2">
+              <div className="flex justify-between items-center">
+                <h2 className="font-medium">Share with</h2>
+              </div>
+              <FormField
+                control={form.control}
+                name="selectedParticipant"
+                render={({ field }) => (
+                  <FormControl>
+                    <UsersInput {...field} />
+                  </FormControl>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="permissionLevel"
+                render={({ field }) => (
+                  <FormControl>
+                    <SelectInput options={permissionLevels} {...field} />
+                  </FormControl>
+                )}
+              />
             </div>
-            <FormField
-              control={control}
-              name="selectedParticipant"
-              rules={{ required: "Participant is required" }}
-              render={({ field }) => {
-                const onChange = (value) => field.onChange(value);
-                return (
-                  <FormControl>
-                    <UsersInput {...field} onChange={onChange} />;
-                  </FormControl>
-                );
-              }}
-            />
-            <FormField
-              control={control}
-              name="selectedParticipant"
-              rules={{ required: "Participant is required" }}
-              render={({ field }) => {
-                return (
-                  <FormControl>
-                    <SelectInput {...field} />
-                  </FormControl>
-                );
-              }}
-            />
-          </div>
-        </form>
+            <div className="flex justify-end items-center gap-2 mt-4">
+              <Button
+                type="button"
+                onClick={handleAddCollab}
+                variant="secondary"
+              >
+                Add
+              </Button>
+            </div>
+            <Separator className="mx-2 my-4 w-auto bg-sidebar-border" />
+            <div>
+              <h2 className="font-medium">Manage access</h2>
+              <ul>
+                {collaborators?.map((collab, index) => {
+                  const user = usersMap.get(collab.userId);
+                  return user ? (
+                    <UserPermissionInput
+                      collab={collab}
+                      index={index}
+                      control={form.control}
+                      subtitle={user.email}
+                      title={user.firstName}
+                      update={update}
+                      key={collab.userId}
+                    />
+                  ) : null;
+                })}
+              </ul>
+            </div>
+          </form>
+        </Form>
 
-        <Separator className="mx-2 my-4 w-auto bg-sidebar-border" />
         <DialogFooter>
-          <Button variant="outline" size="sm" onClick={() => setOpen(false)}>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setOpen(false)}
+          >
             Cancel
           </Button>
-          <Button size="sm" type="submit">
+          <Button
+            disabled={isLoading}
+            size="sm"
+            type="submit"
+            form="share-form"
+          >
             Save
           </Button>
         </DialogFooter>

@@ -5,17 +5,25 @@ import useUserQuery from "@/hooks/users/useUserQuery";
 type UsersInputProps = {
   value: string | string[];
   onChange: (value: string | string[]) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  filterOptions?: (autocompleteOptions: any[]) => any[];
 } & Partial<AutocompleteMultiSelectProps>;
 
-const UsersInput = ({ value, onChange, ...props }: UsersInputProps) => {
+const UsersInput = ({
+  value,
+  onChange,
+  filterOptions,
+  ...props
+}: UsersInputProps) => {
   const { users, isLoading } = useUserQuery();
 
   const options = useMemo(() => {
-    return users?.map((user) => ({
+    const usersOptions = users?.map((user) => ({
       label: `${user.firstName} ${user.lastName}`,
-      value: user.email,
+      value: user._id,
     }));
-  }, [users]);
+    return filterOptions ? filterOptions(usersOptions) : usersOptions;
+  }, [users, filterOptions]);
 
   return (
     <Autocomplete

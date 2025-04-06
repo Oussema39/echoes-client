@@ -11,7 +11,6 @@ import {
 import DocumentEditor from "../../../components/DocumentEditor/DocumentEditor";
 import { IDocument } from "@/interface/IDocument";
 import { useEffect, useState } from "react";
-import { Dialog, DialogContent } from "../../../components/ui/dialog";
 import ShareDialog from "./ShareDialog";
 import { ICollaborator } from "@/interface/ICollaborator";
 
@@ -20,6 +19,7 @@ type DocumentFormProps = {
   saveDocument?: (data: FormData) => void;
   shareDocument?: (collaborators: ICollaborator[]) => void;
   isLoading: boolean;
+  isLoadingShare: boolean;
 };
 
 type FormData = {
@@ -34,6 +34,7 @@ const DocumentForm = ({
   saveDocument,
   shareDocument,
   isLoading,
+  isLoadingShare,
 }: DocumentFormProps) => {
   const form = useForm<FormData>({
     defaultValues: {
@@ -125,20 +126,14 @@ const DocumentForm = ({
           />
         </form>
       </Form>
-      <Dialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
-        <DialogContent>
-          <div className="flex flex-col gap-2">
-            <div className="flex justify-between items-center">
-              <h2>Share with</h2>
-            </div>
-            <ShareDialog
-              open={shareDialogOpen}
-              setOpen={setShareDialogOpen}
-              onSubmit={shareDocument}
-            />
-          </div>
-        </DialogContent>
-      </Dialog>
+
+      <ShareDialog
+        open={shareDialogOpen}
+        setOpen={setShareDialogOpen}
+        shareDocument={shareDocument}
+        selectedDocument={selectedDocument}
+        isLoading={isLoadingShare}
+      />
     </>
   );
 };

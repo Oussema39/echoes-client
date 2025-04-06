@@ -65,12 +65,11 @@ apiClient.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const res = await axios.post(apiEndpoints.auth.login, {
+        const res = await apiClient.post(apiEndpoints.auth.login, {
           password: import.meta.env.VITE_TMP_PASSWORD,
           email: import.meta.env.VITE_TMP_EMAIL,
         });
-
-        const newAccessToken = res.data.accessToken;
+        const newAccessToken = res.data.data.accessToken;
         localStorage.setItem("token", newAccessToken);
         apiClient.defaults.headers.common.Authorization = `Bearer ${newAccessToken}`;
 

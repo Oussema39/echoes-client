@@ -29,7 +29,7 @@ const SelectInput = ({
 }: SelectInputProps) => {
   return (
     <Select onValueChange={onChange} value={value} {...props}>
-      <SelectTrigger>
+      <SelectTrigger className="!ring-0">
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
 

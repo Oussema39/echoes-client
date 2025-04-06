@@ -23,14 +23,14 @@ export interface AutocompleteMultiSelectProps {
 
 export const Autocomplete = ({
   options,
-  selectedValues,
   onSelectionChange,
   placeholder = "Select options...",
   className,
+  loading,
+  selectedValues = [],
   maxHeight = 250,
   disabled = false,
   multiple = false,
-  loading,
 }: AutocompleteMultiSelectProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -63,7 +63,7 @@ export const Autocomplete = ({
         onSelectionChange([...selectedValues, value]);
       }
     } else {
-      onSelectionChange([value]);
+      onSelectionChange(value);
       handlePopperOpen(false); // close dropdown on single select
     }
   };
@@ -72,7 +72,11 @@ export const Autocomplete = ({
   const removeOption = (value: string, e?: React.MouseEvent) => {
     if (!multiple) return; // Skip in single select mode
     e?.stopPropagation();
-    onSelectionChange(selectedValues.filter((val) => val !== value));
+    onSelectionChange(
+      multiple
+        ? (selectedValues as string[]).filter((val) => val !== value)
+        : selectedValues
+    );
   };
 
   // Clear all selected options

@@ -104,6 +104,7 @@ const Documents = () => {
               shareDocument={handleShareDocument}
               selectedDocument={selectedDocument}
               isLoading={updateDocument.isPending}
+              isLoadingShare={shareDocument.isPending}
             />
           ) : (
             <div className="h-full flex items-center justify-center">
