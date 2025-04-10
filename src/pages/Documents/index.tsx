@@ -85,18 +85,19 @@ const Documents = () => {
         onToggleSuggestions={toggleSuggestions}
       />
       <div className="flex flex-1 overflow-hidden">
-        <DocumentsSidebar
-          open={sidebarOpen}
-          onToggle={toggleSidebar}
-          documents={_documents}
-          selectedDocument={selectedDocument}
-          onSelectDocument={handleSelectDocument}
-          onCreateDocument={handleCreateDocument}
-          isLoading={createDocument.isPending}
-          isLoadingDelete={deleteDocument.isPending}
-          onDeleteDocument={deleteDocument.mutate}
-        />
-
+        <div className={sidebarOpen ? "" : "hidden"}>
+          <DocumentsSidebar
+            open={sidebarOpen}
+            onToggle={toggleSidebar}
+            documents={_documents}
+            selectedDocument={selectedDocument}
+            onSelectDocument={handleSelectDocument}
+            onCreateDocument={handleCreateDocument}
+            isLoading={createDocument.isPending}
+            isLoadingDelete={deleteDocument.isPending}
+            onDeleteDocument={deleteDocument.mutate}
+          />
+        </div>
         <main className="flex-1 overflow-hidden">
           {selectedDocument ? (
             <DocumentForm

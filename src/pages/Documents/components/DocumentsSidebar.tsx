@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { Search, Plus, CreditCard, X, InfinityIcon } from "lucide-react";
+import { Search, Plus, ArrowLeftToLine } from "lucide-react";
 import { IDocument } from "@/interface/IDocument";
 import DocumentPreviewCard from "@/components/Cards/DocumentPreviewCard";
 
@@ -43,12 +43,18 @@ const DocumentsSidebar: React.FC<DocumentsSidebarProps> = ({
   return (
     <aside
       className={cn(
-        "w-72 h-auto bg-white border-r flex flex-col overflow-hidden transition-all duration-300 ease-in-out",
+        "w-72 h-[100%] bg-white border-r flex flex-col overflow-hidden transition-all duration-300 ease-in-out",
         open ? "translate-x-0" : "-translate-x-full"
       )}
     >
       <div className="p-4 border-b">
-        <h2 className="text-lg font-medium mb-4">Your Documents</h2>
+        <div className="flex items-center mb-4 justify-between">
+          <h2 className="text-lg font-medium m-0">Your Documents</h2>
+          <ArrowLeftToLine
+            className="flex cursor-pointer text-gray-900"
+            onClick={onToggle}
+          />
+        </div>
         <div className="relative">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
@@ -89,7 +95,7 @@ const DocumentsSidebar: React.FC<DocumentsSidebarProps> = ({
       </div>
 
       <div className="mt-auto border-t p-3">
-        <div className="bg-muted/30 p-3 rounded-md">
+        {/* <div className="bg-muted/30 p-3 rounded-md">
           <div className="flex items-center gap-2 mb-2">
             <div className="w-6 h-6 flex items-center justify-center bg-brand-blue text-white rounded-md">
               <CreditCard size={14} />
@@ -111,7 +117,7 @@ const DocumentsSidebar: React.FC<DocumentsSidebarProps> = ({
           <Button className="w-full text-xs h-7 bg-brand-blue hover:bg-brand-dark">
             Upgrade
           </Button>
-        </div>
+        </div> */}
       </div>
     </aside>
   );
