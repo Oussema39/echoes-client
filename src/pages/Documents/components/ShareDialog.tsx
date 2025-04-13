@@ -93,10 +93,6 @@ const ShareDialog = ({
     handleReset();
   }, [handleReset]);
 
-  useEffect(() => {
-    console.log({ collaborators });
-  }, [collaborators]);
-
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent title="">

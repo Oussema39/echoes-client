@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/form";
 import DocumentEditor from "../../../components/DocumentEditor/DocumentEditor";
 import { IDocument } from "@/interface/IDocument";
-import { useEffect, useState } from "react";
+import { forwardRef, useEffect, useState } from "react";
 import ShareDialog from "./ShareDialog";
 import { ICollaborator } from "@/interface/ICollaborator";
 
@@ -29,113 +29,118 @@ type FormData = {
 
 const options = [];
 
-const DocumentForm = ({
-  selectedDocument,
-  saveDocument,
-  shareDocument,
-  isLoading,
-  isLoadingShare,
-}: DocumentFormProps) => {
-  const form = useForm<FormData>({
-    defaultValues: {
-      title: selectedDocument?.title || "",
-      content: selectedDocument?.content || "",
-    },
-  });
-  const [shareDialogOpen, setShareDialogOpen] = useState<boolean>(false);
-
-  const onSubmit = (data: FormData) => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    saveDocument && saveDocument(data);
-  };
-
-  useEffect(() => {
-    form.reset({
-      title: selectedDocument?.title || "",
-      content: selectedDocument?.content || "",
+const DocumentForm = forwardRef(
+  (
+    {
+      selectedDocument,
+      saveDocument,
+      shareDocument,
+      isLoading,
+      isLoadingShare,
+    }: DocumentFormProps,
+    editorRef
+  ) => {
+    const form = useForm<FormData>({
+      defaultValues: {
+        title: selectedDocument?.title || "",
+        content: selectedDocument?.content || "",
+      },
     });
-  }, [selectedDocument, form]);
+    const [shareDialogOpen, setShareDialogOpen] = useState<boolean>(false);
 
-  return (
-    <>
-      <Form {...form} key={selectedDocument?._id}>
-        <form
-          id="document-form"
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col h-full w-full bg-white rounded-lg shadow-subtle overflow-hidden animate-fade-in"
-        >
-          <header className="flex justify-between items-center px-6 py-3 border-b">
-            <div className="flex items-center gap-2">
-              {/* Title Field */}
-              <FormField
-                control={form.control}
-                name="title"
-                rules={{ required: "Title is required" }}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <input
-                        {...field}
-                        type="text"
-                        className="font-medium text-lg focus:outline-none focus:bg-muted/30 px-2 py-1 rounded"
-                        placeholder="Document title"
-                        aria-label="Document title"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                disabled={isLoading}
-                type="submit"
-                variant="outline"
-                size="sm"
-                className="gap-1"
-              >
-                <Save size={16} />
-                <span>Save</span>
-              </Button>
-              <Button
-                disabled={isLoading}
-                size="sm"
-                className="gap-1"
-                type="button"
-                onClick={() => setShareDialogOpen(true)}
-              >
-                <Share size={16} />
-                <span>Share</span>
-              </Button>
-            </div>
-          </header>
+    const onSubmit = (data: FormData) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      saveDocument && saveDocument(data);
+    };
 
-          {/* Document Content Field */}
-          <FormField
-            control={form.control}
-            name="content"
-            rules={{ required: "Content is required" }}
-            render={({ field }) => {
-              return (
-                <FormControl>
-                  <DocumentEditor {...field} />
-                </FormControl>
-              );
-            }}
-          />
-        </form>
-      </Form>
+    useEffect(() => {
+      form.reset({
+        title: selectedDocument?.title || "",
+        content: selectedDocument?.content || "",
+      });
+    }, [selectedDocument, form]);
 
-      <ShareDialog
-        open={shareDialogOpen}
-        setOpen={setShareDialogOpen}
-        shareDocument={shareDocument}
-        selectedDocument={selectedDocument}
-        isLoading={isLoadingShare}
-      />
-    </>
-  );
-};
+    return (
+      <>
+        <Form {...form} key={selectedDocument?._id}>
+          <form
+            id="document-form"
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="flex flex-col h-full w-full bg-white rounded-lg shadow-subtle overflow-hidden animate-fade-in"
+          >
+            <header className="flex justify-between items-center px-6 py-3 border-b">
+              <div className="flex items-center gap-2">
+                {/* Title Field */}
+                <FormField
+                  control={form.control}
+                  name="title"
+                  rules={{ required: "Title is required" }}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <input
+                          {...field}
+                          type="text"
+                          className="font-medium text-lg focus:outline-none focus:bg-muted/30 px-2 py-1 rounded"
+                          placeholder="Document title"
+                          aria-label="Document title"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  disabled={isLoading}
+                  type="submit"
+                  variant="outline"
+                  size="sm"
+                  className="gap-1"
+                >
+                  <Save size={16} />
+                  <span>Save</span>
+                </Button>
+                <Button
+                  disabled={isLoading}
+                  size="sm"
+                  className="gap-1"
+                  type="button"
+                  onClick={() => setShareDialogOpen(true)}
+                >
+                  <Share size={16} />
+                  <span>Share</span>
+                </Button>
+              </div>
+            </header>
+
+            {/* Document Content Field */}
+            <FormField
+              control={form.control}
+              name="content"
+              rules={{ required: "Content is required" }}
+              render={({ field }) => {
+                return (
+                  <FormControl>
+                    <DocumentEditor {...field} ref={editorRef} />
+                  </FormControl>
+                );
+              }}
+            />
+          </form>
+        </Form>
+
+        <ShareDialog
+          open={shareDialogOpen}
+          setOpen={setShareDialogOpen}
+          shareDocument={shareDocument}
+          selectedDocument={selectedDocument}
+          isLoading={isLoadingShare}
+        />
+      </>
+    );
+  }
+);
 
 export default DocumentForm;

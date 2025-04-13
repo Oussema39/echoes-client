@@ -6,92 +6,97 @@ import {
   Sparkles,
   ArrowUpRight,
   Wand2,
-  Flame,
-  Smile,
   MessageSquare,
-  ThumbsUp,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { TDocAIActions } from "@/utils/constants";
 
 interface AiSuggestionsProps {
   open: boolean;
   onToggle: () => void;
   onApplySuggestion: (text: string) => void;
+  applyDocAIAction: (action: `${TDocAIActions}`) => void;
 }
 
 const AiSuggestions: React.FC<AiSuggestionsProps> = ({
   open,
   onToggle,
   onApplySuggestion,
+  applyDocAIAction,
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
 
   const suggestionCategories = [
     { id: "rewrite", label: "REWRITE" },
-    { id: "tone", label: "ADJUST TONE" },
+    // { id: "tone", label: "ADJUST TONE" },
     { id: "suggestions", label: "SUGGESTIONS", badge: 4 },
   ];
 
   const rewriteOptions = [
     {
       icon: <Wand2 className="h-4 w-4 text-blue-500" />,
-      label: "Improve It",
+      label: "Correct",
       color: "text-blue-500",
-    },
-    {
-      icon: <ArrowUpRight className="h-4 w-4 text-cyan-500" />,
-      label: "Shorten",
-      color: "text-cyan-500",
-    },
-    {
-      icon: <MessageSquare className="h-4 w-4 text-orange-500" />,
-      label: "Simplify",
-      color: "text-orange-500",
-    },
-    {
-      icon: <Sparkles className="h-4 w-4 text-green-500" />,
-      label: "Detailed",
-      color: "text-green-500",
+      action: () => applyDocAIAction("correct"),
     },
     {
       icon: <MessageSquare className="h-4 w-4 text-purple-500" />,
       label: "Paraphrase",
       color: "text-purple-500",
+      action: () => applyDocAIAction("paraphrase"),
     },
+
     {
-      icon: <Flame className="h-4 w-4 text-blue-500" />,
-      label: "Fluent",
-      color: "text-blue-500",
+      icon: <ArrowUpRight className="h-4 w-4 text-cyan-500" />,
+      label: "Shorten",
+      color: "text-cyan-500",
+      action: () => applyDocAIAction("shorten"),
     },
+    // {
+    //   icon: <MessageSquare className="h-4 w-4 text-orange-500" />,
+    //   label: "Simplify",
+    //   color: "text-orange-500",
+    // },
+    // {
+    //   icon: <Sparkles className="h-4 w-4 text-green-500" />,
+    //   label: "Detailed",
+    //   color: "text-green-500",
+    // },
+
+    // {
+    //   icon: <Flame className="h-4 w-4 text-blue-500" />,
+    //   label: "Fluent",
+    //   color: "text-blue-500",
+    // },
   ];
 
-  const toneOptions = [
-    {
-      icon: <Sparkles className="h-4 w-4 text-amber-500" />,
-      label: "Anticipatory",
-      color: "text-amber-500",
-    },
-    {
-      icon: <ThumbsUp className="h-4 w-4 text-orange-500" />,
-      label: "Assertive",
-      color: "text-orange-500",
-    },
-    {
-      icon: <Smile className="h-4 w-4 text-pink-500" />,
-      label: "Compassionate",
-      color: "text-pink-500",
-    },
-    {
-      icon: <Smile className="h-4 w-4 text-yellow-500" />,
-      label: "Confident",
-      color: "text-yellow-500",
-    },
-    {
-      icon: <ThumbsUp className="h-4 w-4 text-amber-500" />,
-      label: "Constructive",
-      color: "text-amber-500",
-    },
-  ];
+  // const toneOptions = [
+  //   {
+  //     icon: <Sparkles className="h-4 w-4 text-amber-500" />,
+  //     label: "Anticipatory",
+  //     color: "text-amber-500",
+  //   },
+  //   {
+  //     icon: <ThumbsUp className="h-4 w-4 text-orange-500" />,
+  //     label: "Assertive",
+  //     color: "text-orange-500",
+  //   },
+  //   {
+  //     icon: <Smile className="h-4 w-4 text-pink-500" />,
+  //     label: "Compassionate",
+  //     color: "text-pink-500",
+  //   },
+  //   {
+  //     icon: <Smile className="h-4 w-4 text-yellow-500" />,
+  //     label: "Confident",
+  //     color: "text-yellow-500",
+  //   },
+  //   {
+  //     icon: <ThumbsUp className="h-4 w-4 text-amber-500" />,
+  //     label: "Constructive",
+  //     color: "text-amber-500",
+  //   },
+  // ];
 
   const suggestions = [
     {
@@ -182,22 +187,22 @@ const AiSuggestions: React.FC<AiSuggestionsProps> = ({
                 key={idx}
                 variant="outline"
                 className="justify-start gap-2 h-9"
-                onClick={() => {}}
+                onClick={option.action}
               >
                 {option.icon}
                 <span className={option.color}>{option.label}</span>
               </Button>
             ))}
-            <Button
+            {/* <Button
               variant="ghost"
               className="text-xs text-muted-foreground col-span-2 mt-1"
             >
               Show All
-            </Button>
+            </Button> */}
           </div>
         )}
 
-        {activeCategory === "tone" && (
+        {/* {activeCategory === "tone" && (
           <div className="p-4 grid grid-cols-2 gap-2">
             {toneOptions.map((option, idx) => (
               <Button
@@ -211,7 +216,7 @@ const AiSuggestions: React.FC<AiSuggestionsProps> = ({
               </Button>
             ))}
           </div>
-        )}
+        )} */}
 
         {activeCategory === "suggestions" && (
           <div className="p-4 space-y-4">

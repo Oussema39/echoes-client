@@ -14,3 +14,9 @@ export const countEditorWords = (content: string) => {
     .filter((word) => word.length > 0);
   return words.length;
 };
+
+export const getEstimatedReadTime = (wordCount: number) => {
+  const wordsPerMinute = 200;
+  const minutes = Math.ceil(wordCount / wordsPerMinute);
+  return minutes;
+};

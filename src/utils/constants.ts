@@ -4,3 +4,9 @@ export enum TPermissionLevel {
   MANAGER = "manager",
   OWNER = "owner",
 }
+
+export enum TDocAIActions {
+  CORRECT = "correct",
+  PARAPHRASE = "paraphrase",
+  SHORTEN = "shorten",
+}

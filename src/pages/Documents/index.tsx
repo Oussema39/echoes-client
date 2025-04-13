@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import AppNavbar from "@/components/AppNavbar";
 import AiSuggestions from "@/components/AiSuggestions";
 import DocumentsProvider from "@/context/DocumentsProvider";
@@ -7,6 +7,12 @@ import DocumentForm from "@/pages/Documents/components/DocumentForm";
 import Loader from "@/components/ui/loader";
 import DocumentsSidebar from "./components/DocumentsSidebar";
 import { ICollaborator } from "@/interface/ICollaborator";
+
+type TEditorRef = {
+  insertTextFromSelection: (
+    actionHandler: (text: string) => Promise<string>
+  ) => Promise<void>;
+};
 
 const Documents = () => {
   const {
@@ -20,8 +26,15 @@ const Documents = () => {
     shareDocument,
   } = useDocuments();
 
+  const editorRef = useRef<TEditorRef>(null);
+
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [suggestionsOpen, setSuggestionsOpen] = useState(true);
+
+  // Apply Document AI Action
+  const applyDocAIAction = (text: string) => {
+    editorRef.current?.insertTextFromSelection?.(text);
+  };
 
   // Toggle sidebar
   const toggleSidebar = () => {
@@ -106,6 +119,7 @@ const Documents = () => {
               selectedDocument={selectedDocument}
               isLoading={updateDocument.isPending}
               isLoadingShare={shareDocument.isPending}
+              ref={editorRef}
             />
           ) : (
             <div className="h-full flex items-center justify-center">
@@ -128,6 +142,7 @@ const Documents = () => {
           open={suggestionsOpen}
           onToggle={toggleSuggestions}
           onApplySuggestion={handleApplySuggestion}
+          applyDocAIAction={applyDocAIAction}
         />
       </div>
     </div>

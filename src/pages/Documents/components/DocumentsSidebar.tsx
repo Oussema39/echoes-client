@@ -6,12 +6,6 @@ import { Search, Plus, ArrowLeftToLine } from "lucide-react";
 import { IDocument } from "@/interface/IDocument";
 import DocumentPreviewCard from "@/components/Cards/DocumentPreviewCard";
 
-interface Document {
-  id: string;
-  title: string;
-  selected?: boolean;
-}
-
 interface DocumentsSidebarProps {
   open: boolean;
   onToggle: () => void;

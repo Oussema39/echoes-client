@@ -1,22 +1,27 @@
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Dot } from "lucide-react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 
 const DocumentFooter = ({
   wordCount,
+  readMins,
   promptsLeft,
 }: {
   wordCount: number;
+  readMins;
   promptsLeft: number;
 }) => {
   return (
     <footer className="flex justify-between items-center px-6 py-2 border-t text-sm text-muted-foreground">
       <div className="flex items-center gap-2">
-        <span>{wordCount} Words</span>
+        <div className="flex items-center">
+          <span>{wordCount} Words</span> <Dot />{" "}
+          <span>{readMins} min read</span>
+        </div>
         <Button
           variant="ghost"
           size="sm"
-          className="text-xs h-6 gap-1"
+          className="text-xs h-6 gap-1 border"
           type="button"
         >
           <span>V1</span>
