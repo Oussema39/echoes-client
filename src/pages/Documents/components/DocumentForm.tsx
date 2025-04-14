@@ -20,6 +20,7 @@ type DocumentFormProps = {
   shareDocument?: (collaborators: ICollaborator[]) => void;
   isLoading: boolean;
   isLoadingShare: boolean;
+  isLoadingAIAction?: boolean;
 };
 
 type FormData = {
@@ -37,6 +38,7 @@ const DocumentForm = forwardRef(
       shareDocument,
       isLoading,
       isLoadingShare,
+      isLoadingAIAction,
     }: DocumentFormProps,
     editorRef
   ) => {
@@ -123,7 +125,11 @@ const DocumentForm = forwardRef(
               render={({ field }) => {
                 return (
                   <FormControl>
-                    <DocumentEditor {...field} ref={editorRef} />
+                    <DocumentEditor
+                      loading={isLoadingAIAction}
+                      {...field}
+                      ref={editorRef}
+                    />
                   </FormControl>
                 );
               }}

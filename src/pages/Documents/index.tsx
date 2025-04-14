@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import AppNavbar from "@/components/AppNavbar";
 import AiSuggestions from "@/components/AiSuggestions";
 import DocumentsProvider from "@/context/DocumentsProvider";
@@ -7,11 +7,17 @@ import DocumentForm from "@/pages/Documents/components/DocumentForm";
 import Loader from "@/components/ui/loader";
 import DocumentsSidebar from "./components/DocumentsSidebar";
 import { ICollaborator } from "@/interface/ICollaborator";
+import { TDocAIActions } from "@/utils/constants";
+import {
+  useCorrectTextMutation,
+  useParaphraseTextMutation,
+  useShortenTextMutation,
+} from "@/hooks/ai";
+import type Quill from "quill";
 
 type TEditorRef = {
-  insertTextFromSelection: (
-    actionHandler: (text: string) => Promise<string>
-  ) => Promise<void>;
+  insertTextFromSelection: (text: string) => Promise<void>;
+  instance: Quill;
 };
 
 const Documents = () => {
@@ -26,14 +32,50 @@ const Documents = () => {
     shareDocument,
   } = useDocuments();
 
+  const paraphraseText = useParaphraseTextMutation();
+  const shortenText = useShortenTextMutation();
+  const correctText = useCorrectTextMutation();
+
   const editorRef = useRef<TEditorRef>(null);
 
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [suggestionsOpen, setSuggestionsOpen] = useState(true);
 
+  const isLoadingAIAction = useMemo(() => {
+    return (
+      paraphraseText.isPending || shortenText.isPending || correctText.isPending
+    );
+  }, [paraphraseText, shortenText, correctText]);
+
   // Apply Document AI Action
-  const applyDocAIAction = (text: string) => {
-    editorRef.current?.insertTextFromSelection?.(text);
+  const applyDocAIAction = async (text: `${TDocAIActions}`) => {
+    const { insertTextFromSelection, instance } = editorRef.current;
+
+    if (!instance) throw new Error("No instance of an Editor was found");
+    const selection = instance.getSelection();
+    const selectionText = instance.getText(selection.index, selection.length);
+
+    let handler: any;
+    switch (text) {
+      case TDocAIActions.PARAPHRASE:
+        handler = paraphraseText.mutateAsync;
+        break;
+      case TDocAIActions.SHORTEN:
+        handler = shortenText.mutateAsync;
+        break;
+      case TDocAIActions.CORRECT:
+        handler = correctText.mutateAsync;
+        break;
+
+      default:
+        break;
+    }
+
+    const modifiedText: string = await handler(selectionText);
+
+    if (modifiedText) {
+      insertTextFromSelection(modifiedText);
+    }
   };
 
   // Toggle sidebar
@@ -120,6 +162,7 @@ const Documents = () => {
               isLoading={updateDocument.isPending}
               isLoadingShare={shareDocument.isPending}
               ref={editorRef}
+              isLoadingAIAction={isLoadingAIAction}
             />
           ) : (
             <div className="h-full flex items-center justify-center">

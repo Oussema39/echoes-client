@@ -12,10 +12,17 @@ import DocumentFooter from "./DocumentFooter";
 import { formats, modules } from "./config";
 import { countEditorWords, getEstimatedReadTime } from "@/lib/utils";
 import { toast } from "sonner";
+import Loader from "../ui/loader";
 
 const DocumentEditor = forwardRef(
   (
-    { hideFooter = false, value, onChange, ...rest }: DocumentEditorProps,
+    {
+      hideFooter = false,
+      value,
+      onChange,
+      loading,
+      ...rest
+    }: DocumentEditorProps,
     ref
   ) => {
     const [wordCount, setWordCount] = useState(0);
@@ -39,9 +46,7 @@ const DocumentEditor = forwardRef(
       updateContentStats(content);
     };
 
-    const insertTextFromSelection = async (
-      actionHandler: (text: string) => Promise<string>
-    ) => {
+    const insertTextFromSelection = (text: string) => {
       const quill = quillRef.current?.getEditor();
       if (!quill) return;
 
@@ -51,13 +56,18 @@ const DocumentEditor = forwardRef(
         return;
       }
 
-      const selectedText = quill.getText(selection.index, selection.length);
-
-      const modifiedText = await actionHandler(selectedText);
-
       quill.deleteText(selection.index, selection.length);
-      quill.insertText(selection.index, modifiedText);
-      quill.setSelection(selection.index, modifiedText.length);
+      quill.insertText(selection.index, text);
+      quill.setSelection(selection.index, text.length);
+    };
+
+    const getTextFromSelection = () => {
+      const quill = quillRef.current?.getEditor();
+      if (!quill) return;
+
+      const selection = quill.getSelection();
+
+      quill.getText(selection.index, selection.length);
     };
 
     useEffect(() => {
@@ -66,11 +76,18 @@ const DocumentEditor = forwardRef(
 
     useImperativeHandle(ref, () => ({
       insertTextFromSelection,
+      getTextFromSelection,
+      instance: quillRef.current?.getEditor(),
     }));
 
     return (
       <>
-        <div className="flex-grow overflow-hidden px-6 pb-12">
+        <div className="flex-grow overflow-hidden px-6 pb-12 relative">
+          {loading && (
+            <div className="inset-0 flex items-center justify-center absolute backdrop-blur-[4px] z-50">
+              <Loader />
+            </div>
+          )}
           <ReactQuill
             ref={quillRef}
             theme="snow"
