@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import AppNavbar from "@/components/AppNavbar";
 import AiSuggestions from "@/components/AiSuggestions";
 import DocumentsProvider from "@/context/DocumentsProvider";
@@ -14,6 +14,7 @@ import {
   useShortenTextMutation,
 } from "@/hooks/ai";
 import type Quill from "quill";
+import { useGenerationStream } from "@/hooks/gen-ai/useGenerationStream";
 
 type TEditorRef = {
   insertTextFromSelection: (text: string) => Promise<void>;
@@ -35,6 +36,15 @@ const Documents = () => {
   const paraphraseText = useParaphraseTextMutation();
   const shortenText = useShortenTextMutation();
   const correctText = useCorrectTextMutation();
+
+  const [startStream, { message }] = useGenerationStream();
+
+  useEffect(() => {
+    startStream(
+      "Technology has revolutionized the way we communicate, work, and live. The advent of the internet and mobile devices has made it easier than ever to stay connected with others, access information, and complete tasks from virtually anywhere. However, with these advancements come new challenges, such as privacy concerns, information overload, and the growing dependence on digital tools for everyday life."
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const editorRef = useRef<TEditorRef>(null);
 

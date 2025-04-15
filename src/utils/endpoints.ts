@@ -21,5 +21,6 @@ export const apiEndpoints = {
     paraphrase: `${aiBase}/paraphrase`,
     shorten: `${aiBase}/shorten`,
     correct: `${aiBase}/correct`,
+    stream: `${aiBase}/stream`,
   },
 } as const;
