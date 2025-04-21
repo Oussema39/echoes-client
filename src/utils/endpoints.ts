@@ -22,5 +22,6 @@ export const apiEndpoints = {
     shorten: `${aiBase}/shorten`,
     correct: `${aiBase}/correct`,
     stream: `${aiBase}/stream`,
+    initStream: `${aiBase}/initStream`,
   },
 } as const;

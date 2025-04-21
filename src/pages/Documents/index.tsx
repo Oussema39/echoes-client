@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import AppNavbar from "@/components/AppNavbar";
 import AiSuggestions from "@/components/AiSuggestions";
 import DocumentsProvider from "@/context/DocumentsProvider";
@@ -15,9 +15,11 @@ import {
 } from "@/hooks/ai";
 import type Quill from "quill";
 import { useGenerationStream } from "@/hooks/gen-ai/useGenerationStream";
+import { toast } from "sonner";
 
 type TEditorRef = {
-  insertTextFromSelection: (text: string) => Promise<void>;
+  pushTextToBuffer: (text: string) => void;
+  streamInsertFromSelection: (text: string) => void;
   instance: Quill;
 };
 
@@ -37,14 +39,8 @@ const Documents = () => {
   const shortenText = useShortenTextMutation();
   const correctText = useCorrectTextMutation();
 
-  const [startStream, { message }] = useGenerationStream();
-
-  useEffect(() => {
-    startStream(
-      "Technology has revolutionized the way we communicate, work, and live. The advent of the internet and mobile devices has made it easier than ever to stay connected with others, access information, and complete tasks from virtually anywhere. However, with these advancements come new challenges, such as privacy concerns, information overload, and the growing dependence on digital tools for everyday life."
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const [startStream, { messages, isLoading: isLoadingStream }] =
+    useGenerationStream();
 
   const editorRef = useRef<TEditorRef>(null);
 
@@ -53,39 +49,52 @@ const Documents = () => {
 
   const isLoadingAIAction = useMemo(() => {
     return (
-      paraphraseText.isPending || shortenText.isPending || correctText.isPending
+      paraphraseText.isPending ||
+      shortenText.isPending ||
+      correctText.isPending ||
+      isLoadingStream
     );
-  }, [paraphraseText, shortenText, correctText]);
+  }, [paraphraseText, shortenText, correctText, isLoadingStream]);
 
   // Apply Document AI Action
-  const applyDocAIAction = async (text: `${TDocAIActions}`) => {
-    const { insertTextFromSelection, instance } = editorRef.current;
+  const applyDocAIAction = async (action: `${TDocAIActions}`) => {
+    const { instance, pushTextToBuffer } = editorRef.current;
 
     if (!instance) throw new Error("No instance of an Editor was found");
     const selection = instance.getSelection();
+    if (!selection) {
+      toast.info("Please select some text to apply the AI action.");
+      return;
+    }
     const selectionText = instance.getText(selection.index, selection.length);
+    if (!selectionText || selectionText.length === 0) {
+      toast.info("Please select some text to apply the AI action.");
+      return;
+    }
 
-    let handler: any;
-    switch (text) {
+    // let handler: any;
+    switch (action) {
       case TDocAIActions.PARAPHRASE:
-        handler = paraphraseText.mutateAsync;
+        startStream(selectionText, (chunk: string) => {
+          pushTextToBuffer(chunk);
+        });
         break;
-      case TDocAIActions.SHORTEN:
-        handler = shortenText.mutateAsync;
-        break;
-      case TDocAIActions.CORRECT:
-        handler = correctText.mutateAsync;
-        break;
+      // case TDocAIActions.SHORTEN:
+      //   handler = shortenText.mutateAsync;
+      //   break;
+      // case TDocAIActions.CORRECT:
+      //   handler = correctText.mutateAsync;
+      //   break;
 
       default:
         break;
     }
 
-    const modifiedText: string = await handler(selectionText);
+    // const modifiedText: string = await handler(selectionText);
 
-    if (modifiedText) {
-      insertTextFromSelection(modifiedText);
-    }
+    // if (modifiedText) {
+    //   insertTextFromSelection(modifiedText);
+    // }
   };
 
   // Toggle sidebar
@@ -150,6 +159,7 @@ const Documents = () => {
         onToggleSuggestions={toggleSuggestions}
       />
       <div className="flex flex-1 overflow-hidden">
+        <div id="streamed-text"></div>
         <div className={sidebarOpen ? "" : "hidden"}>
           <DocumentsSidebar
             open={sidebarOpen}

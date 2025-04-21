@@ -28,8 +28,6 @@ type FormData = {
   content: string;
 };
 
-const options = [];
-
 const DocumentForm = forwardRef(
   (
     {

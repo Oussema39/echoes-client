@@ -29,6 +29,8 @@ const DocumentEditor = forwardRef(
     const [readMins, setReadMins] = useState(0);
     const [promptsLeft] = useState(Number.POSITIVE_INFINITY);
     const quillRef = useRef<ReactQuill>(null);
+    const charBuffer = useRef<string>("");
+    const typingInterval = useRef<NodeJS.Timeout | null>(null);
 
     const updateContentStats = (content: string) => {
       if (!content) {
@@ -61,6 +63,41 @@ const DocumentEditor = forwardRef(
       quill.setSelection(selection.index, text.length);
     };
 
+    const streamInsert = () => {
+      const quill = quillRef.current?.getEditor();
+      if (!quill) return;
+
+      const selection = quill.getSelection();
+      if (!selection || selection.length === 0) {
+        return;
+      }
+
+      let insertIndex = selection.index;
+
+      // Delete the selected text first
+      quill.deleteText(selection.index, selection.length);
+
+      if (typingInterval.current) return; // Already typing
+
+      typingInterval.current = setInterval(() => {
+        if (charBuffer.current.length > 0) {
+          const nextChar = charBuffer.current[0];
+          charBuffer.current = charBuffer.current.slice(1);
+          quill.insertText(insertIndex++, nextChar);
+        } else {
+          clearInterval(typingInterval.current!);
+          typingInterval.current = null;
+
+          quill.setSelection(selection.index, insertIndex - selection.index);
+        }
+      }, 25);
+    };
+
+    const pushTextToBuffer = (chunk: string) => {
+      charBuffer.current += chunk;
+      streamInsert();
+    };
+
     const getTextFromSelection = () => {
       const quill = quillRef.current?.getEditor();
       if (!quill) return;
@@ -75,9 +112,11 @@ const DocumentEditor = forwardRef(
     }, [value]);
 
     useImperativeHandle(ref, () => ({
-      insertTextFromSelection,
-      getTextFromSelection,
       instance: quillRef.current?.getEditor(),
+      getTextFromSelection,
+      insertTextFromSelection,
+      streamInsertFromSelection: streamInsert,
+      pushTextToBuffer,
     }));
 
     return (
