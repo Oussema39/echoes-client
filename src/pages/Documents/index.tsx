@@ -16,6 +16,8 @@ import {
 import type Quill from "quill";
 import { useGenerationStream } from "@/hooks/gen-ai/useGenerationStream";
 import { toast } from "sonner";
+import { purifyHtml } from "@/lib/utils";
+import { documentHtmlTemplate } from "@/utils/htmlTemplates";
 
 type TEditorRef = {
   pushTextToBuffer: (text: string) => void;
@@ -33,14 +35,14 @@ const Documents = () => {
     createDocument,
     deleteDocument,
     shareDocument,
+    generatePDF,
   } = useDocuments();
 
   const paraphraseText = useParaphraseTextMutation();
   const shortenText = useShortenTextMutation();
   const correctText = useCorrectTextMutation();
 
-  const [startStream, { messages, isLoading: isLoadingStream }] =
-    useGenerationStream();
+  const [startStream, { isLoading: isLoadingStream }] = useGenerationStream();
 
   const editorRef = useRef<TEditorRef>(null);
 
@@ -72,29 +74,23 @@ const Documents = () => {
       return;
     }
 
-    // let handler: any;
     switch (action) {
       case TDocAIActions.PARAPHRASE:
         startStream(selectionText, (chunk: string) => {
           pushTextToBuffer(chunk);
         });
         break;
-      // case TDocAIActions.SHORTEN:
-      //   handler = shortenText.mutateAsync;
-      //   break;
-      // case TDocAIActions.CORRECT:
-      //   handler = correctText.mutateAsync;
-      //   break;
 
       default:
         break;
     }
+  };
 
-    // const modifiedText: string = await handler(selectionText);
-
-    // if (modifiedText) {
-    //   insertTextFromSelection(modifiedText);
-    // }
+  const exportPdf = async (html: string) => {
+    const res = await generatePDF.mutateAsync({
+      html: documentHtmlTemplate(purifyHtml(html)),
+    });
+    console.log({ pdf: generatePDF.data });
   };
 
   // Toggle sidebar
@@ -176,11 +172,13 @@ const Documents = () => {
         <main className="flex-1 overflow-hidden">
           {selectedDocument ? (
             <DocumentForm
+              exportPdf={exportPdf}
               saveDocument={handleSaveDocument}
               shareDocument={handleShareDocument}
               selectedDocument={selectedDocument}
               isLoading={updateDocument.isPending}
               isLoadingShare={shareDocument.isPending}
+              isLoadingGeneratePDF={generatePDF.isPending}
               ref={editorRef}
               isLoadingAIAction={isLoadingAIAction}
             />

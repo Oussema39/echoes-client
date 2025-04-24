@@ -1,4 +1,4 @@
-import { Save, Share } from "lucide-react";
+import { Download, Save, Share } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 import { useForm } from "react-hook-form";
 import {
@@ -18,9 +18,11 @@ type DocumentFormProps = {
   selectedDocument: IDocument | null;
   saveDocument?: (data: FormData) => void;
   shareDocument?: (collaborators: ICollaborator[]) => void;
+  exportPdf?: (html: string) => Promise<void>;
   isLoading: boolean;
   isLoadingShare: boolean;
   isLoadingAIAction?: boolean;
+  isLoadingGeneratePDF?: boolean;
 };
 
 type FormData = {
@@ -34,6 +36,7 @@ const DocumentForm = forwardRef(
       selectedDocument,
       saveDocument,
       shareDocument,
+      exportPdf,
       isLoading,
       isLoadingShare,
       isLoadingAIAction,
@@ -46,6 +49,9 @@ const DocumentForm = forwardRef(
         content: selectedDocument?.content || "",
       },
     });
+
+    const content = form.watch("content");
+
     const [shareDialogOpen, setShareDialogOpen] = useState<boolean>(false);
 
     const onSubmit = (data: FormData) => {
@@ -59,6 +65,10 @@ const DocumentForm = forwardRef(
         content: selectedDocument?.content || "",
       });
     }, [selectedDocument, form]);
+
+    useEffect(() => {
+      console.log({ content });
+    }, [content]);
 
     return (
       <>
@@ -101,6 +111,17 @@ const DocumentForm = forwardRef(
                 >
                   <Save size={16} />
                   <span>Save</span>
+                </Button>
+                <Button
+                  disabled={isLoading}
+                  size="sm"
+                  className="gap-1"
+                  type="button"
+                  variant="outline"
+                  onClick={() => exportPdf(content)}
+                >
+                  <Download size={16} />
+                  <span>Print</span>
                 </Button>
                 <Button
                   disabled={isLoading}
