@@ -50,14 +50,3 @@ export const downloadFile = (
     console.error("Error downloading file:", error);
   }
 };
-
-// export const downloadFile = (file: Blob, fileName: string) => {
-//   const url = window.URL.createObjectURL(file);
-//   const a = document.createElement("a");
-//   a.href = url;
-//   a.download = fileName;
-//   document.body.appendChild(a);
-//   a.click();
-//   window.URL.revokeObjectURL(url);
-//   document.body.removeChild(a);
-// };

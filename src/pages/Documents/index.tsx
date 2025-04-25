@@ -17,7 +17,6 @@ import type Quill from "quill";
 import { useGenerationStream } from "@/hooks/gen-ai/useGenerationStream";
 import { toast } from "sonner";
 import { purifyHtml } from "@/lib/utils";
-import { documentHtmlTemplate } from "@/utils/htmlTemplates";
 
 type TEditorRef = {
   pushTextToBuffer: (text: string) => void;
@@ -87,10 +86,9 @@ const Documents = () => {
   };
 
   const exportPdf = async (html: string) => {
-    const res = await generatePDF.mutateAsync({
-      html: documentHtmlTemplate(purifyHtml(html)),
+    await generatePDF.mutateAsync({
+      html: purifyHtml(html),
     });
-    console.log({ pdf: generatePDF.data });
   };
 
   // Toggle sidebar
