@@ -6,7 +6,16 @@ export enum TPermissionLevel {
 }
 
 export enum TDocAIActions {
-  CORRECT = "correct",
-  PARAPHRASE = "paraphrase",
+  IMPROVE = "improve",
   SHORTEN = "shorten",
+  SIMPLIFY = "simplify",
+  DETAILED = "detailed",
+  PARAPHRASE = "paraphrase",
+  FLUENT = "fluent",
+  ANTICIPATORY = "anticipatory",
+  ASSERTIVE = "assertive",
+  COMPASSIONATE = "compassionate",
+  CONFIDENT = "confident",
+  CONSTRUCTIVE = "constructive",
+  PROMPT = "prompt",
 }

@@ -119,6 +119,33 @@ const DocumentEditor = forwardRef(
       pushTextToBuffer,
     }));
 
+    // useEffect(() => {
+    //   if (!quillRef.current) return;
+
+    //   const quill = quillRef.current.getEditor();
+    //   let savedRange = null;
+
+    //   quill.on("selection-change", (range, oldRange, source) => {
+    //     if (range == null && oldRange != null) {
+    //       savedRange = oldRange;
+    //     }
+    //   });
+
+    //   quill.root.addEventListener("blur", () => {
+    //     if (savedRange) {
+    //       quill.setSelection(savedRange.index, savedRange.length, "silent");
+    //     }
+    //   });
+
+    //   quill.root.addEventListener("focus", () => {
+    //     savedRange = null;
+    //   });
+
+    //   return () => {
+    //     quill.root.removeEventListener("focus", () => {});
+    //   };
+    // }, []);
+
     return (
       <>
         <div className="flex-grow overflow-hidden px-6 pb-12 relative">

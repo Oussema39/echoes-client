@@ -7,6 +7,9 @@ export const modules = {
     ["link"],
     ["clean"],
   ],
+  clipboard: {
+    preserveFocus: true,
+  },
 };
 
 export const formats = [

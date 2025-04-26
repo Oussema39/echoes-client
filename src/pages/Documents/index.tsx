@@ -17,6 +17,7 @@ import type Quill from "quill";
 import { useGenerationStream } from "@/hooks/gen-ai/useGenerationStream";
 import { toast } from "sonner";
 import { purifyHtml } from "@/lib/utils";
+import { PROMPT_GENERATORS } from "@/utils/prompts";
 
 type TEditorRef = {
   pushTextToBuffer: (text: string) => void;
@@ -41,7 +42,8 @@ const Documents = () => {
   const shortenText = useShortenTextMutation();
   const correctText = useCorrectTextMutation();
 
-  const [startStream, { isLoading: isLoadingStream }] = useGenerationStream();
+  const [startGenStream, { isLoading: isLoadingStream }] =
+    useGenerationStream();
 
   const editorRef = useRef<TEditorRef>(null);
 
@@ -73,16 +75,10 @@ const Documents = () => {
       return;
     }
 
-    switch (action) {
-      case TDocAIActions.PARAPHRASE:
-        startStream(selectionText, (chunk: string) => {
-          pushTextToBuffer(chunk);
-        });
-        break;
-
-      default:
-        break;
-    }
+    const prompt = PROMPT_GENERATORS[action](selectionText);
+    startGenStream(prompt, (chunk: string) => {
+      pushTextToBuffer(chunk);
+    });
   };
 
   const exportPdf = async (html: string) => {
