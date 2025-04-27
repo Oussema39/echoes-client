@@ -60,12 +60,15 @@ const Documents = () => {
   }, [paraphraseText, shortenText, correctText, isLoadingStream]);
 
   // Apply Document AI Action
-  const applyDocAIAction = async (action: `${TDocAIActions}`) => {
+  const applyDocAIAction = async (
+    action: `${TDocAIActions}`,
+    customPrompt?: string
+  ) => {
     const { instance, pushTextToBuffer } = editorRef.current;
 
     if (!instance) throw new Error("No instance of an Editor was found");
     const selection = instance.getSelection();
-    if (!selection) {
+    if (!selection && action !== "custom-prompt") {
       toast.info("Please select some text to apply the AI action.");
       return;
     }
@@ -75,7 +78,7 @@ const Documents = () => {
       return;
     }
 
-    const prompt = PROMPT_GENERATORS[action](selectionText);
+    const prompt = PROMPT_GENERATORS[action](selectionText, customPrompt);
     startGenStream(prompt, (chunk: string) => {
       pushTextToBuffer(chunk);
     });

@@ -6,12 +6,14 @@ import { cn } from "@/lib/utils";
 import { TDocAIActions } from "@/utils/constants";
 import { PROMPT_OPTIONS, suggestionCategories } from "@/utils/options";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
+import { Alert } from "./ui/alert";
+import PromptChat from "./Views/PromptChat";
 
 interface AiSuggestionsProps {
   open: boolean;
   onToggle: () => void;
   onApplySuggestion: (text: string) => void;
-  applyDocAIAction: (action: `${TDocAIActions}`) => void;
+  applyDocAIAction: (action: `${TDocAIActions}`, customPrompt?: string) => void;
 }
 
 const AiSuggestions: React.FC<AiSuggestionsProps> = ({
@@ -43,7 +45,7 @@ const AiSuggestions: React.FC<AiSuggestionsProps> = ({
   return (
     <aside
       className={cn(
-        "w-72 h-auto bg-white border-l flex flex-col overflow-hidden transition-all duration-300 ease-in-out",
+        "w-80 h-auto bg-white border-l flex flex-col overflow-hidden transition-all duration-300 ease-in-out",
         open ? "translate-x-0" : "translate-x-full"
       )}
     >
@@ -76,7 +78,7 @@ const AiSuggestions: React.FC<AiSuggestionsProps> = ({
               key={category.id}
               onClick={() => setActiveCategory(category.id)}
               className={cn(
-                "flex-1 text-sm py-2 relative",
+                "flex-1 text-sm p-2 relative",
                 activeCategory === category.id
                   ? "text-foreground font-medium"
                   : "text-muted-foreground"
@@ -127,12 +129,28 @@ const AiSuggestions: React.FC<AiSuggestionsProps> = ({
                 />
               </Tooltip>
             ))}
-            {/* <Button
+            <Button
               variant="ghost"
               className="text-xs text-muted-foreground col-span-2 mt-1"
             >
               Show All
-            </Button> */}
+            </Button>
+          </div>
+        )}
+
+        {activeCategory === "chat" && (
+          <div className="p-4 flex flex-col gap-2">
+            <PromptChat
+              onSubmit={(data) =>
+                applyDocAIAction("custom-prompt", data.prompt)
+              }
+            />
+            <Alert
+              variant="default"
+              className="text-xs text-muted-foreground col-span-2 mt-1"
+            >
+              Changes will be applied to the whole document content
+            </Alert>
           </div>
         )}
 

@@ -119,7 +119,7 @@ const suggestions = [
 
 export const suggestionCategories = [
   { id: "prompts", label: "Pre-Engineered Prompts" },
-  // { id: "tone", label: "ADJUST TONE" },
+  { id: "chat", label: "Chat" },
   // { id: "suggestions", label: "SUGGESTIONS", badge: 4 },
 ] as const;
 

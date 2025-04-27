@@ -17,5 +17,5 @@ export enum TDocAIActions {
   COMPASSIONATE = "compassionate",
   CONFIDENT = "confident",
   CONSTRUCTIVE = "constructive",
-  PROMPT = "prompt",
+  CUSTOM_PROMPT = "custom-prompt",
 }

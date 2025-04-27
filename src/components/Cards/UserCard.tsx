@@ -4,6 +4,7 @@ import SelectInput from "../form/SelectInput";
 import { permissionLevels } from "@/utils/selectOptions";
 import { FormField } from "../ui/form";
 import { Control } from "react-hook-form";
+import { Avatar, AvatarFallback } from "../ui/avatar";
 
 type UserCardProps = {
   title: string;
@@ -27,9 +28,16 @@ const UserPermissionInput = ({
 }: UserCardProps) => {
   return (
     <div className="flex justify-between" key={collab.id}>
-      <div className="flex flex-col">
-        <p className="text-sm">{title}</p>
-        <p className="text-xs">{subtitle}</p>
+      <div className="flex items-center gap-3">
+        <Avatar>
+          <AvatarFallback className="font-semibold bg-cyan-200/50 text-cyan-500">
+            {title.slice(0, 2).toUpperCase()}
+          </AvatarFallback>
+        </Avatar>
+        <div className="flex flex-col">
+          <p className="text-sm">{title}</p>
+          <p className="text-xs text-muted-foreground">{subtitle}</p>
+        </div>
       </div>
       <div>
         <FormField

@@ -1,6 +1,8 @@
 import { ChevronDown, Dot } from "lucide-react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
+import PromptPopover, { PromptFormValues } from "../Views/PromptPopover";
+import { useState } from "react";
 
 const DocumentFooter = ({
   wordCount,
@@ -8,9 +10,15 @@ const DocumentFooter = ({
   promptsLeft,
 }: {
   wordCount: number;
-  readMins;
+  readMins: number;
   promptsLeft: number;
 }) => {
+  const [promptPopOverOpen, setPromptPopOverOpen] = useState(false);
+
+  const onSubmit = (values: PromptFormValues) => {
+    console.log({ values });
+  };
+
   return (
     <footer className="flex justify-between items-center px-6 py-2 border-t text-sm text-muted-foreground">
       <div className="flex items-center gap-2">
@@ -32,13 +40,19 @@ const DocumentFooter = ({
         <Badge variant="outline" className="text-brand-blue bg-brand-light">
           {promptsLeft} Prompts Left
         </Badge>
-        <Button
-          size="sm"
-          type="button"
-          className="h-6 text-xs bg-brand-blue hover:bg-brand-dark"
+        <PromptPopover
+          open={promptPopOverOpen}
+          onOpenChange={setPromptPopOverOpen}
+          onSubmit={onSubmit}
         >
-          Write Prompt for Selection
-        </Button>
+          <Button
+            size="sm"
+            type="button"
+            className="h-6 text-xs bg-brand-blue hover:bg-brand-dark"
+          >
+            Write Prompt for Selection
+          </Button>
+        </PromptPopover>
       </div>
     </footer>
   );

@@ -55,6 +55,11 @@ const generateConstructiveTonePrompt = (text: string) => {
 "${text}"`;
 };
 
+const generateCustomPrompt = (text: string, customPrompt?: string) => {
+  return `${customPrompt}. Avoid adding introductions or conclusions. Output only the text:
+"${text}"`;
+};
+
 export const PROMPT_GENERATORS = {
   [TDocAIActions.IMPROVE]: generateImproveItPrompt,
   [TDocAIActions.SHORTEN]: generateShortenPrompt,
@@ -67,4 +72,5 @@ export const PROMPT_GENERATORS = {
   [TDocAIActions.COMPASSIONATE]: generateCompassionateTonePrompt,
   [TDocAIActions.CONFIDENT]: generateConfidentTonePrompt,
   [TDocAIActions.CONSTRUCTIVE]: generateConstructiveTonePrompt,
+  [TDocAIActions.CUSTOM_PROMPT]: generateCustomPrompt,
 } as const;
