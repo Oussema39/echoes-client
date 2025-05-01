@@ -33,7 +33,6 @@ export const downloadFile = (
   mimeType: string = "application/pdf"
 ) => {
   try {
-    console.log({ typeofFile: typeof file, classFile: file.constructor.name });
     const blob =
       file instanceof Blob
         ? file

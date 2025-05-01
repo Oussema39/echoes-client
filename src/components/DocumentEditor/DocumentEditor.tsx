@@ -13,6 +13,7 @@ import { formats, modules } from "./config";
 import { countEditorWords, getEstimatedReadTime } from "@/lib/utils";
 import { toast } from "sonner";
 import Loader from "../ui/loader";
+import { RangeStatic } from "quill";
 
 const DocumentEditor = forwardRef(
   (
@@ -31,6 +32,7 @@ const DocumentEditor = forwardRef(
     const quillRef = useRef<ReactQuill>(null);
     const charBuffer = useRef<string>("");
     const typingInterval = useRef<NodeJS.Timeout | null>(null);
+    const hasDeletedText = useRef<boolean>(false);
 
     const updateContentStats = (content: string) => {
       if (!content) {
@@ -67,7 +69,11 @@ const DocumentEditor = forwardRef(
       const quill = quillRef.current?.getEditor();
       if (!quill) return;
 
-      const selection = quill.getSelection();
+      const selection: RangeStatic = quill.getSelection() ?? {
+        index: 0,
+        length: quill.getLength(),
+      };
+
       if (!selection || selection.length === 0) {
         return;
       }
@@ -75,9 +81,12 @@ const DocumentEditor = forwardRef(
       let insertIndex = selection.index;
 
       // Delete the selected text first
-      quill.deleteText(selection.index, selection.length);
+      if (!hasDeletedText.current) {
+        quill.deleteText(selection.index, selection.length);
+        hasDeletedText.current = true;
+      }
 
-      if (typingInterval.current) return; // Already typing
+      if (typingInterval.current) return;
 
       typingInterval.current = setInterval(() => {
         if (charBuffer.current.length > 0) {
@@ -89,6 +98,7 @@ const DocumentEditor = forwardRef(
           typingInterval.current = null;
 
           quill.setSelection(selection.index, insertIndex - selection.index);
+          hasDeletedText.current = false;
         }
       }, 25);
     };

@@ -67,17 +67,22 @@ const Documents = () => {
     const { instance, pushTextToBuffer } = editorRef.current;
 
     if (!instance) throw new Error("No instance of an Editor was found");
+
     const selection = instance.getSelection();
+
     if (!selection && action !== "custom-prompt") {
       toast.info("Please select some text to apply the AI action.");
       return;
     }
-    const selectionText = instance.getText(selection.index, selection.length);
+
+    const selectionText = selection
+      ? instance.getText(selection.index, selection.length)
+      : instance.getText();
+
     if (!selectionText || selectionText.length === 0) {
       toast.info("Please select some text to apply the AI action.");
       return;
     }
-
     const prompt = PROMPT_GENERATORS[action](selectionText, customPrompt);
     startGenStream(prompt, (chunk: string) => {
       pushTextToBuffer(chunk);
