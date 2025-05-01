@@ -31,8 +31,11 @@ const DocumentEditor = forwardRef(
     const [promptsLeft] = useState(Number.POSITIVE_INFINITY);
     const quillRef = useRef<ReactQuill>(null);
     const charBuffer = useRef<string>("");
+    const htmlBuffer = useRef<string>("");
     const typingInterval = useRef<NodeJS.Timeout | null>(null);
     const hasDeletedText = useRef<boolean>(false);
+    const insertIndex = useRef<number>(0);
+    let streamTimeout: NodeJS.Timeout | null;
 
     const updateContentStats = (content: string) => {
       if (!content) {
@@ -65,7 +68,8 @@ const DocumentEditor = forwardRef(
       quill.setSelection(selection.index, text.length);
     };
 
-    const streamInsert = () => {
+    // Stream plain text insert (existing)
+    const streamInsert = (speed: number = 25) => {
       const quill = quillRef.current?.getEditor();
       if (!quill) return;
 
@@ -74,47 +78,111 @@ const DocumentEditor = forwardRef(
         length: quill.getLength(),
       };
 
-      if (!selection || selection.length === 0) {
-        return;
-      }
+      if (!selection || selection.length === 0) return;
 
-      let insertIndex = selection.index;
-
-      // Delete the selected text first
+      // initialize insert
       if (!hasDeletedText.current) {
         quill.deleteText(selection.index, selection.length);
         hasDeletedText.current = true;
+        insertIndex.current = selection.index;
       }
-
       if (typingInterval.current) return;
 
       typingInterval.current = setInterval(() => {
         if (charBuffer.current.length > 0) {
           const nextChar = charBuffer.current[0];
           charBuffer.current = charBuffer.current.slice(1);
-          quill.insertText(insertIndex++, nextChar);
+          quill.insertText(insertIndex.current++, nextChar);
         } else {
           clearInterval(typingInterval.current!);
           typingInterval.current = null;
-
-          quill.setSelection(selection.index, insertIndex - selection.index);
+          quill.setSelection(
+            selection.index,
+            insertIndex.current - selection.index
+          );
           hasDeletedText.current = false;
         }
-      }, 25);
+      }, speed);
     };
 
-    const pushTextToBuffer = (chunk: string) => {
+    // Push text into buffer and start streaming
+    const pushTextToBuffer = (chunk: string, speed?: number) => {
       charBuffer.current += chunk;
-      streamInsert();
+      streamInsert(speed);
+    };
+
+    // New: Stream HTML into Quill with animation
+    const streamHtmlInsert = (speed: number = 25) => {
+      const quill = quillRef.current?.getEditor();
+      if (!quill) return;
+
+      if (htmlBuffer.current.length === 0) return;
+
+      const selection: RangeStatic = quill.getSelection() ?? {
+        index: 0,
+        length: quill.getLength(),
+      };
+      if (!hasDeletedText.current) {
+        quill.deleteText(selection.index, selection.length);
+        hasDeletedText.current = true;
+        insertIndex.current = selection.index;
+      }
+
+      const insertNext = () => {
+        if (htmlBuffer.current.length === 0) {
+          // hasDeletedText.current = false;
+          return;
+        }
+        let frag = "";
+        if (htmlBuffer.current.startsWith("<")) {
+          const end = htmlBuffer.current.indexOf(">") + 1;
+          if (end > 0) frag = htmlBuffer.current.slice(0, end);
+        }
+        if (!frag) frag = htmlBuffer.current.charAt(0);
+        htmlBuffer.current = htmlBuffer.current.slice(frag.length);
+
+        // wrap for animation
+        const spanId = `frag-${Date.now()}-${Math.random()}`;
+        const wrapped = `<span id="${spanId}" class="stream-fragment">${frag}</span>`;
+        quill.clipboard.dangerouslyPasteHTML(
+          insertIndex.current,
+          wrapped,
+          "silent"
+        );
+        insertIndex.current += frag.length;
+
+        // cleanup span after animation
+        setTimeout(() => {
+          const node = quill.root.querySelector(`#${spanId}`);
+          if (node) {
+            const fragHtml = node.innerHTML;
+            node.replaceWith(
+              ...Array.from(
+                document.createRange().createContextualFragment(fragHtml)
+                  .childNodes
+              )
+            );
+          }
+        }, 300);
+
+        if (htmlBuffer.current.length > 0) {
+          setTimeout(insertNext, speed);
+        }
+      };
+
+      insertNext();
+    };
+
+    const pushHtmlToBuffer = (chunk: string, speed?: number) => {
+      htmlBuffer.current += chunk;
+      streamHtmlInsert(speed);
     };
 
     const getTextFromSelection = () => {
       const quill = quillRef.current?.getEditor();
       if (!quill) return;
-
       const selection = quill.getSelection();
-
-      quill.getText(selection.index, selection.length);
+      return quill.getText(selection.index, selection.length);
     };
 
     useEffect(() => {
@@ -127,34 +195,9 @@ const DocumentEditor = forwardRef(
       insertTextFromSelection,
       streamInsertFromSelection: streamInsert,
       pushTextToBuffer,
+      streamHtmlInsertFromSelection: streamHtmlInsert,
+      pushHtmlToBuffer,
     }));
-
-    // useEffect(() => {
-    //   if (!quillRef.current) return;
-
-    //   const quill = quillRef.current.getEditor();
-    //   let savedRange = null;
-
-    //   quill.on("selection-change", (range, oldRange, source) => {
-    //     if (range == null && oldRange != null) {
-    //       savedRange = oldRange;
-    //     }
-    //   });
-
-    //   quill.root.addEventListener("blur", () => {
-    //     if (savedRange) {
-    //       quill.setSelection(savedRange.index, savedRange.length, "silent");
-    //     }
-    //   });
-
-    //   quill.root.addEventListener("focus", () => {
-    //     savedRange = null;
-    //   });
-
-    //   return () => {
-    //     quill.root.removeEventListener("focus", () => {});
-    //   };
-    // }, []);
 
     return (
       <>

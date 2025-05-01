@@ -18,9 +18,11 @@ import { useGenerationStream } from "@/hooks/gen-ai/useGenerationStream";
 import { toast } from "sonner";
 import { purifyHtml } from "@/lib/utils";
 import { PROMPT_GENERATORS } from "@/utils/prompts";
+import { mockDocHtml } from "@/utils/mock";
 
 type TEditorRef = {
-  pushTextToBuffer: (text: string) => void;
+  pushTextToBuffer: (text: string, speed?: number) => void;
+  pushHtmlToBuffer: (text: string, speed?: number) => void;
   streamInsertFromSelection: (text: string) => void;
   instance: Quill;
 };
@@ -64,7 +66,7 @@ const Documents = () => {
     action: `${TDocAIActions}`,
     customPrompt?: string
   ) => {
-    const { instance, pushTextToBuffer } = editorRef.current;
+    const { instance, pushTextToBuffer, pushHtmlToBuffer } = editorRef.current;
 
     if (!instance) throw new Error("No instance of an Editor was found");
 
@@ -84,9 +86,10 @@ const Documents = () => {
       return;
     }
     const prompt = PROMPT_GENERATORS[action](selectionText, customPrompt);
-    startGenStream(prompt, (chunk: string) => {
-      pushTextToBuffer(chunk);
-    });
+    pushHtmlToBuffer(mockDocHtml);
+    // startGenStream(prompt, (chunk: string) => {
+    //   pushTextToBuffer(chunk, action === TDocAIActions.CUSTOM_PROMPT ? 5 : 25);
+    // });
   };
 
   const exportPdf = async (html: string) => {

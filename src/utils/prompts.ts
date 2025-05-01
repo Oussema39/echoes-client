@@ -60,6 +60,49 @@ const generateCustomPrompt = (text: string, customPrompt?: string) => {
 "${text}"`;
 };
 
+export const generateStructuredHtmlPrompt = (
+  text: string,
+  customPrompt: string
+) => {
+  return `
+You are a professional writing assistant that generates fully structured documents.
+
+### Task:
+${customPrompt}
+${
+  text?.length > 0
+    ? `
+### Reference:
+Use this document text content as a reference and build upon it:
+${text}
+`
+    : ""
+}
+
+### Structure:
+- Start with a single main title using <h1>
+- Use <h2> and <h3> for section headings and subsections
+- Wrap normal text in <p> tags
+- Use <ul><li> and <ol><li> for unordered and ordered lists
+- Use <strong>, <em>, and <u> for bold, italic, and underline respectively
+- Use <a> for links
+- Use the "align" attribute for alignment (e.g., <p align="center">)
+
+### HTML Output Rules:
+- Only use: <h1>, <h2>, <h3>, <p>, <strong>, <em>, <u>, <ul>, <ol>, <li>, <a>, <br>
+- Ensure the opening and closing of each tag
+- Do NOT include \`\`\`html or any markdown formatting
+- Do NOT include any of the HTML skeleton tags
+- Do NOT include <style> tags or inline CSS
+- Do NOT return explanations or commentary — only return clean raw HTML
+
+### Apply the corresponding CSS classes to the HTML tags as defined in the Styles Section below:
+<styles-section>
+
+Now, generate the full document as HTML. Do not add introductions or conclusions outside the structured sections. Output only the HTML content, starting with the <h1> tag.
+  `.trim();
+};
+
 export const PROMPT_GENERATORS = {
   [TDocAIActions.IMPROVE]: generateImproveItPrompt,
   [TDocAIActions.SHORTEN]: generateShortenPrompt,
@@ -72,5 +115,5 @@ export const PROMPT_GENERATORS = {
   [TDocAIActions.COMPASSIONATE]: generateCompassionateTonePrompt,
   [TDocAIActions.CONFIDENT]: generateConfidentTonePrompt,
   [TDocAIActions.CONSTRUCTIVE]: generateConstructiveTonePrompt,
-  [TDocAIActions.CUSTOM_PROMPT]: generateCustomPrompt,
+  [TDocAIActions.CUSTOM_PROMPT]: generateStructuredHtmlPrompt,
 } as const;

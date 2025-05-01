@@ -40,6 +40,7 @@ const DocumentForm = forwardRef(
       isLoading,
       isLoadingShare,
       isLoadingAIAction,
+      isLoadingGeneratePDF,
     }: DocumentFormProps,
     editorRef
   ) => {
@@ -113,7 +114,7 @@ const DocumentForm = forwardRef(
                   <span>Save</span>
                 </Button>
                 <Button
-                  disabled={isLoading}
+                  disabled={isLoadingGeneratePDF || isLoading}
                   size="sm"
                   className="gap-1"
                   type="button"
