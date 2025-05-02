@@ -117,9 +117,13 @@ const suggestions = [
   },
 ];
 
-export const suggestionCategories = [
+export const suggestionCategories: {
+  id: string;
+  label: string;
+  experimental?: boolean;
+}[] = [
   { id: "prompts", label: "Pre-Engineered Prompts" },
-  { id: "chat", label: "Chat" },
+  { id: "chat", label: "Chat", experimental: true },
   // { id: "suggestions", label: "SUGGESTIONS", badge: 4 },
 ] as const;
 

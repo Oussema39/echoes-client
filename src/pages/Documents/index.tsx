@@ -78,8 +78,7 @@ const Documents = () => {
 
   // Toggle suggestions panel
   const toggleSuggestions = () => {
-    return;
-    // setSuggestionsOpen(!suggestionsOpen);
+    setSuggestionsOpen(!suggestionsOpen);
   };
 
   // Handle new document creation

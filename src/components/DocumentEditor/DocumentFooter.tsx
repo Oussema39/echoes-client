@@ -1,8 +1,9 @@
 import { ChevronDown, Dot } from "lucide-react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
-import PromptPopover, { PromptFormValues } from "../Views/PromptPopover";
+import { PromptFormValues } from "../Views/PromptPopover";
 import { useState } from "react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 const DocumentFooter = ({
   wordCount,
@@ -40,19 +41,33 @@ const DocumentFooter = ({
         <Badge variant="outline" className="text-brand-blue bg-brand-light">
           {promptsLeft} Prompts Left
         </Badge>
-        <PromptPopover
-          open={promptPopOverOpen}
-          onOpenChange={setPromptPopOverOpen}
-          onSubmit={onSubmit}
-        >
-          <Button
-            size="sm"
-            type="button"
-            className="h-6 text-xs bg-brand-blue hover:bg-brand-dark"
-          >
-            Write Prompt for Selection
-          </Button>
-        </PromptPopover>
+
+        <Tooltip>
+          <TooltipTrigger asChild>
+            {/* <PromptPopover
+              open={promptPopOverOpen}
+              onOpenChange={setPromptPopOverOpen}
+              onSubmit={onSubmit}
+            > */}
+            <span>
+              <Button
+                size="sm"
+                type="button"
+                className="h-6 text-xs bg-brand-blue hover:bg-brand-dark"
+                disabled
+              >
+                Write Prompt for Selection
+              </Button>
+            </span>
+
+            {/* </PromptPopover> */}
+          </TooltipTrigger>
+          <TooltipContent
+            side="top"
+            align="center"
+            children={"Experimental feature"}
+          />
+        </Tooltip>
       </div>
     </footer>
   );

@@ -1,7 +1,12 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Sparkles } from "lucide-react";
+import {
+  ArrowRightToLine,
+  FlaskConicalIcon,
+  Search,
+  Sparkles,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { TDocAIActions } from "@/utils/constants";
 import { PROMPT_OPTIONS, suggestionCategories } from "@/utils/options";
@@ -46,7 +51,7 @@ const AiSuggestions: React.FC<AiSuggestionsProps> = ({
     <aside
       className={cn(
         "w-80 h-auto bg-white border-l flex flex-col overflow-hidden transition-all duration-300 ease-in-out",
-        open ? "translate-x-0" : "translate-x-full"
+        open ? "translate-x-0" : "translate-x-full hidden"
       )}
     >
       <div className="p-4 border-b">
@@ -58,6 +63,11 @@ const AiSuggestions: React.FC<AiSuggestionsProps> = ({
           <div className="ml-auto text-xs text-muted-foreground border rounded-full px-2 py-0.5">
             {filteredPrompts.length} options
           </div>
+          <ArrowRightToLine
+            className="flex cursor-pointer text-gray-900"
+            size={20}
+            // onClick={onToggle}
+          />
         </div>
         <div className="relative">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -77,6 +87,7 @@ const AiSuggestions: React.FC<AiSuggestionsProps> = ({
             <button
               key={category.id}
               onClick={() => setActiveCategory(category.id)}
+              disabled={category.experimental}
               className={cn(
                 "flex-1 text-sm p-2 relative",
                 activeCategory === category.id
@@ -84,14 +95,23 @@ const AiSuggestions: React.FC<AiSuggestionsProps> = ({
                   : "text-muted-foreground"
               )}
             >
-              <div className="flex items-center justify-center gap-1">
-                {category.label}
-                {/* {category.badge && (
-                  <span className="text-xs bg-muted rounded-full px-1.5 py-0.5">
-                    {category.badge}
-                  </span>
-                )} */}
-              </div>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center justify-center gap-2">
+                    {category.label}
+                    {category.experimental ? (
+                      <FlaskConicalIcon size={12} />
+                    ) : null}
+                  </div>
+                </TooltipTrigger>
+                {category.experimental ? (
+                  <TooltipContent
+                    side="top"
+                    align="center"
+                    children={"Experimental feature"}
+                  />
+                ) : null}
+              </Tooltip>
               {activeCategory === category.id && (
                 <div className="absolute bottom-0 left-0 w-full h-0.5 bg-brand-blue"></div>
               )}
