@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useState } from "react";
 import AppNavbar from "@/components/AppNavbar";
 import AiSuggestions from "@/components/AiSuggestions";
 import DocumentsProvider from "@/context/DocumentsProvider";
@@ -8,24 +8,11 @@ import Loader from "@/components/ui/loader";
 import DocumentsSidebar from "./components/DocumentsSidebar";
 import { ICollaborator } from "@/interface/ICollaborator";
 import { TDocAIActions } from "@/utils/constants";
-import {
-  useCorrectTextMutation,
-  useParaphraseTextMutation,
-  useShortenTextMutation,
-} from "@/hooks/ai";
-import type Quill from "quill";
 import { useGenerationStream } from "@/hooks/gen-ai/useGenerationStream";
 import { toast } from "sonner";
 import { purifyHtml } from "@/lib/utils";
 import { PROMPT_GENERATORS } from "@/utils/prompts";
-import { mockDocHtml } from "@/utils/mock";
-
-type TEditorRef = {
-  pushTextToBuffer: (text: string, speed?: number) => void;
-  pushHtmlToBuffer: (text: string, speed?: number) => void;
-  streamInsertFromSelection: (text: string) => void;
-  instance: Quill;
-};
+import useEditorTools from "@/components/DocumentEditor/useEditorTools";
 
 const Documents = () => {
   const {
@@ -40,33 +27,20 @@ const Documents = () => {
     generatePDF,
   } = useDocuments();
 
-  const paraphraseText = useParaphraseTextMutation();
-  const shortenText = useShortenTextMutation();
-  const correctText = useCorrectTextMutation();
+  const { quillRef: editorRef, pushTextToBuffer } = useEditorTools();
 
   const [startGenStream, { isLoading: isLoadingStream }] =
     useGenerationStream();
 
-  const editorRef = useRef<TEditorRef>(null);
-
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [suggestionsOpen, setSuggestionsOpen] = useState(true);
-
-  const isLoadingAIAction = useMemo(() => {
-    return (
-      paraphraseText.isPending ||
-      shortenText.isPending ||
-      correctText.isPending ||
-      isLoadingStream
-    );
-  }, [paraphraseText, shortenText, correctText, isLoadingStream]);
 
   // Apply Document AI Action
   const applyDocAIAction = async (
     action: `${TDocAIActions}`,
     customPrompt?: string
   ) => {
-    const { instance, pushTextToBuffer, pushHtmlToBuffer } = editorRef.current;
+    const instance = editorRef.current?.getEditor();
 
     if (!instance) throw new Error("No instance of an Editor was found");
 
@@ -86,10 +60,9 @@ const Documents = () => {
       return;
     }
     const prompt = PROMPT_GENERATORS[action](selectionText, customPrompt);
-    pushHtmlToBuffer(mockDocHtml);
-    // startGenStream(prompt, (chunk: string) => {
-    //   pushTextToBuffer(chunk, action === TDocAIActions.CUSTOM_PROMPT ? 5 : 25);
-    // });
+    startGenStream(prompt, (chunk: string) => {
+      pushTextToBuffer(chunk, action === TDocAIActions.CUSTOM_PROMPT ? 5 : 25);
+    });
   };
 
   const exportPdf = async (html: string) => {
@@ -185,7 +158,7 @@ const Documents = () => {
               isLoadingShare={shareDocument.isPending}
               isLoadingGeneratePDF={generatePDF.isPending}
               ref={editorRef}
-              isLoadingAIAction={isLoadingAIAction}
+              isLoadingAIAction={isLoadingStream}
             />
           ) : (
             <div className="h-full flex items-center justify-center">
