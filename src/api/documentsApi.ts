@@ -52,3 +52,16 @@ export const shareDocument = async (payload: {
 
   return document;
 };
+
+export const generateDocumentPdf = async (payload: { html: string }) => {
+  const res = await apiClient.post(
+    apiEndpoints.documents.generatePdf,
+    payload,
+    {
+      responseType: "blob",
+    }
+  );
+  const pdfFile = res.data?.data ?? res.data;
+
+  return pdfFile;
+};

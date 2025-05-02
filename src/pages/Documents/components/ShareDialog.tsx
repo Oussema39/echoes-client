@@ -93,10 +93,6 @@ const ShareDialog = ({
     handleReset();
   }, [handleReset]);
 
-  useEffect(() => {
-    console.log({ collaborators });
-  }, [collaborators]);
-
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent title="">
@@ -135,21 +131,23 @@ const ShareDialog = ({
               </Button>
             </div>
             <Separator className="mx-2 my-4 w-auto bg-sidebar-border" />
-            <div>
+            <div className="flex flex-col gap-2">
               <h2 className="font-medium">Manage access</h2>
-              <ul>
+              <ul className="flex flex-col gap-2">
                 {collaborators?.map((collab, index) => {
                   const user = usersMap.get(collab.userId);
                   return user ? (
-                    <UserPermissionInput
-                      collab={collab}
-                      index={index}
-                      control={form.control}
-                      subtitle={user.email}
-                      title={user.firstName}
-                      update={update}
-                      key={collab.userId}
-                    />
+                    <li key={collab.userId}>
+                      <UserPermissionInput
+                        collab={collab}
+                        index={index}
+                        control={form.control}
+                        subtitle={user.email}
+                        title={user.firstName}
+                        update={update}
+                        key={collab.userId}
+                      />
+                    </li>
                   ) : null;
                 })}
               </ul>
@@ -157,7 +155,7 @@ const ShareDialog = ({
           </form>
         </Form>
 
-        <DialogFooter>
+        <DialogFooter className="mt-4">
           <Button
             type="button"
             variant="outline"

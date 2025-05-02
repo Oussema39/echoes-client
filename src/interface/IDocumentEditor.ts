@@ -3,4 +3,5 @@ export interface DocumentEditorProps {
   value: string;
   onChange?: (value: string) => void;
   hideFooter?: boolean;
+  loading?: boolean;
 }

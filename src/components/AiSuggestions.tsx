@@ -2,125 +2,56 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
+  ArrowRightToLine,
+  FlaskConicalIcon,
   Search,
   Sparkles,
-  ArrowUpRight,
-  Wand2,
-  Flame,
-  Smile,
-  MessageSquare,
-  ThumbsUp,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { TDocAIActions } from "@/utils/constants";
+import { PROMPT_OPTIONS, suggestionCategories } from "@/utils/options";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
+import { Alert } from "./ui/alert";
+import PromptChat from "./Views/PromptChat";
 
 interface AiSuggestionsProps {
   open: boolean;
   onToggle: () => void;
   onApplySuggestion: (text: string) => void;
+  applyDocAIAction: (action: `${TDocAIActions}`, customPrompt?: string) => void;
 }
 
 const AiSuggestions: React.FC<AiSuggestionsProps> = ({
   open,
   onToggle,
   onApplySuggestion,
+  applyDocAIAction,
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [filteredPrompts, setFilteredPrompts] = useState(PROMPT_OPTIONS);
+  const [activeCategory, setActiveCategory] =
+    useState<(typeof suggestionCategories)[number]["id"]>("prompts");
 
-  const suggestionCategories = [
-    { id: "rewrite", label: "REWRITE" },
-    { id: "tone", label: "ADJUST TONE" },
-    { id: "suggestions", label: "SUGGESTIONS", badge: 4 },
-  ];
+  const handleSearchPrompts = (query: string) => {
+    if (!query) {
+      setFilteredPrompts(PROMPT_OPTIONS);
+      setSearchQuery("");
+      return;
+    }
 
-  const rewriteOptions = [
-    {
-      icon: <Wand2 className="h-4 w-4 text-blue-500" />,
-      label: "Improve It",
-      color: "text-blue-500",
-    },
-    {
-      icon: <ArrowUpRight className="h-4 w-4 text-cyan-500" />,
-      label: "Shorten",
-      color: "text-cyan-500",
-    },
-    {
-      icon: <MessageSquare className="h-4 w-4 text-orange-500" />,
-      label: "Simplify",
-      color: "text-orange-500",
-    },
-    {
-      icon: <Sparkles className="h-4 w-4 text-green-500" />,
-      label: "Detailed",
-      color: "text-green-500",
-    },
-    {
-      icon: <MessageSquare className="h-4 w-4 text-purple-500" />,
-      label: "Paraphrase",
-      color: "text-purple-500",
-    },
-    {
-      icon: <Flame className="h-4 w-4 text-blue-500" />,
-      label: "Fluent",
-      color: "text-blue-500",
-    },
-  ];
+    const filtered = PROMPT_OPTIONS.filter((option) =>
+      option.label.toLowerCase().includes(query.toLowerCase())
+    );
 
-  const toneOptions = [
-    {
-      icon: <Sparkles className="h-4 w-4 text-amber-500" />,
-      label: "Anticipatory",
-      color: "text-amber-500",
-    },
-    {
-      icon: <ThumbsUp className="h-4 w-4 text-orange-500" />,
-      label: "Assertive",
-      color: "text-orange-500",
-    },
-    {
-      icon: <Smile className="h-4 w-4 text-pink-500" />,
-      label: "Compassionate",
-      color: "text-pink-500",
-    },
-    {
-      icon: <Smile className="h-4 w-4 text-yellow-500" />,
-      label: "Confident",
-      color: "text-yellow-500",
-    },
-    {
-      icon: <ThumbsUp className="h-4 w-4 text-amber-500" />,
-      label: "Constructive",
-      color: "text-amber-500",
-    },
-  ];
-
-  const suggestions = [
-    {
-      id: "1",
-      type: "paraphrase",
-      content:
-        "Although AI has the capacity to produce designs using data and algorithms, it falls short in replicating human creativity.",
-    },
-    {
-      id: "2",
-      type: "simplify",
-      content:
-        "AI can create designs from data and algorithms, but it can't match human creativity.",
-    },
-    {
-      id: "3",
-      type: "confident",
-      content:
-        "AI's ability to generate designs from data and algorithms simply cannot compete with the depth and nuance of human creativity.",
-    },
-  ];
-
-  const [activeCategory, setActiveCategory] = useState("rewrite");
+    setFilteredPrompts(filtered);
+    setSearchQuery(query);
+  };
 
   return (
     <aside
       className={cn(
-        "w-72 h-auto bg-white border-l flex flex-col overflow-hidden transition-all duration-300 ease-in-out",
-        open ? "translate-x-0" : "translate-x-full"
+        "w-80 h-auto bg-white border-l flex flex-col overflow-hidden transition-all duration-300 ease-in-out",
+        open ? "translate-x-0" : "translate-x-full hidden"
       )}
     >
       <div className="p-4 border-b">
@@ -130,8 +61,13 @@ const AiSuggestions: React.FC<AiSuggestionsProps> = ({
           </div>
           <h2 className="text-lg font-medium">Actions</h2>
           <div className="ml-auto text-xs text-muted-foreground border rounded-full px-2 py-0.5">
-            78
+            {filteredPrompts.length} options
           </div>
+          <ArrowRightToLine
+            className="flex cursor-pointer text-gray-900"
+            size={20}
+            // onClick={onToggle}
+          />
         </div>
         <div className="relative">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -139,7 +75,7 @@ const AiSuggestions: React.FC<AiSuggestionsProps> = ({
             type="text"
             placeholder="Search"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => handleSearchPrompts(e.target.value)}
             className="pl-8 w-full bg-muted/30"
           />
         </div>
@@ -151,21 +87,31 @@ const AiSuggestions: React.FC<AiSuggestionsProps> = ({
             <button
               key={category.id}
               onClick={() => setActiveCategory(category.id)}
+              disabled={category.experimental}
               className={cn(
-                "flex-1 text-sm py-2 relative",
+                "flex-1 text-sm p-2 relative",
                 activeCategory === category.id
                   ? "text-foreground font-medium"
                   : "text-muted-foreground"
               )}
             >
-              <div className="flex items-center justify-center gap-1">
-                {category.label}
-                {category.badge && (
-                  <span className="text-xs bg-muted rounded-full px-1.5 py-0.5">
-                    {category.badge}
-                  </span>
-                )}
-              </div>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center justify-center gap-2">
+                    {category.label}
+                    {category.experimental ? (
+                      <FlaskConicalIcon size={12} />
+                    ) : null}
+                  </div>
+                </TooltipTrigger>
+                {category.experimental ? (
+                  <TooltipContent
+                    side="top"
+                    align="center"
+                    children={"Experimental feature"}
+                  />
+                ) : null}
+              </Tooltip>
               {activeCategory === category.id && (
                 <div className="absolute bottom-0 left-0 w-full h-0.5 bg-brand-blue"></div>
               )}
@@ -175,18 +121,33 @@ const AiSuggestions: React.FC<AiSuggestionsProps> = ({
       </div>
 
       <div className="flex-grow overflow-auto">
-        {activeCategory === "rewrite" && (
+        {activeCategory === "prompts" && (
           <div className="p-4 grid grid-cols-2 gap-2">
-            {rewriteOptions.map((option, idx) => (
-              <Button
-                key={idx}
-                variant="outline"
-                className="justify-start gap-2 h-9"
-                onClick={() => {}}
-              >
-                {option.icon}
-                <span className={option.color}>{option.label}</span>
-              </Button>
+            {filteredPrompts.map((option, idx) => (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    key={idx}
+                    variant="outline"
+                    onClick={() => applyDocAIAction(option.promptType)}
+                    {...option.buttonProps}
+                    className={cn(
+                      "justify-start gap-2 h-9",
+                      option.buttonProps?.className
+                    )}
+                  >
+                    {option.icon}
+                    <span className={`truncate max-w-full ${option.color}`}>
+                      {option.label}
+                    </span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent
+                  side="top"
+                  align="center"
+                  children={option.label}
+                />
+              </Tooltip>
             ))}
             <Button
               variant="ghost"
@@ -197,7 +158,36 @@ const AiSuggestions: React.FC<AiSuggestionsProps> = ({
           </div>
         )}
 
-        {activeCategory === "tone" && (
+        {activeCategory === "chat" && (
+          <div className="p-4 flex flex-col gap-2">
+            <PromptChat
+              onSubmit={(data) =>
+                applyDocAIAction("custom-prompt", data.prompt)
+              }
+            />
+            <Alert
+              variant="default"
+              className="text-xs text-muted-foreground col-span-2 mt-1"
+            >
+              Changes will be applied to the whole document content
+            </Alert>
+          </div>
+        )}
+
+        {/* 
+        <Tooltip>
+        <TooltipTrigger asChild>{button}</TooltipTrigger>
+        <TooltipContent
+          side="right"
+          align="center"
+          hidden={state !== "collapsed" || isMobile}
+          {...tooltip}
+        />
+      </Tooltip>
+
+        */}
+
+        {/* {activeCategory === "tone" && (
           <div className="p-4 grid grid-cols-2 gap-2">
             {toneOptions.map((option, idx) => (
               <Button
@@ -211,9 +201,9 @@ const AiSuggestions: React.FC<AiSuggestionsProps> = ({
               </Button>
             ))}
           </div>
-        )}
+        )} */}
 
-        {activeCategory === "suggestions" && (
+        {/* {activeCategory === "suggestions" && (
           <div className="p-4 space-y-4">
             {suggestions.map((suggestion) => (
               <div key={suggestion.id} className="bg-muted/30 rounded-md p-3">
@@ -256,7 +246,7 @@ const AiSuggestions: React.FC<AiSuggestionsProps> = ({
               </div>
             ))}
           </div>
-        )}
+        )} */}
       </div>
     </aside>
   );

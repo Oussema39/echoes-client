@@ -1,7 +1,5 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Bell, MoreVertical } from "lucide-react";
 
 interface AppNavbarProps {
   onToggleSidebar: () => void;
@@ -33,7 +31,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({
         <span className="font-bold text-xl">Echoes</span>
       </div>
 
-      <div className="flex items-center gap-2">
+      {/* <div className="flex items-center gap-2">
         <Button variant="outline" size="sm" className="hidden sm:flex">
           Upgrade
         </Button>
@@ -50,7 +48,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({
           <AvatarImage src="https://github.com/shadcn.png" alt="User" />
           <AvatarFallback>JD</AvatarFallback>
         </Avatar>
-      </div>
+      </div> */}
     </header>
   );
 };

@@ -6,12 +6,6 @@ import { Search, Plus, ArrowLeftToLine } from "lucide-react";
 import { IDocument } from "@/interface/IDocument";
 import DocumentPreviewCard from "@/components/Cards/DocumentPreviewCard";
 
-interface Document {
-  id: string;
-  title: string;
-  selected?: boolean;
-}
-
 interface DocumentsSidebarProps {
   open: boolean;
   onToggle: () => void;
@@ -52,6 +46,7 @@ const DocumentsSidebar: React.FC<DocumentsSidebarProps> = ({
           <h2 className="text-lg font-medium m-0">Your Documents</h2>
           <ArrowLeftToLine
             className="flex cursor-pointer text-gray-900"
+            size={20}
             onClick={onToggle}
           />
         </div>

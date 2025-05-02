@@ -1,6 +1,7 @@
 import { getAllDocuments } from "@/api/documentsApi";
 import useCreateDocumentMutation from "@/hooks/documents/useCreateDocumentMutation";
 import useDeleteDocumentMutation from "@/hooks/documents/useDeleteDocumentMutation";
+import useGeneratePDFMutation from "@/hooks/documents/useGeneratePDFMutation";
 import useShareDocumentMutation from "@/hooks/documents/useShareDocumentMutation";
 import useUpdateDocumentMutation from "@/hooks/documents/useUpdateDocumentMutation";
 import { DocumentsContext } from "@/hooks/useDocuments";
@@ -22,6 +23,7 @@ export type TDocumentContextValue = {
   updateDocument: UseMutationResult;
   deleteDocument: UseMutationResult;
   shareDocument: UseMutationResult;
+  generatePDF: UseMutationResult;
 };
 
 const DocumentsProvider = ({ children }: { children: ReactNode }) => {
@@ -69,6 +71,8 @@ const DocumentsProvider = ({ children }: { children: ReactNode }) => {
     queryClient,
   });
 
+  const generatePDFMutation = useGeneratePDFMutation();
+
   const value = useMemo(() => {
     return {
       documents,
@@ -80,6 +84,7 @@ const DocumentsProvider = ({ children }: { children: ReactNode }) => {
       updateDocument: updateDocumentMutation,
       deleteDocument: deleteDocumentMutation,
       shareDocument: shareDocumentMutation,
+      generatePDF: generatePDFMutation,
     };
   }, [
     documents,
@@ -91,6 +96,7 @@ const DocumentsProvider = ({ children }: { children: ReactNode }) => {
     updateDocumentMutation,
     deleteDocumentMutation,
     shareDocumentMutation,
+    generatePDFMutation,
   ]);
 
   useEffect(() => {
