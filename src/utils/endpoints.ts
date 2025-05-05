@@ -16,7 +16,9 @@ export const apiEndpoints = {
     getAll: usersBase,
   },
   auth: {
+    me: `${authBase}/me`,
     login: `${authBase}/login`,
+    logout: `${authBase}/logout`,
     loginWithGoogle: `${authBase}/google`,
   },
   ai: {

@@ -1,7 +1,8 @@
+import { getCurrentUserData } from "@/api/authApi";
 import { IUser } from "@/interface/IUser";
-import { getCurrentUser } from "@/services/authService";
 import { apiEndpoints } from "@/utils/endpoints";
 import { createContext, useState, useEffect, ReactNode } from "react";
+import { useNavigate } from "react-router-dom";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -23,21 +24,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [user, setUser] = useState<IUser | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Check if user is already logged in
     const checkAuthStatus = async () => {
       try {
         setIsLoading(true);
-        const token = localStorage.getItem("auth_token");
+        const userData = await getCurrentUserData();
+        if (!userData) throw new Error("No user data found");
 
-        if (token) {
-          const userData = await getCurrentUser();
-          if (!userData) throw new Error("No user data found");
-
-          setUser(userData);
-          setIsAuthenticated(true);
-        }
+        setUser(userData);
+        setIsAuthenticated(true);
+        navigate("/", { replace: true });
       } catch (error) {
         console.error("Authentication check failed:", error);
         localStorage.removeItem("auth_token");
@@ -47,6 +46,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     checkAuthStatus();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loginWithGoogle = async () => {

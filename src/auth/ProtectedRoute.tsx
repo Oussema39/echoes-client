@@ -3,7 +3,6 @@ import { useAuth } from "@/hooks/useAuth";
 import { Navigate, Outlet } from "react-router-dom";
 
 const ProtectedRoute = () => {
-  debugger;
   const { isLoading, isAuthenticated } = useAuth();
 
   if (isLoading) {

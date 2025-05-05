@@ -1,6 +1,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { ChromeIcon } from "lucide-react";
+import { ChromeIcon, LogOut } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 interface AppNavbarProps {
   onToggleSidebar: () => void;
@@ -13,6 +14,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({
   onToggleSuggestions,
   loginWithGoogle,
 }) => {
+  const { isAuthenticated } = useAuth();
   return (
     <header className="h-14 border-b bg-white flex items-center px-4 justify-between">
       <div className="flex items-center">
@@ -35,10 +37,17 @@ const AppNavbar: React.FC<AppNavbarProps> = ({
       </div>
 
       <div className="flex items-center gap-2">
-        <Button variant="outline" className="rounded-full">
-          <ChromeIcon size={24} />
-          Sign in with Google
-        </Button>
+        {isAuthenticated ? (
+          <Button variant="outline" className="rounded-full">
+            <LogOut size={24} />
+            Logout
+          </Button>
+        ) : (
+          <Button variant="outline" className="rounded-full">
+            <ChromeIcon size={24} />
+            Sign in with Google
+          </Button>
+        )}
       </div>
       {/* <div className="flex items-center gap-2">
         <Button variant="outline" size="sm" className="hidden sm:flex">

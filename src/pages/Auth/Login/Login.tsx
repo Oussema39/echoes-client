@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { Card, CardContent } from "@/components/ui/card";
 import { Alert } from "@/components/ui/alert";
@@ -16,7 +16,7 @@ interface LoginFormInputs {
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const { login, loginWithGoogle } = useAuth();
+  const { login, loginWithGoogle, isAuthenticated } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -50,6 +50,10 @@ const LoginPage = () => {
       setIsLoading(false);
     }
   };
+
+  if (isAuthenticated) {
+    return <Navigate to="/" replace />;
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center">
