@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { purifyHtml } from "@/lib/utils";
 import { PROMPT_GENERATORS } from "@/utils/prompts";
 import useEditorTools from "@/components/DocumentEditor/useEditorTools";
+import { useAuth } from "@/hooks/useAuth";
 
 const Documents = () => {
   const {
@@ -26,6 +27,8 @@ const Documents = () => {
     shareDocument,
     generatePDF,
   } = useDocuments();
+
+  const { loginWithGoogle } = useAuth();
 
   const { quillRef: editorRef, pushTextToBuffer } = useEditorTools();
 
@@ -130,6 +133,7 @@ const Documents = () => {
       <AppNavbar
         onToggleSidebar={toggleSidebar}
         onToggleSuggestions={toggleSuggestions}
+        loginWithGoogle={loginWithGoogle}
       />
       <div className="flex flex-1 overflow-hidden">
         <div id="streamed-text"></div>

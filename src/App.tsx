@@ -6,6 +6,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Documents";
 import "./App.css";
 import NotFound from "./pages/NotFound";
+import { AuthProvider } from "./context/AuthProvider";
+import ProtectedRoute from "./auth/ProtectedRoute";
+import LoginPage from "./pages/Auth/Login/Login";
 
 const queryClient = new QueryClient();
 
@@ -14,12 +17,19 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
+            <Route element={<ProtectedRoute />}>
+              <Route path="/" element={<Index />} />
+            </Route>
+            <Route element={<ProtectedRoute />}>
+              <Route path="*" element={<NotFound />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

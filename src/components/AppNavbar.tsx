@@ -1,14 +1,17 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
+import { ChromeIcon } from "lucide-react";
 
 interface AppNavbarProps {
   onToggleSidebar: () => void;
   onToggleSuggestions: () => void;
+  loginWithGoogle: () => void;
 }
 
 const AppNavbar: React.FC<AppNavbarProps> = ({
   onToggleSidebar,
   onToggleSuggestions,
+  loginWithGoogle,
 }) => {
   return (
     <header className="h-14 border-b bg-white flex items-center px-4 justify-between">
@@ -31,6 +34,12 @@ const AppNavbar: React.FC<AppNavbarProps> = ({
         <span className="font-bold text-xl">Echoes</span>
       </div>
 
+      <div className="flex items-center gap-2">
+        <Button variant="outline" className="rounded-full">
+          <ChromeIcon size={24} />
+          Sign in with Google
+        </Button>
+      </div>
       {/* <div className="flex items-center gap-2">
         <Button variant="outline" size="sm" className="hidden sm:flex">
           Upgrade

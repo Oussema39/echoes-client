@@ -28,7 +28,7 @@ const apiClient: AxiosInstance = axios.create({
 
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("auth_token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -70,7 +70,7 @@ apiClient.interceptors.response.use(
           email: import.meta.env.VITE_TMP_EMAIL,
         });
         const newAccessToken = res.data.data.accessToken;
-        localStorage.setItem("token", newAccessToken);
+        localStorage.setItem("auth_token", newAccessToken);
         apiClient.defaults.headers.common.Authorization = `Bearer ${newAccessToken}`;
 
         processQueue(null, newAccessToken);

@@ -17,6 +17,7 @@ export const apiEndpoints = {
   },
   auth: {
     login: `${authBase}/login`,
+    loginWithGoogle: `${authBase}/google`,
   },
   ai: {
     paraphrase: `${aiBase}/paraphrase`,
