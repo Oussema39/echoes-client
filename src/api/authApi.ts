@@ -12,7 +12,7 @@ export const getCurrentUserData = async (): Promise<IUser | null> => {
 
 export const logoutUser = async (): Promise<IUser | null> => {
   const res = await apiClient.post(apiEndpoints.auth.logout, {
-    withCredentials: true,
+    // withCredentials: true,
   });
   const userData = res.data.data ?? res.data;
   return userData;

@@ -1,4 +1,4 @@
-import { getCurrentUserData } from "@/api/authApi";
+import { getCurrentUserData, logoutUser } from "@/api/authApi";
 import { IUser } from "@/interface/IUser";
 import { apiEndpoints } from "@/utils/endpoints";
 import { createContext, useState, useEffect, ReactNode } from "react";
@@ -57,10 +57,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return true;
   };
 
-  const logout = () => {
-    localStorage.removeItem("auth_token");
-    setUser(null);
-    setIsAuthenticated(false);
+  const logout = async () => {
+    // setIsLoading(true);
+    try {
+      await logoutUser();
+      localStorage.removeItem("auth_token");
+      localStorage.removeItem("refreshToken");
+      setUser(null);
+      setIsAuthenticated(false);
+    } catch (error) {
+      throw new Error(error);
+    } finally {
+      // setIsLoading(false);
+    }
   };
 
   const value = {

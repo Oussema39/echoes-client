@@ -14,7 +14,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({
   onToggleSuggestions,
   loginWithGoogle,
 }) => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, logout, isLoading } = useAuth();
   return (
     <header className="h-14 border-b bg-white flex items-center px-4 justify-between">
       <div className="flex items-center">
@@ -38,7 +38,12 @@ const AppNavbar: React.FC<AppNavbarProps> = ({
 
       <div className="flex items-center gap-2">
         {isAuthenticated ? (
-          <Button variant="outline" className="rounded-full">
+          <Button
+            onClick={logout}
+            disabled={isLoading}
+            variant="outline"
+            className="rounded-full"
+          >
             <LogOut size={24} />
             Logout
           </Button>
