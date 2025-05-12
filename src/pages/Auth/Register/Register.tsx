@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Card, CardContent } from "@/components/ui/card";
 import { Alert } from "@/components/ui/alert";
@@ -8,15 +7,23 @@ import { Separator } from "@/components/ui/separator";
 import { ChromeIcon } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Link, Navigate, useNavigate } from "react-router-dom";
+import { useState } from "react";
 
-interface LoginFormInputs {
+interface RegisterFormInputs {
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
+  age?: number;
 }
 
-const LoginPage = () => {
+const RegisterPage = () => {
   const navigate = useNavigate();
-  const { login, loginWithGoogle, isAuthenticated } = useAuth();
+  const {
+    register: registerUser,
+    loginWithGoogle,
+    isAuthenticated,
+  } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -24,27 +31,22 @@ const LoginPage = () => {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginFormInputs>({
-    defaultValues: {
-      email: import.meta.env.VITE_TMP_EMAIL,
-      password: import.meta.env.VITE_TMP_PASSWORD,
-    },
-  });
+  } = useForm<RegisterFormInputs>();
 
-  const onSubmit = async (data: LoginFormInputs) => {
+  const onSubmit = async (data: RegisterFormInputs) => {
     try {
       setIsLoading(true);
       setError(null);
 
-      const success = await login(data.email, data.password);
+      const success = await registerUser(data);
 
       if (success) {
         navigate("/");
       } else {
-        setError("Invalid email or password");
+        setError("Registration failed");
       }
     } catch (err) {
-      setError("Authentication failed. Please try again.");
+      setError("Registration failed. Please try again.");
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -57,7 +59,7 @@ const LoginPage = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center">
-      <Card>
+      <Card className="md:min-w-[500px]">
         <CardContent className="p-8">
           <div className="flex items-center justify-center mb-2">
             <img
@@ -68,9 +70,11 @@ const LoginPage = () => {
             />
           </div>
 
-          <h2 className="text-center text-xl font-medium mb-4">Welcome Back</h2>
+          <h2 className="text-center text-xl font-medium mb-4">
+            Create an Account
+          </h2>
           <p className="text-gray-500 block text-center mb-8">
-            Enter your credentials to access your dashboard
+            Fill in the details to register
           </p>
 
           {error && (
@@ -88,6 +92,24 @@ const LoginPage = () => {
             className="flex flex-col gap-6"
           >
             <Controller
+              name="firstName"
+              control={control}
+              rules={{ required: "First name is required" }}
+              render={({ field }) => (
+                <Input {...field} placeholder="First name" />
+              )}
+            />
+
+            <Controller
+              name="lastName"
+              control={control}
+              rules={{ required: "Last name is required" }}
+              render={({ field }) => (
+                <Input {...field} placeholder="Last name" />
+              )}
+            />
+
+            <Controller
               name="email"
               control={control}
               rules={{
@@ -98,7 +120,7 @@ const LoginPage = () => {
                 },
               }}
               render={({ field }) => (
-                <Input {...field} placeholder="your.email@example.com" />
+                <Input {...field} placeholder="Email address" />
               )}
             />
 
@@ -113,21 +135,33 @@ const LoginPage = () => {
                 },
               }}
               render={({ field }) => (
-                <Input {...field} placeholder="Your password" type="password" />
+                <Input {...field} placeholder="Password" type="password" />
+              )}
+            />
+
+            <Controller
+              name="age"
+              control={control}
+              rules={{
+                min: { value: 13, message: "You must be at least 13" },
+              }}
+              render={({ field }) => (
+                <Input {...field} placeholder="Age (optional)" type="number" />
               )}
             />
 
             <Button type="submit" size="lg" disabled={isLoading}>
-              Sign In
+              Sign Up
             </Button>
           </form>
           <p className="text-sm text-center text-muted-foreground mt-2">
-            Don't have an account?{" "}
-            <Link to="/register" className="text-primary hover:underline">
-              Register here
+            Already have an account?{" "}
+            <Link to="/login" className="text-primary hover:underline">
+              Login here
             </Link>
           </p>
           <Separator className="mx-2 my-4 w-auto bg-sidebar-border" />
+
           <div className="flex items-center gap-2">
             <Button
               type="button"
@@ -137,7 +171,7 @@ const LoginPage = () => {
               className="rounded-full w-full"
             >
               <ChromeIcon size={24} />
-              Sign in with Google
+              Sign up with Google
             </Button>
           </div>
         </CardContent>
@@ -146,4 +180,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default RegisterPage;

@@ -6,6 +6,7 @@ const aiBase = "/ai";
 export const apiEndpoints = {
   documents: {
     getAll: documentsBase,
+    getByUser: `${documentsBase}/by-user`,
     addDocument: documentsBase,
     shareDocument: `${documentsBase}/share`,
     generatePdf: `${documentsBase}/generate-pdf`,
@@ -20,6 +21,7 @@ export const apiEndpoints = {
     login: `${authBase}/login`,
     logout: `${authBase}/logout`,
     loginWithGoogle: `${authBase}/google`,
+    register: `${authBase}/register`,
   },
   ai: {
     paraphrase: `${aiBase}/paraphrase`,

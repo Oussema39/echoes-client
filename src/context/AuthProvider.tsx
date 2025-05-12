@@ -1,4 +1,10 @@
-import { getCurrentUserData, logoutUser } from "@/api/authApi";
+import {
+  getCurrentUserData,
+  loginUser,
+  logoutUser,
+  registerUser,
+} from "@/api/authApi";
+import { IBase } from "@/interface/IBase";
 import { IUser } from "@/interface/IUser";
 import { apiEndpoints } from "@/utils/endpoints";
 import { createContext, useState, useEffect, ReactNode } from "react";
@@ -6,11 +12,16 @@ import { useNavigate } from "react-router-dom";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
+export type UserData = Omit<
+  IUser,
+  keyof IBase | "emailVerified" | "refreshToken"
+>;
 interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   user: IUser | null;
-  login: (email: string, password: string) => Promise<boolean>;
+  login: (email: string, password: string) => Promise<IUser | null>;
+  register: (data: UserData) => Promise<IUser | null>;
   loginWithGoogle: () => void;
   logout: () => void;
 }
@@ -53,8 +64,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     window.location.href = `${BASE_URL}${apiEndpoints.auth.loginWithGoogle}`;
   };
 
-  const login = async (email: string, password: string) => {
-    return true;
+  const login = async (
+    email: string,
+    password: string
+  ): Promise<IUser | null> => {
+    try {
+      const res = await loginUser({ email, password });
+      const user = res?.user;
+
+      // if (!user?.emailVerified) {
+      //   throw new Error("User email unverified");
+      // }
+
+      setUser(user);
+      setIsAuthenticated(true);
+      return user;
+    } catch (error) {
+      console.error(error);
+      setUser(null);
+      return null;
+    }
   };
 
   const logout = async () => {
@@ -65,10 +94,30 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       localStorage.removeItem("refreshToken");
       setUser(null);
       setIsAuthenticated(false);
+      window.location.reload();
     } catch (error) {
       throw new Error(error);
     } finally {
       // setIsLoading(false);
+    }
+  };
+
+  const register = async (data: UserData): Promise<IUser | null> => {
+    try {
+      const res = await registerUser(data);
+      const user = res?.user;
+
+      // if (!user?.emailVerified) {
+      //   throw new Error("User email unverified");
+      // }
+
+      setUser(user);
+      setIsAuthenticated(true);
+      return user;
+    } catch (error) {
+      console.error(error);
+      setUser(null);
+      return null;
     }
   };
 
@@ -79,6 +128,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     login,
     loginWithGoogle,
     logout,
+    register,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

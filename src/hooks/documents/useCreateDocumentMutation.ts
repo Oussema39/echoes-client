@@ -16,7 +16,7 @@ const useCreateDocumentMutation = ({
   const updateDocumentMutation = useMutation({
     mutationFn: createDocument,
     onSuccess: (addedDoc: IDocument) => {
-      queryClient.setQueryData<IDocument[]>(["documents"], (oldDocs) => {
+      queryClient.setQueryData<IDocument[]>(["documents"], (oldDocs = []) => {
         return [addedDoc, ...oldDocs];
       });
 

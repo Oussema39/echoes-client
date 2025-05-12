@@ -2,6 +2,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { ChromeIcon, LogOut } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 interface AppNavbarProps {
   onToggleSidebar: () => void;
@@ -14,7 +15,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({
   onToggleSuggestions,
   loginWithGoogle,
 }) => {
-  const { isAuthenticated, logout, isLoading } = useAuth();
+  const { isAuthenticated, logout, isLoading, user } = useAuth();
   return (
     <header className="h-14 border-b bg-white flex items-center px-4 justify-between">
       <div className="flex items-center">
@@ -37,41 +38,31 @@ const AppNavbar: React.FC<AppNavbarProps> = ({
       </div>
 
       <div className="flex items-center gap-2">
-        {isAuthenticated ? (
-          <Button
-            onClick={logout}
-            disabled={isLoading}
-            variant="outline"
-            className="rounded-full"
-          >
-            <LogOut size={24} />
-            Logout
-          </Button>
-        ) : (
-          <Button variant="outline" className="rounded-full">
-            <ChromeIcon size={24} />
-            Sign in with Google
-          </Button>
-        )}
-      </div>
-      {/* <div className="flex items-center gap-2">
-        <Button variant="outline" size="sm" className="hidden sm:flex">
-          Upgrade
-        </Button>
-        <Button variant="ghost" size="icon" className="text-muted-foreground">
-          <Bell size={18} />
-        </Button>
-        <Button variant="ghost" size="icon" className="text-muted-foreground">
-          <MoreVertical size={18} />
-        </Button>
         <Avatar
           className="h-8 w-8 cursor-pointer"
           onClick={onToggleSuggestions}
         >
-          <AvatarImage src="https://github.com/shadcn.png" alt="User" />
-          <AvatarFallback>JD</AvatarFallback>
+          <AvatarImage
+            src={user.picture ?? "https://avatar.iran.liara.run/public/48"}
+            alt="User"
+          />
+          <AvatarFallback>
+            {`${user.firstName?.at(0)}${user.lastName?.at(0)}`.toUpperCase()}
+          </AvatarFallback>
         </Avatar>
-      </div> */}
+        <div className="flex items-center gap-2">
+          {isAuthenticated ? (
+            <Button onClick={logout} disabled={isLoading} variant="ghost">
+              <LogOut size={24} />
+            </Button>
+          ) : (
+            <Button variant="outline" className="rounded-full">
+              <ChromeIcon size={24} />
+              Sign in with Google
+            </Button>
+          )}
+        </div>
+      </div>
     </header>
   );
 };

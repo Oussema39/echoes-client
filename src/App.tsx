@@ -9,6 +9,7 @@ import NotFound from "./pages/NotFound";
 import { AuthProvider } from "./context/AuthProvider";
 import ProtectedRoute from "./auth/ProtectedRoute";
 import LoginPage from "./pages/Auth/Login/Login";
+import RegisterPage from "./pages/Auth/Register/Register";
 
 const queryClient = new QueryClient();
 
@@ -21,6 +22,7 @@ const App = () => (
         <AuthProvider>
           <Routes>
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
             <Route element={<ProtectedRoute />}>
               <Route path="/" element={<Index />} />
             </Route>

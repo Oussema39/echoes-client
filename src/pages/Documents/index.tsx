@@ -128,6 +128,11 @@ const Documents = () => {
     );
   }
 
+  const handleOnFocus = () => {
+    toggleSidebar();
+    toggleSuggestions();
+  };
+
   return (
     <div className="h-screen flex flex-col bg-gray-50">
       <AppNavbar
@@ -161,6 +166,7 @@ const Documents = () => {
               isLoadingShare={shareDocument.isPending}
               isLoadingGeneratePDF={generatePDF.isPending}
               ref={editorRef}
+              handleOnFocus={handleOnFocus}
               isLoadingAIAction={isLoadingStream}
             />
           ) : (

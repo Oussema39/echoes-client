@@ -1,4 +1,4 @@
-import { Download, Save, Share } from "lucide-react";
+import { ArrowLeftRight, Download, Save, Share } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 import { useForm } from "react-hook-form";
 import {
@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/form";
 import DocumentEditor from "../../../components/DocumentEditor/DocumentEditor";
 import { IDocument } from "@/interface/IDocument";
-import { forwardRef, useEffect, useState } from "react";
+import { forwardRef, useEffect, useId, useState } from "react";
 import ShareDialog from "./ShareDialog";
 import { ICollaborator } from "@/interface/ICollaborator";
 
@@ -23,6 +23,7 @@ type DocumentFormProps = {
   isLoadingShare: boolean;
   isLoadingAIAction?: boolean;
   isLoadingGeneratePDF?: boolean;
+  handleOnFocus: () => void;
 };
 
 type FormData = {
@@ -41,17 +42,17 @@ const DocumentForm = forwardRef(
       isLoadingShare,
       isLoadingAIAction,
       isLoadingGeneratePDF,
+      handleOnFocus,
     }: DocumentFormProps,
     editorRef
   ) => {
+    const formId = useId();
     const form = useForm<FormData>({
       defaultValues: {
         title: selectedDocument?.title || "",
         content: selectedDocument?.content || "",
       },
     });
-
-    const content = form.watch("content");
 
     const [shareDialogOpen, setShareDialogOpen] = useState<boolean>(false);
 
@@ -67,15 +68,11 @@ const DocumentForm = forwardRef(
       });
     }, [selectedDocument, form]);
 
-    useEffect(() => {
-      console.log({ content });
-    }, [content]);
-
     return (
       <>
         <Form {...form} key={selectedDocument?._id}>
           <form
-            id="document-form"
+            id={`document-form-${formId}`}
             onSubmit={form.handleSubmit(onSubmit)}
             className="flex flex-col h-full w-full bg-white rounded-lg shadow-subtle overflow-hidden animate-fade-in"
           >
@@ -119,7 +116,7 @@ const DocumentForm = forwardRef(
                   className="gap-1"
                   type="button"
                   variant="outline"
-                  onClick={() => exportPdf(content)}
+                  onClick={() => exportPdf(form.getValues().content)}
                 >
                   <Download size={16} />
                   <span>Print</span>
@@ -134,6 +131,17 @@ const DocumentForm = forwardRef(
                   <Share size={16} />
                   <span>Share</span>
                 </Button>
+                <Button
+                  disabled={isLoading}
+                  size="sm"
+                  className="gap-1"
+                  type="button"
+                  variant="ghost"
+                  onClick={handleOnFocus}
+                >
+                  <ArrowLeftRight size={16} />
+                  <span>Focus</span>
+                </Button>
               </div>
             </header>
 
@@ -141,7 +149,6 @@ const DocumentForm = forwardRef(
             <FormField
               control={form.control}
               name="content"
-              rules={{ required: "Content is required" }}
               render={({ field }) => {
                 return (
                   <FormControl>

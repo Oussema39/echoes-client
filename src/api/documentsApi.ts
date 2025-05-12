@@ -5,12 +5,39 @@ import { IDocument } from "@/interface/IDocument";
 import { IBase } from "@/interface/IBase";
 import { ICollaborator } from "@/interface/ICollaborator";
 
+type GetUserDocsResponse = {
+  owned: IDocument[];
+  sharedWithMe: IDocument[];
+};
+
 export const getAllDocuments = async (
   config: AxiosRequestConfig
 ): Promise<IDocument[] | null> => {
   const res = await apiClient.get(apiEndpoints.documents.getAll, config);
   const documents = Array.isArray(res.data.data) ? res.data.data : [];
   return documents;
+};
+
+export const getUserDocuments = async (
+  config: AxiosRequestConfig
+): Promise<IDocument[] | null> => {
+  const res = await apiClient.get<GetUserDocsResponse>(
+    apiEndpoints.documents.getByUser,
+    config
+  );
+
+  const { owned, sharedWithMe } = res.data ?? {};
+
+  const documents = [
+    ...owned.map((doc) => ({ ...doc, owned: true, sharedWithMe: false })),
+    ...sharedWithMe.map((doc) => ({
+      ...doc,
+      owned: false,
+      sharedWithMe: true,
+    })),
+  ];
+
+  return documents ?? [];
 };
 
 export const createDocument = async (

@@ -12,4 +12,6 @@ export interface IDocument extends IBase {
   content: string;
   owner: Partial<IUser>;
   collaborators: TCollaborator[];
+  owned?: boolean;
+  sharedWithMe?: boolean;
 }

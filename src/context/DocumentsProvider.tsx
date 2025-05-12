@@ -1,4 +1,4 @@
-import { getAllDocuments } from "@/api/documentsApi";
+import { getUserDocuments } from "@/api/documentsApi";
 import useCreateDocumentMutation from "@/hooks/documents/useCreateDocumentMutation";
 import useDeleteDocumentMutation from "@/hooks/documents/useDeleteDocumentMutation";
 import useGeneratePDFMutation from "@/hooks/documents/useGeneratePDFMutation";
@@ -39,7 +39,7 @@ const DocumentsProvider = ({ children }: { children: ReactNode }) => {
     isFetched,
   } = useQuery<IDocument[]>({
     queryKey: ["documents"],
-    queryFn: getAllDocuments,
+    queryFn: getUserDocuments,
     retry: false,
     refetchOnWindowFocus: false,
   });

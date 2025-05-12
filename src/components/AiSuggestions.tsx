@@ -1,12 +1,7 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  ArrowRightToLine,
-  FlaskConicalIcon,
-  Search,
-  Sparkles,
-} from "lucide-react";
+import { FlaskConicalIcon, Search, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { TDocAIActions } from "@/utils/constants";
 import { PROMPT_OPTIONS, suggestionCategories } from "@/utils/options";
@@ -63,11 +58,11 @@ const AiSuggestions: React.FC<AiSuggestionsProps> = ({
           <div className="ml-auto text-xs text-muted-foreground border rounded-full px-2 py-0.5">
             {filteredPrompts.length} options
           </div>
-          <ArrowRightToLine
+          {/* <ArrowRightToLine
             className="flex cursor-pointer text-gray-900"
             size={20}
             // onClick={onToggle}
-          />
+          /> */}
         </div>
         <div className="relative">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -124,7 +119,7 @@ const AiSuggestions: React.FC<AiSuggestionsProps> = ({
         {activeCategory === "prompts" && (
           <div className="p-4 grid grid-cols-2 gap-2">
             {filteredPrompts.map((option, idx) => (
-              <Tooltip>
+              <Tooltip key={option.promptType}>
                 <TooltipTrigger asChild>
                   <Button
                     key={idx}
