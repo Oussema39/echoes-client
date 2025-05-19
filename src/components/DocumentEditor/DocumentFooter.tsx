@@ -1,9 +1,18 @@
-import { ChevronDown, Dot } from "lucide-react";
+import { ChevronDown, DatabaseBackup, Dot } from "lucide-react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { PromptFormValues } from "../Views/PromptPopover";
 import { useState } from "react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import { useDocuments } from "@/hooks/useDocuments";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import { format } from "date-fns";
+import { IDocVersion } from "@/interface/IDocVersion";
 
 const DocumentFooter = ({
   wordCount,
@@ -15,9 +24,26 @@ const DocumentFooter = ({
   promptsLeft: number;
 }) => {
   const [promptPopOverOpen, setPromptPopOverOpen] = useState(false);
-
   const onSubmit = (values: PromptFormValues) => {
     console.log({ values });
+  };
+
+  const {
+    selectedDocument,
+    selectedVersion,
+    handleChangeSelectedVersion,
+    updateSelectedDocumentById,
+  } = useDocuments();
+
+  const handleChangeVersion = (version: IDocVersion) => {
+    handleChangeSelectedVersion(version._id, selectedDocument._id);
+    updateSelectedDocumentById(selectedDocument._id, (doc) => {
+      return {
+        ...doc,
+        content: version.changes.content.newValue,
+        title: version.changes.title.newValue,
+      };
+    });
   };
 
   return (
@@ -27,15 +53,59 @@ const DocumentFooter = ({
           <span>{wordCount} Words</span> <Dot />{" "}
           <span>{readMins} min read</span>
         </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="text-xs h-6 gap-1 border"
-          type="button"
-        >
-          <span>V1</span>
-          <ChevronDown size={12} />
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-xs h-6 gap-1 border"
+              type="button"
+            >
+              <div className="flex items-center gap-2">
+                <DatabaseBackup size={12} />
+                <p className="text-sm">V{selectedVersion?.version ?? 0}</p>
+              </div>
+              {selectedVersion?.timestamp ? (
+                <div className="flex items-center">
+                  <Dot />
+                  <p className="flex-1 mr-1">
+                    {format(selectedVersion.timestamp, "MMM d, yyyy - h:mm a")}
+                  </p>
+                  <ChevronDown size={12} />
+                </div>
+              ) : null}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            className="max-h-48 overflow-y-auto"
+            hidden={!selectedVersion}
+          >
+            {selectedDocument?.versions?.map((version) => (
+              <DropdownMenuItem
+                key={version._id ?? version.version}
+                disabled={version === selectedVersion}
+                onClick={() => handleChangeVersion(version)}
+                className={`${
+                  version === selectedVersion
+                    ? "cursor-not-allowed"
+                    : "cursor-pointer"
+                }
+                flex items-center`}
+              >
+                <div className="flex items-center gap-2">
+                  <DatabaseBackup size={12} />
+                  <p className="text-sm">V{version.version}</p>
+                </div>
+                <div className="flex items-center">
+                  <Dot />
+                  <p className="flex-1">
+                    {format(version.timestamp, "MMM d, yyyy - h:mm a")}
+                  </p>
+                </div>
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
       <div className="flex items-center gap-2">
         <Badge variant="outline" className="text-brand-blue bg-brand-light">

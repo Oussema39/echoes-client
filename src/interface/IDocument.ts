@@ -1,6 +1,7 @@
 import { TPermissionLevel } from "@/utils/constants";
 import { IUser } from "./IUser";
 import { IBase } from "./IBase";
+import { IDocVersion } from "./IDocVersion";
 
 type TCollaborator = {
   userId: string;
@@ -14,4 +15,5 @@ export interface IDocument extends IBase {
   collaborators: TCollaborator[];
   owned?: boolean;
   sharedWithMe?: boolean;
+  versions?: IDocVersion[];
 }

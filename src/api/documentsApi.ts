@@ -4,6 +4,7 @@ import { AxiosRequestConfig } from "axios";
 import { IDocument } from "@/interface/IDocument";
 import { IBase } from "@/interface/IBase";
 import { ICollaborator } from "@/interface/ICollaborator";
+import { IDocVersion } from "@/interface/IDocVersion";
 
 type GetUserDocsResponse = {
   owned: IDocument[];
@@ -38,6 +39,16 @@ export const getUserDocuments = async (
   ];
 
   return documents ?? [];
+};
+
+export const getDocumentVersionsMetadata = async (
+  docId: string
+): Promise<Omit<IDocVersion, "changes">[] | null> => {
+  const res = await apiClient.get(
+    apiEndpoints.documents.getVersionsMetadata(docId)
+  );
+  const versions = res.data.data || res.data;
+  return versions ?? [];
 };
 
 export const createDocument = async (

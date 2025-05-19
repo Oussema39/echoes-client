@@ -103,8 +103,8 @@ const DocumentForm = forwardRef(
                 <Button
                   disabled={isLoading}
                   type="submit"
-                  variant="outline"
-                  size="sm"
+                  variant="secondary"
+                  size="md"
                   className="gap-1"
                 >
                   <Save size={16} />
@@ -112,10 +112,10 @@ const DocumentForm = forwardRef(
                 </Button>
                 <Button
                   disabled={isLoadingGeneratePDF || isLoading}
-                  size="sm"
+                  size="md"
                   className="gap-1"
                   type="button"
-                  variant="outline"
+                  variant="secondary"
                   onClick={() => exportPdf(form.getValues().content)}
                 >
                   <Download size={16} />
@@ -123,7 +123,7 @@ const DocumentForm = forwardRef(
                 </Button>
                 <Button
                   disabled={isLoading}
-                  size="sm"
+                  size="md"
                   className="gap-1"
                   type="button"
                   onClick={() => setShareDialogOpen(true)}
@@ -133,10 +133,10 @@ const DocumentForm = forwardRef(
                 </Button>
                 <Button
                   disabled={isLoading}
-                  size="sm"
+                  size="md"
                   className="gap-1"
                   type="button"
-                  variant="ghost"
+                  variant="secondary"
                   onClick={handleOnFocus}
                 >
                   <ArrowLeftRight size={16} />

@@ -8,8 +8,9 @@ import { Separator } from "@/components/ui/separator";
 import useUserQuery from "@/hooks/users/useUserQuery";
 import { ICollaborator } from "@/interface/ICollaborator";
 import { IDocument } from "@/interface/IDocument";
+import { TPermissionLevel } from "@/utils/constants";
 import { permissionLevels } from "@/utils/selectOptions";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -34,7 +35,7 @@ const ShareDialog = ({
   shareDocument,
   selectedDocument,
 }: ShareDialogProps) => {
-  const { usersMap } = useUserQuery();
+  const { usersMap, users } = useUserQuery();
 
   const form = useForm<ShareForm>({
     defaultValues: {
@@ -44,10 +45,38 @@ const ShareDialog = ({
     },
   });
 
+  const formCollabs = form.watch("collaborators");
+
+  const options = useMemo(() => {
+    const usersOptions = users?.map((user) => ({
+      label: `${user.firstName} ${user.lastName} | ${user.email}`,
+      value: user._id,
+    }));
+
+    const selectedCollabsMap = new Map();
+
+    if (!Array.isArray(formCollabs)) {
+      return [];
+    }
+
+    for (const collab of formCollabs) {
+      selectedCollabsMap.set(collab?.userId, collab?.permissionLevel);
+    }
+
+    const filteredOptions = usersOptions.filter(
+      (option) =>
+        !selectedCollabsMap.get(option.value) &&
+        option.value !== selectedDocument.owner
+    );
+
+    return filteredOptions;
+  }, [formCollabs, users, selectedDocument]);
+
   const {
     fields: collaborators,
     append,
     update,
+    remove,
   } = useFieldArray({
     control: form.control,
     name: "collaborators",
@@ -62,7 +91,6 @@ const ShareDialog = ({
   }, [form, selectedDocument]);
 
   const onSubmit = (values: ShareForm) => {
-    console.log({ values });
     shareDocument(values.collaborators);
   };
 
@@ -79,14 +107,12 @@ const ShareDialog = ({
       permissionLevel,
     } as ICollaborator);
 
-    form.reset({
-      selectedParticipant: "",
-      permissionLevel: "viewer",
-    });
+    form.setValue("permissionLevel", TPermissionLevel.VIEWER);
+    form.setValue("selectedParticipant", "");
   };
 
-  const handleChangeCollabPermission = (field) => {
-    console.log({ field });
+  const handleRemoveCollab = (index: number) => {
+    remove(index);
   };
 
   useEffect(() => {
@@ -107,7 +133,7 @@ const ShareDialog = ({
                 name="selectedParticipant"
                 render={({ field }) => (
                   <FormControl>
-                    <UsersInput {...field} />
+                    <UsersInput {...field} options={options} />
                   </FormControl>
                 )}
               />
@@ -145,6 +171,7 @@ const ShareDialog = ({
                         subtitle={user.email}
                         title={user.firstName}
                         update={update}
+                        onDelete={handleRemoveCollab}
                         key={collab.userId}
                       />
                     </li>

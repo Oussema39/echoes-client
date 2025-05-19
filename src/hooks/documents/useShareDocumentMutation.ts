@@ -16,7 +16,7 @@ const useShareDocumentMutation = ({ queryClient }: Props) => {
         if (index === -1) return oldDocs;
         return [
           ...oldDocs.slice(0, index),
-          updatedDoc,
+          { ...oldDocs[index], ...updatedDoc },
           ...oldDocs.slice(index + 1),
         ];
       });
