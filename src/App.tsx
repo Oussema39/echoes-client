@@ -10,6 +10,7 @@ import { AuthProvider } from "./context/AuthProvider";
 import ProtectedRoute from "./auth/ProtectedRoute";
 import LoginPage from "./pages/Auth/Login/Login";
 import RegisterPage from "./pages/Auth/Register/Register";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,7 @@ const App = () => (
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
+    <ReactQueryDevtools />
   </QueryClientProvider>
 );
 
