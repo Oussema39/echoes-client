@@ -8,7 +8,9 @@
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "vercel:link": "vercel link --project echoes-client",
+    "deploy:prod": "vercel --prod"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
