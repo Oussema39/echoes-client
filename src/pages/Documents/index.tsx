@@ -30,10 +30,17 @@ const Documents = () => {
 
   const { loginWithGoogle } = useAuth();
 
-  const { quillRef: editorRef, pushTextToBuffer } = useEditorTools();
+  const {
+    quillRef: editorRef,
+    pushTextToBuffer,
+    stopStreamInsert,
+    isInserting,
+  } = useEditorTools();
 
-  const [startGenStream, { isLoading: isLoadingStream }] =
-    useGenerationStream();
+  const [
+    startGenStream,
+    { isLoading: isLoadingStream, isLoadingInit, cancel: cancelGeneration },
+  ] = useGenerationStream();
 
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [suggestionsOpen, setSuggestionsOpen] = useState(true);
@@ -120,6 +127,11 @@ const Documents = () => {
   // Apply AI suggestion to the editor
   const handleApplySuggestion = (text: string) => {};
 
+  const handleStopStreaming = () => {
+    cancelGeneration();
+    stopStreamInsert();
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -167,7 +179,7 @@ const Documents = () => {
               isLoadingGeneratePDF={generatePDF.isPending}
               ref={editorRef}
               handleOnFocus={handleOnFocus}
-              isLoadingAIAction={isLoadingStream}
+              isLoadingAIAction={isLoadingInit}
             />
           ) : (
             <div className="h-full flex items-center justify-center">
@@ -190,7 +202,9 @@ const Documents = () => {
           open={suggestionsOpen}
           onToggle={toggleSuggestions}
           onApplySuggestion={handleApplySuggestion}
+          cancelGeneration={handleStopStreaming}
           applyDocAIAction={applyDocAIAction}
+          isApplySuggLoading={isLoadingStream || isInserting}
         />
       </div>
     </div>

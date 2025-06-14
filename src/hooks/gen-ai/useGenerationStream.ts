@@ -9,6 +9,7 @@ type StreamResult = {
   isStreaming: boolean;
   error: string | null;
   isLoading: boolean;
+  isLoadingInit: boolean;
   cancel: () => void;
 };
 
@@ -22,6 +23,7 @@ export const useGenerationStream = (): [
   const [messages, setMessages] = useState<string[]>([]);
   const [isStreaming, setIsStreaming] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingInit, setIsLoadingInit] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const eventSourceRef = useRef<EventSource | null>(null);
 
@@ -37,6 +39,7 @@ export const useGenerationStream = (): [
     setError(null);
 
     try {
+      setIsLoadingInit(true);
       const response = await apiClient.post(apiEndpoints.ai.initStream, {
         text,
       });
@@ -45,10 +48,7 @@ export const useGenerationStream = (): [
       const streamUrl = `${BASE_URL}${apiEndpoints.ai.stream}?streamId=${streamId}`;
       const eventSource = new EventSource(streamUrl);
       eventSourceRef.current = eventSource;
-
-      eventSource.onopen = () => {
-        setIsLoading(false);
-      };
+      setIsLoadingInit(false);
 
       eventSource.onmessage = (event) => {
         if (onMessage) {
@@ -59,6 +59,7 @@ export const useGenerationStream = (): [
 
       eventSource.addEventListener("end", () => {
         eventSource.close();
+        setIsLoading(false);
         setIsStreaming(false);
       });
 
@@ -73,6 +74,7 @@ export const useGenerationStream = (): [
       setError("Failed to start stream");
       setIsStreaming(false);
       setIsLoading(false);
+      setIsLoadingInit(false);
     }
   };
 
@@ -82,5 +84,8 @@ export const useGenerationStream = (): [
     setIsLoading(false);
   };
 
-  return [startStream, { messages, isStreaming, error, isLoading, cancel }];
+  return [
+    startStream,
+    { messages, isStreaming, error, isLoading, isLoadingInit, cancel },
+  ];
 };

@@ -1,9 +1,11 @@
 import Quill, { RangeStatic } from "quill";
-import { MutableRefObject, useRef } from "react";
+import { MutableRefObject, useRef, useState } from "react";
 import ReactQuill from "react-quill";
 import { toast } from "sonner";
 
 interface UserEditorToolsReturn {
+  isInserting: boolean;
+  stopStreamInsert: () => void;
   quillRef: MutableRefObject<ReactQuill>;
   insertTextFromSelection: (text: string) => void;
   streamInsertFromSelection: (speed?: number) => void;
@@ -20,6 +22,7 @@ const useEditorTools = (
   const hasDeletedText = useRef<boolean>(false);
   const insertIndex = useRef<number>(0);
   const internalRef = useRef<ReactQuill>(null);
+  const [isInserting, setIsInserting] = useState<boolean>(false);
   const quillRef = externalRef ?? internalRef;
 
   const getEditorInstance = (ref: MutableRefObject<ReactQuill>) => {
@@ -44,7 +47,8 @@ const useEditorTools = (
 
   // Stream plain text insert (existing)
   const streamInsert = (speed: number = 25) => {
-    const quill = quillRef.current?.getEditor();
+    setIsInserting(true);
+    const quill = getEditorInstance(quillRef);
     if (!quill) return;
 
     const selection: RangeStatic = quill.getSelection() ?? {
@@ -68,8 +72,10 @@ const useEditorTools = (
         charBuffer.current = charBuffer.current.slice(1);
         quill.insertText(insertIndex.current++, nextChar);
       } else {
+        charBuffer.current = "";
         clearInterval(typingInterval.current!);
         typingInterval.current = null;
+        setIsInserting(false);
         quill.setSelection(
           selection.index,
           insertIndex.current - selection.index
@@ -85,6 +91,11 @@ const useEditorTools = (
     streamInsert(speed);
   };
 
+  // Push text into buffer and start streaming
+  const stopStreamInsert = () => {
+    charBuffer.current = "";
+  };
+
   const getTextFromSelection = () => {
     const quill = quillRef.current?.getEditor();
     if (!quill) return;
@@ -94,6 +105,8 @@ const useEditorTools = (
 
   return {
     quillRef,
+    isInserting,
+    stopStreamInsert,
     getTextFromSelection,
     insertTextFromSelection,
     pushTextToBuffer,
