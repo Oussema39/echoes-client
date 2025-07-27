@@ -1,3 +1,4 @@
+import { normalizeUrl } from "@/lib/utils";
 import axios, { AxiosInstance } from "axios";
 import { toast } from "sonner";
 
@@ -18,6 +19,7 @@ apiClient.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
     config.withCredentials = true;
+    config.url = normalizeUrl(config.url);
     return config;
   },
   (error) => {

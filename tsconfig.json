@@ -9,6 +9,8 @@
     "paths": {
       "@/*": ["./src/*"]
     },
+    "sourceMap": true,
+    "noEmit": false,
     "noImplicitAny": false,
     "noUnusedParameters": false,
     "skipLibCheck": true,

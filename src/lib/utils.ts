@@ -49,3 +49,7 @@ export const downloadFile = (
     console.error("Error downloading file:", error);
   }
 };
+
+export const normalizeUrl = (url: string) => {
+  return url.replace(/\/\//g, "/");
+};
