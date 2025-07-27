@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AppNavbar from "@/components/AppNavbar";
 import AiSuggestions from "@/components/AiSuggestions";
 import DocumentsProvider from "@/context/DocumentsProvider";
@@ -14,8 +14,10 @@ import { purifyHtml } from "@/lib/utils";
 import { PROMPT_GENERATORS } from "@/utils/prompts";
 import useEditorTools from "@/components/DocumentEditor/useEditorTools";
 import { useAuth } from "@/hooks/useAuth";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const Documents = () => {
+  const isMobile = useIsMobile(1400);
   const {
     documents: _documents,
     selectedDocument,
@@ -132,6 +134,22 @@ const Documents = () => {
     stopStreamInsert();
   };
 
+  const handleOnFocus = () => {
+    toggleSidebar();
+    toggleSuggestions();
+  };
+
+  useEffect(() => {
+    console.log({ isMobile });
+    if (isMobile) {
+      setSuggestionsOpen(false);
+      setSidebarOpen(false);
+    } else {
+      setSidebarOpen(true);
+      setSuggestionsOpen(true);
+    }
+  }, [isMobile]);
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -139,11 +157,6 @@ const Documents = () => {
       </div>
     );
   }
-
-  const handleOnFocus = () => {
-    toggleSidebar();
-    toggleSuggestions();
-  };
 
   return (
     <div className="h-screen flex flex-col bg-gray-50">
