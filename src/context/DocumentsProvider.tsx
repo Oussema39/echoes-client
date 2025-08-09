@@ -88,12 +88,12 @@ const DocumentsProvider = ({ children }: { children: ReactNode }) => {
     (_id: string, documentId: string) => {
       const document = documents.find((doc) => doc._id === documentId);
       if (!document) {
-        console.log(`${handleChangeSelectedVersion.name} → Doc doesn't exist`);
+        console.warn(`${handleChangeSelectedVersion.name} → Doc doesn't exist`);
         return null;
       }
       const versions = document.versions;
       if (!versions) {
-        console.log(
+        console.warn(
           `${handleChangeSelectedVersion.name} → Doc has no Versions`
         );
         return null;

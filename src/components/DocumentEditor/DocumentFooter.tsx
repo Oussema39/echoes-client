@@ -1,8 +1,6 @@
 import { ChevronDown, DatabaseBackup, Dot } from "lucide-react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
-import { PromptFormValues } from "../Views/PromptPopover";
-import { useState } from "react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { useDocuments } from "@/hooks/useDocuments";
 import {
@@ -23,10 +21,10 @@ const DocumentFooter = ({
   readMins: number;
   promptsLeft: number;
 }) => {
-  const [promptPopOverOpen, setPromptPopOverOpen] = useState(false);
-  const onSubmit = (values: PromptFormValues) => {
-    console.log({ values });
-  };
+  // const [promptPopOverOpen, setPromptPopOverOpen] = useState(false);
+  // const onSubmit = (values: PromptFormValues) => {
+  //   console.log({ values });
+  // };
 
   const {
     selectedDocument,

@@ -47,7 +47,7 @@ const AiSuggestions: React.FC<AiSuggestionsProps> = ({
   return (
     <aside
       className={cn(
-        "w-80 h-auto bg-white border-l flex flex-col overflow-hidden transition-all duration-300 ease-in-out",
+        "w-96 h-auto bg-white border-l flex flex-col overflow-hidden transition-all duration-300 ease-in-out",
         open ? "translate-x-0" : "translate-x-full hidden"
       )}
     >

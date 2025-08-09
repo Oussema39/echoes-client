@@ -140,7 +140,6 @@ const Documents = () => {
   };
 
   useEffect(() => {
-    console.log({ isMobile });
     if (isMobile) {
       setSuggestionsOpen(false);
       setSidebarOpen(false);

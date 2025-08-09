@@ -4,6 +4,9 @@ import { FormControl, FormField, FormItem, FormMessage } from "../ui/form";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import { Send } from "lucide-react";
+import { useSocket } from "@/hooks/socket/useSocket";
+import { EVENT_NAMES } from "@/utils/constants";
+import { generateStructuredHtmlPrompt } from "@/utils/prompts";
 
 interface PromptPopoverProps extends React.PropsWithChildren {
   onSubmit?: (data: PromptFormValues) => void;
@@ -14,6 +17,7 @@ export interface PromptFormValues {
 }
 
 const PromptChat = ({ onSubmit }: PromptPopoverProps) => {
+  const { socket } = useSocket();
   const form = useForm<PromptFormValues>({
     defaultValues: {
       prompt: "",
@@ -26,6 +30,10 @@ const PromptChat = ({ onSubmit }: PromptPopoverProps) => {
 
     const data = form.getValues();
     onSubmit?.(data);
+
+    socket.emit(EVENT_NAMES.CHAT_SEND, {
+      prompt: generateStructuredHtmlPrompt(data.prompt, ""),
+    });
 
     form.reset();
   };
