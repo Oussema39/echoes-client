@@ -16,7 +16,7 @@ const generateSimplifyPrompt = (text: string) => {
 };
 
 const generateDetailedPrompt = (text: string) => {
-  return `Expand the following text with more detailed explanations, examples, and descriptions where appropriate. Keep the original intent but add richness and depth. Avoid adding introductions or conclusions. Output only the detailed version:
+  return `Improve the following text by adding only essential clarifications or brief examples where helpful. Keep the original meaning and tone. Be concise — avoid excessive elaboration or unnecessary length. Do not add an introduction or conclusion. Return only the revised text:
 "${text}"`;
 };
 
