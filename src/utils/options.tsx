@@ -123,7 +123,7 @@ export const suggestionCategories: {
   experimental?: boolean;
 }[] = [
   { id: "prompts", label: "Pre-Engineered Prompts" },
-  { id: "chat", label: "Chat", experimental: false },
+  { id: "chat", label: "Chat", experimental: true },
   // { id: "suggestions", label: "SUGGESTIONS", badge: 4 },
 ] as const;
 

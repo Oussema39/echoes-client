@@ -79,7 +79,7 @@ const AiSuggestions: React.FC<AiSuggestionsProps> = ({
             <button
               key={category.id}
               onClick={() => setActiveCategory(category.id)}
-              disabled={category.experimental}
+              // disabled={category.experimental}
               className={cn(
                 "flex-1 text-sm p-2 relative",
                 activeCategory === category.id
