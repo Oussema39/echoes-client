@@ -16,7 +16,8 @@ type StreamResult = {
 export const useGenerationStream = (): [
   (
     text: string,
-    onMessage?: (data: string, event: MessageEvent) => void
+    onMessage?: (data: string, event: MessageEvent) => void,
+    onEnd?: (event: MessageEvent) => void
   ) => void,
   StreamResult
 ] => {
@@ -29,7 +30,8 @@ export const useGenerationStream = (): [
 
   const startStream = async (
     text: string,
-    onMessage?: (data: string, event: MessageEvent) => void
+    onMessage?: (data: string, event: MessageEvent) => void,
+    onEnd?: (event: MessageEvent) => void
   ) => {
     if (isStreaming) return;
 
@@ -57,8 +59,9 @@ export const useGenerationStream = (): [
         setMessages((prev) => [...prev, event.data as string]);
       };
 
-      eventSource.addEventListener("end", () => {
+      eventSource.addEventListener("end", (e) => {
         eventSource.close();
+        onEnd(e);
         setIsLoading(false);
         setIsStreaming(false);
       });

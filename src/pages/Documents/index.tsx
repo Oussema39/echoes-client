@@ -34,9 +34,12 @@ const Documents = () => {
 
   const {
     quillRef: editorRef,
+    isInserting,
+    endStreamInsert,
     pushTextToBuffer,
     stopStreamInsert,
-    isInserting,
+    streamInsertHTML,
+    emptyEditor,
   } = useEditorTools();
 
   const [
@@ -71,10 +74,27 @@ const Documents = () => {
       toast.info("Please select some text to apply the AI action.");
       return;
     }
+
     const prompt = PROMPT_GENERATORS[action](selectionText, customPrompt);
-    startGenStream(prompt, (chunk: string) => {
-      pushTextToBuffer(chunk, action === TDocAIActions.CUSTOM_PROMPT ? 5 : 25);
-    });
+
+    const handler =
+      action === TDocAIActions.CUSTOM_PROMPT
+        ? streamInsertHTML
+        : pushTextToBuffer;
+
+    if (action === TDocAIActions.CUSTOM_PROMPT) {
+      emptyEditor();
+    }
+
+    startGenStream(
+      prompt,
+      (chunk: string) => {
+        handler(chunk, action === TDocAIActions.CUSTOM_PROMPT ? 5 : 25);
+      },
+      () => {
+        endStreamInsert();
+      }
+    );
   };
 
   const exportPdf = async (html: string) => {
@@ -140,7 +160,6 @@ const Documents = () => {
   };
 
   useEffect(() => {
-    console.log({ isMobile });
     if (isMobile) {
       setSuggestionsOpen(false);
       setSidebarOpen(false);

@@ -47,7 +47,7 @@ const AiSuggestions: React.FC<AiSuggestionsProps> = ({
   return (
     <aside
       className={cn(
-        "w-80 h-auto bg-white border-l flex flex-col overflow-hidden transition-all duration-300 ease-in-out",
+        "w-96 h-auto bg-white border-l flex flex-col overflow-hidden transition-all duration-300 ease-in-out",
         open ? "translate-x-0" : "translate-x-full hidden"
       )}
     >
@@ -79,7 +79,7 @@ const AiSuggestions: React.FC<AiSuggestionsProps> = ({
             <button
               key={category.id}
               onClick={() => setActiveCategory(category.id)}
-              disabled={category.experimental}
+              // disabled={category.experimental}
               className={cn(
                 "flex-1 text-sm p-2 relative",
                 activeCategory === category.id
