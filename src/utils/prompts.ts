@@ -65,42 +65,71 @@ export const generateStructuredHtmlPrompt = (
   customPrompt: string
 ) => {
   return `
-You are a professional writing assistant that generates fully structured documents.
+You are an AI that outputs ONLY valid HTML fragments for use inside a React Quill editor.
+
+Strict rules:
+- Do NOT include <!DOCTYPE>, <html>, <head>, <body>, <style>, or <script>.
+- Start output strictly with <h1>.
+- Use ONLY Quill-compatible tags: <p>, <h1>-<h6>, <ul>, <ol>, <li>, <strong>, <em>, <u>, <blockquote>, <a>, <code>.
+- All tags MUST be properly closed.
+
+### Allowed Quill classes
+- **Font and Size**: ql-font-serif, ql-font-monospace, ql-size-small, ql-size-large, ql-size-huge
+- **Color and Background**: ql-color-white, ql-color-red, ql-color-orange, ql-color-yellow, ql-color-green, ql-color-blue, ql-color-purple; ql-bg-black, ql-bg-red, ql-bg-orange, ql-bg-yellow, ql-bg-green, ql-bg-blue, ql-bg-purple
+- **Alignment and Direction**: ql-align-left, ql-align-center, ql-align-right, ql-align-justify; ql-direction-rtl
+- **Lists and Indentation**: ql-indent-1 through ql-indent-9; li[data-list="ordered"], li[data-list="bullet"], li[data-list="checked"], li[data-list="unchecked"]
+- **Other Text-Related Styles**: ql-editor, ql-blank; h1-h6, a, blockquote, code, ql-code-block-container, ql-video
+
+Do NOT use any other classes or inline styles.
 
 ### Task:
 ${customPrompt}
+
 ${
   text?.length > 0
     ? `
 ### Reference:
-Use this document text content as a reference and build upon it:
+Use this document as inspiration and expand upon it with more detail:
 ${text}
 `
     : ""
 }
 
-### Structure:
-- Start with a single main title using <h1>
-- Use <h2> and <h3> for section headings and subsections
-- Wrap normal text in <p> tags
-- Use <ul><li> and <ol><li> for unordered and ordered lists
-- Use <strong>, <em>, and <u> for bold, italic, and underline respectively
-- Use <a> for links
-- Use the "align" attribute for alignment (e.g., <p align="center">)
+### Output Requirements:
+- Length: 600-1200 words (moderately long).
+- At least 6-10 <h2> sections with content.
+- At least 2 <h3> subsections spread under different <h2> sections.
+- Each section must have 2-3 paragraphs of 3-5 sentences.
+- Include at least 2 <ul> lists and 2 <ol> lists across the document.
+- Use <strong>, <em>, <u>, and allowed Quill classes for emphasis and styling throughout.
+- **Smart Styling**: Vary fonts, sizes, colors, alignment, background, indentation, and list types throughout the document for readability and visual hierarchy.
+- **Content Quality**: Provide clear, actionable, and valuable information; use examples, step-by-step instructions, and summaries where appropriate.
+- Balance narrative, lists, and visual emphasis; avoid repetition.
+- Ensure output is valid HTML that can be directly parsed into Quill.
 
-### HTML Output Rules:
-- Only use: <h1>, <h2>, <h3>, <p>, <strong>, <em>, <u>, <ul>, <ol>, <li>, <a>, <br>
-- Ensure the opening and closing of each tag
-- Do NOT include \`\`\`html or any markdown formatting
-- Do NOT include any of the HTML skeleton tags
-- Do NOT include <style> tags or inline CSS
-- Do NOT return explanations or commentary — only return clean raw HTML
+### Structure Template (follow closely):
 
-### Apply the corresponding CSS classes to the HTML tags as defined in the Styles Section below:
-<styles-section>
+<h1 class="ql-align-center ql-size-huge ql-font-serif ql-color-blue">[Main Title]</h1>
 
-Now, generate the full document as HTML. Do not add introductions or conclusions outside the structured sections. Output only the HTML content, starting with the <h1> tag.
-  `.trim();
+<h2 class="ql-align-left ql-size-large ql-color-red">[Section Title]</h2>
+<p class="ql-size-large ql-font-serif ql-color-green">[3-5 sentences of explanatory text]</p>
+<ul>
+  <li class="ql-indent-1">[Item 1]</li>
+  <li class="ql-indent-2">[Item 2]</li>
+</ul>
+
+<h2 class="ql-align-right ql-size-large ql-color-purple">[Next Section]</h2>
+<p>[3-5 sentences of explanatory text]</p>
+<ol>
+  <li class="ql-indent-1">[Step 1]</li>
+  <li class="ql-indent-2">[Step 2]</li>
+</ol>
+
+<h3 class="ql-size-small ql-font-monospace ql-color-orange">[Subsection]</h3>
+<p>[3-5 sentences expanding on this idea]</p>
+
+<!-- Continue until the document is fully developed -->
+`.trim();
 };
 
 export const PROMPT_GENERATORS = {

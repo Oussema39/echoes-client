@@ -1,15 +1,18 @@
-import Quill from "quill";
+import Quill, { RangeStatic } from "quill";
 import { MutableRefObject, useRef, useState } from "react";
 import ReactQuill from "react-quill";
 import { toast } from "sonner";
 
 interface UserEditorToolsReturn {
   isInserting: boolean;
-  stopStreamInsert: () => void;
   quillRef: MutableRefObject<ReactQuill>;
+  emptyEditor: () => void;
+  endStreamInsert: () => void;
+  stopStreamInsert: () => void;
   insertTextFromSelection: (text: string) => void;
   streamInsertFromSelection: (speed?: number) => void;
   pushTextToBuffer: (chunk: string, speed?: number) => void;
+  streamInsertHTML: (chunk: string, speed?: number) => void;
   getTextFromSelection: () => string | undefined;
   getEditorInstance?: (ref: MutableRefObject<ReactQuill>) => Quill;
 }
@@ -26,13 +29,18 @@ const useEditorTools = (
   const quillRef = externalRef ?? internalRef;
 
   const getEditorInstance = (ref: MutableRefObject<ReactQuill>) => {
-    if (!ref.current) return undefined;
+    if (!ref.current)
+      throw new Error("Cannot find editor instance with ref:" + quillRef);
     return ref.current?.getEditor();
+  };
+
+  const emptyEditor = () => {
+    const quill = getEditorInstance(quillRef);
+    quill.deleteText(0, quill.getLength());
   };
 
   const insertTextFromSelection = (text: string) => {
     const quill = getEditorInstance(quillRef);
-    if (!quill) return;
 
     quill.disable();
 
@@ -48,24 +56,67 @@ const useEditorTools = (
   };
 
   // Stream plain text insert (existing)
-  const streamInsert = (speed = 25) => {
-    if (typingInterval.current) return; // Prevent multiple intervals
+  const streamInsertHTML = (() => {
+    let buffer = ""; // Accumulate incoming chunks
 
+    return (chunk: string) => {
+      const quill = getEditorInstance(quillRef);
+      buffer += chunk;
+
+      // Wrap buffer in a temporary div to parse
+      const tempDiv = document.createElement("div");
+      tempDiv.innerHTML = buffer;
+
+      // Move only **complete child nodes** to Quill
+      const children = Array.from(tempDiv.childNodes);
+      let lastUnclosedIndex = -1;
+
+      children.forEach((child, index) => {
+        if (child.nodeType === Node.ELEMENT_NODE) {
+          try {
+            quill.clipboard.dangerouslyPasteHTML(
+              quill.getLength() - 1,
+              (child as HTMLElement).outerHTML
+            );
+            lastUnclosedIndex = index;
+          } catch (err) {
+            // Stop at the first node that cannot be safely inserted
+            return;
+          }
+        } else if (child.nodeType === Node.TEXT_NODE) {
+          quill.insertText(quill.getLength() - 1, child.textContent || "");
+          lastUnclosedIndex = index;
+        }
+      });
+
+      // Keep remaining nodes in buffer
+      buffer = children
+        .slice(lastUnclosedIndex + 1)
+        .map((n) => (n as HTMLElement).outerHTML || n.textContent)
+        .join("");
+    };
+  })();
+
+  // Stream plain text insert (existing)
+  const streamInsert = (speed: number = 25) => {
+    setIsInserting(true);
     const quill = getEditorInstance(quillRef);
     if (!quill) return;
 
-    const selection = quill.getSelection() ?? {
+    const selection: RangeStatic = quill.getSelection() ?? {
       index: 0,
       length: quill.getLength(),
     };
 
     if (!selection || selection.length === 0) return;
 
+    // initialize insert
     if (!hasDeletedText.current) {
       quill.deleteText(selection.index, selection.length);
       hasDeletedText.current = true;
       insertIndex.current = selection.index;
     }
+    if (typingInterval.current) return;
 
     typingInterval.current = setInterval(() => {
       if (charBuffer.current.length > 0) {
@@ -73,6 +124,7 @@ const useEditorTools = (
         charBuffer.current = charBuffer.current.slice(1);
         quill.insertText(insertIndex.current++, nextChar);
       } else {
+        charBuffer.current = "";
         clearInterval(typingInterval.current!);
         typingInterval.current = null;
         setIsInserting(false);
@@ -81,7 +133,6 @@ const useEditorTools = (
           insertIndex.current - selection.index
         );
         hasDeletedText.current = false;
-        quill.enable();
       }
     }, speed);
   };
@@ -99,6 +150,10 @@ const useEditorTools = (
     charBuffer.current = "";
   };
 
+  const endStreamInsert = () => {
+    hasDeletedText.current = false;
+  };
+
   const getTextFromSelection = () => {
     const quill = quillRef.current?.getEditor();
     if (!quill) return;
@@ -113,7 +168,10 @@ const useEditorTools = (
     getTextFromSelection,
     insertTextFromSelection,
     pushTextToBuffer,
+    endStreamInsert,
+    emptyEditor,
     streamInsertFromSelection: streamInsert,
+    streamInsertHTML,
   };
 };
 
