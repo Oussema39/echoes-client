@@ -20,6 +20,13 @@ export enum TDocAIActions {
   CUSTOM_PROMPT = "custom-prompt",
 }
 
+export enum TDocDefaultActions {
+  SAVE = "save",
+  PRINT = "print",
+  SHARE = "share",
+  FOCUS = "focus",
+}
+
 export const EVENT_NAMES = {
   CHAT_SEND: "chat:send_message",
   CHAT_RECEIVE: "chat:receive_message",

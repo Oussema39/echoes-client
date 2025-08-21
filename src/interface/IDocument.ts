@@ -16,4 +16,5 @@ export interface IDocument extends IBase {
   owned?: boolean;
   sharedWithMe?: boolean;
   versions?: IDocVersion[];
+  isDraft?: boolean;
 }

@@ -13,6 +13,7 @@ import { IDocument } from "@/interface/IDocument";
 import { forwardRef, useEffect, useId, useState } from "react";
 import ShareDialog from "./ShareDialog";
 import { ICollaborator } from "@/interface/ICollaborator";
+import { TDocDefaultActions } from "@/utils/constants";
 
 type DocumentFormProps = {
   selectedDocument: IDocument | null;
@@ -24,6 +25,7 @@ type DocumentFormProps = {
   isLoadingAIAction?: boolean;
   isLoadingGeneratePDF?: boolean;
   handleOnFocus: () => void;
+  disabledActions?: string[];
 };
 
 type FormData = {
@@ -43,6 +45,7 @@ const DocumentForm = forwardRef(
       isLoadingAIAction,
       isLoadingGeneratePDF,
       handleOnFocus,
+      disabledActions = [],
     }: DocumentFormProps,
     editorRef
   ) => {
@@ -101,7 +104,10 @@ const DocumentForm = forwardRef(
               </div>
               <div className="flex items-center gap-2">
                 <Button
-                  disabled={isLoading}
+                  disabled={
+                    isLoading ||
+                    disabledActions.includes(TDocDefaultActions.SAVE)
+                  }
                   type="submit"
                   variant="secondary"
                   size="md"
@@ -111,7 +117,11 @@ const DocumentForm = forwardRef(
                   <span>Save</span>
                 </Button>
                 <Button
-                  disabled={isLoadingGeneratePDF || isLoading}
+                  disabled={
+                    isLoadingGeneratePDF ||
+                    isLoading ||
+                    disabledActions.includes(TDocDefaultActions.PRINT)
+                  }
                   size="md"
                   className="gap-1"
                   type="button"
@@ -122,7 +132,10 @@ const DocumentForm = forwardRef(
                   <span>Print</span>
                 </Button>
                 <Button
-                  disabled={isLoading}
+                  disabled={
+                    isLoading ||
+                    disabledActions.includes(TDocDefaultActions.SHARE)
+                  }
                   size="md"
                   className="gap-1"
                   type="button"
@@ -132,7 +145,10 @@ const DocumentForm = forwardRef(
                   <span>Share</span>
                 </Button>
                 <Button
-                  disabled={isLoading}
+                  disabled={
+                    isLoading ||
+                    disabledActions.includes(TDocDefaultActions.FOCUS)
+                  }
                   size="md"
                   className="gap-1"
                   type="button"
@@ -163,14 +179,15 @@ const DocumentForm = forwardRef(
             />
           </form>
         </Form>
-
-        <ShareDialog
-          open={shareDialogOpen}
-          setOpen={setShareDialogOpen}
-          shareDocument={shareDocument}
-          selectedDocument={selectedDocument}
-          isLoading={isLoadingShare}
-        />
+        {shareDialogOpen ? (
+          <ShareDialog
+            open={shareDialogOpen}
+            setOpen={setShareDialogOpen}
+            shareDocument={shareDocument}
+            selectedDocument={selectedDocument}
+            isLoading={isLoadingShare}
+          />
+        ) : null}
       </>
     );
   }

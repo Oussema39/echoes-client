@@ -45,9 +45,9 @@ const DocumentsSidebar: React.FC<DocumentsSidebarProps> = ({
         <div className="flex items-center mb-4 justify-between">
           <h2 className="text-lg font-medium m-0">Your Documents</h2>
           <ArrowLeftToLine
-            className="flex cursor-pointer text-gray-900"
+            className="flex text-gray-900"
             size={20}
-            onClick={onToggle}
+            // onClick={onToggle}
           />
         </div>
         <div className="relative">

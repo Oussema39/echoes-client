@@ -52,12 +52,26 @@ export const getDocumentVersionsMetadata = async (
 };
 
 export const createDocument = async (
-  doc: Partial<Omit<IDocument, keyof IBase>>
+  doc: Partial<Omit<IDocument, keyof IBase>>,
+  isAuthenticated: boolean = false
 ) => {
-  const res = await apiClient.post(apiEndpoints.documents.addDocument, doc);
-  const document = res.data?.data ? res.data.data : null;
+  if (isAuthenticated) {
+    const res = await apiClient.post(apiEndpoints.documents.addDocument, doc);
+    const document = res.data?.data ? res.data.data : null;
+    return document;
+  }
 
-  return document;
+  const tempDoc: Partial<IDocument> = {
+    _id: crypto.randomUUID(),
+    title: doc.title ?? "Untitled",
+    content: doc.content ?? "",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    versions: [],
+    isDraft: true,
+  };
+
+  return tempDoc;
 };
 
 export const updateDocument = async (doc: Partial<IDocument>) => {

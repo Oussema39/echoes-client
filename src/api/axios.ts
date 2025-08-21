@@ -2,6 +2,11 @@ import { normalizeUrl } from "@/lib/utils";
 import axios, { AxiosInstance } from "axios";
 import { toast } from "sonner";
 
+const SKIP_ENDPOINT_ERROR_HANDLING = new Map<string, boolean>([
+  ["/document/by-user", true],
+  ["/auth/me", true],
+]);
+
 const BASE_URL = import.meta.env.VITE_API_URL;
 
 const apiClient: AxiosInstance = axios.create({
@@ -32,7 +37,7 @@ apiClient.interceptors.response.use(
   async (error) => {
     const url = error.config?.url;
 
-    if (url && url.includes("/auth")) {
+    if (url && SKIP_ENDPOINT_ERROR_HANDLING.has(url)) {
       // Skip toast or handle auth errors differently
       return Promise.reject(error);
     }
