@@ -77,6 +77,17 @@
   display: flex;
   flex-wrap: nowrap;
   overflow-x: auto;
+  overflow: visible !important;
+}
+
+.ql-tooltip {
+  right: auto !important;
+  left: auto !important;
+  transform: translateX(-50%);
+  max-width: calc(100vw - 2rem);
+  word-break: break-word;
+  z-index: 99999;
+  overflow: visible !important;
 }
 
 .ql-toolbar.ql-snow .ql-formats {
@@ -134,4 +145,5 @@
   /* padding: 40px; */
   /* box-shadow: 0 0 8px rgba(0, 0, 0, 0.1); */
   min-height: 100vh;
+  overflow: visible;
 }

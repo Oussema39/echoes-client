@@ -8,13 +8,19 @@ import { Separator } from "@/components/ui/separator";
 import { ChromeIcon } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Link, Navigate, useNavigate } from "react-router-dom";
+import { IUser } from "@/interface/IUser";
 
 interface LoginFormInputs {
   email: string;
   password: string;
 }
 
-const LoginPage = () => {
+interface LoginPageProps {
+  isModal?: boolean;
+  onSuccess?: (user: IUser) => void;
+}
+
+const LoginPage = ({ isModal = false, onSuccess }: LoginPageProps) => {
   const navigate = useNavigate();
   const { login, loginWithGoogle, isAuthenticated } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
@@ -36,9 +42,10 @@ const LoginPage = () => {
       setIsLoading(true);
       setError(null);
 
-      const success = await login(data.email, data.password);
+      const user = await login(data.email, data.password);
+      onSuccess?.(user);
 
-      if (success) {
+      if (user) {
         navigate("/");
       } else {
         setError("Invalid email or password");
@@ -56,7 +63,11 @@ const LoginPage = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
+    <div
+      className={`${
+        isModal ? "" : "min-h-screen"
+      } flex items-center justify-center`}
+    >
       <Card>
         <CardContent className="p-8">
           <div className="flex items-center justify-center mb-2">

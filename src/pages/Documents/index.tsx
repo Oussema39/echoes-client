@@ -11,11 +11,13 @@ import { PROMPT_GENERATORS } from "@/utils/prompts";
 import useEditorTools from "@/components/DocumentEditor/useEditorTools";
 import DocumentsLayout from "@/layout/DocumentsLayout";
 import { useAuth } from "@/hooks/useAuth";
-import { useDocumentsLayout } from "@/hooks/useDocumentsLayout";
+import DocumentLayoutProvider from "@/context/DocumentLayoutContext/DocumentLayoutProvider";
+import { useDocumentLayoutContext } from "@/context/DocumentLayoutContext/DocumentLayoutContext";
 
 const DocumentsPageContent = () => {
+  const { handleOnFocus, setLoginModalOpen } = useDocumentLayoutContext();
   const { isAuthenticated } = useAuth();
-  const { handleOnFocus } = useDocumentsLayout();
+
   const {
     documents: _documents,
     selectedDocument,
@@ -111,6 +113,12 @@ const DocumentsPageContent = () => {
     content: string;
     title: string;
   }) => {
+    if (!isAuthenticated) {
+      toast("Please sign in before saving any changes");
+      setLoginModalOpen(true);
+      return;
+    }
+
     updateDocument.mutate({
       _id: selectedDocument?._id,
       content,
@@ -140,6 +148,7 @@ const DocumentsPageContent = () => {
   };
 
   const handleOnFocusEditor = () => {
+    handleOnFocus();
     // Custom focus behavior can be implemented here
     // For now, we'll use the default layout behavior
   };
@@ -177,7 +186,7 @@ const DocumentsPageContent = () => {
           isLoadingShare={shareDocument.isPending}
           isLoadingGeneratePDF={generatePDF.isPending}
           ref={editorRef}
-          handleOnFocus={handleOnFocus}
+          handleOnFocus={handleOnFocusEditor}
           isLoadingAIAction={isLoadingInit}
           disabledActions={!isAuthenticated ? [TDocDefaultActions.SHARE] : []}
         />
@@ -200,9 +209,11 @@ const DocumentsPageContent = () => {
 
 const DocumentsPage = () => {
   return (
-    <DocumentsProvider>
-      <DocumentsPageContent />
-    </DocumentsProvider>
+    <DocumentLayoutProvider>
+      <DocumentsProvider>
+        <DocumentsPageContent />
+      </DocumentsProvider>
+    </DocumentLayoutProvider>
   );
 };
 

@@ -1,33 +1,11 @@
-import { ReactNode, useState, useEffect } from "react";
 import AppNavbar from "@/components/AppNavbar";
 import AiSuggestions from "@/components/AiSuggestions";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { TDocAIActions } from "@/utils/constants";
-import { IDocument } from "@/interface/IDocument";
 import DocumentsSidebar from "@/pages/Documents/components/DocumentsSidebar";
-import { DocumentsLayoutContext } from "@/hooks/useDocumentsLayout";
-
-interface DocumentsLayoutProps {
-  children: ReactNode;
-  // Sidebar props
-  documents: IDocument[];
-  selectedDocument: IDocument;
-  onSelectDocument: (docId: string) => void;
-  onCreateDocument: () => void;
-  onDeleteDocument: (docId: string) => void;
-  isLoadingCreate: boolean;
-  isLoadingDelete: boolean;
-  // AI Suggestions props
-  onApplySuggestion: (text: string) => void;
-  onStopStreaming: () => void;
-  applyDocAIAction: (
-    action: `${TDocAIActions}`,
-    customPrompt?: string
-  ) => Promise<void>;
-  isApplySuggLoading: boolean;
-  // Layout control
-  onFocusEditor?: () => void;
-}
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import LoginPage from "@/pages/Auth/Login/Login";
+import { DocumentsLayoutProps } from "@/interface/IDocumentsLayoutProps";
+import { useDocumentLayoutContext } from "@/context/DocumentLayoutContext/DocumentLayoutContext";
+import { useDocuments } from "@/hooks/useDocuments";
 
 const DocumentsLayout = ({
   children,
@@ -44,82 +22,61 @@ const DocumentsLayout = ({
   isApplySuggLoading,
   onFocusEditor,
 }: DocumentsLayoutProps) => {
-  const isMobile = useIsMobile(1400);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [suggestionsOpen, setSuggestionsOpen] = useState(true);
+  const {
+    loginModalOpen,
+    setLoginModalOpen,
+    sidebarOpen,
+    suggestionsOpen,
+    toggleSidebar,
+    toggleSuggestions,
+  } = useDocumentLayoutContext();
+  const { refetch } = useDocuments();
 
-  // Toggle sidebar
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen);
+  const handleLoginSuccess = () => {
+    setLoginModalOpen(false);
+    refetch();
   };
-
-  // Toggle suggestions panel
-  const toggleSuggestions = () => {
-    setSuggestionsOpen(!suggestionsOpen);
-  };
-
-  const handleOnFocus = () => {
-    if (onFocusEditor) {
-      onFocusEditor();
-    } else {
-      // Default behavior: close both panels on mobile
-      if (isMobile) {
-        setSidebarOpen(false);
-        setSuggestionsOpen(false);
-      }
-    }
-  };
-
-  useEffect(() => {
-    if (isMobile) {
-      setSuggestionsOpen(false);
-      setSidebarOpen(false);
-    } else {
-      setSidebarOpen(true);
-      setSuggestionsOpen(true);
-    }
-  }, [isMobile]);
 
   return (
-    <div className="h-screen flex flex-col bg-gray-50">
-      <AppNavbar
-        onToggleSidebar={toggleSidebar}
-        onToggleSuggestions={toggleSuggestions}
-      />
-      <div className="flex flex-1 overflow-hidden">
-        <div id="streamed-text"></div>
-        <div className={sidebarOpen ? "" : "hidden"}>
-          <DocumentsSidebar
-            open={sidebarOpen}
-            onToggle={toggleSidebar}
-            documents={documents}
-            selectedDocument={selectedDocument}
-            onSelectDocument={onSelectDocument}
-            onCreateDocument={onCreateDocument}
-            isLoading={isLoadingCreate}
-            isLoadingDelete={isLoadingDelete}
-            onDeleteDocument={onDeleteDocument}
+    <>
+      <div className="h-screen flex flex-col bg-gray-50">
+        <AppNavbar
+          onToggleSidebar={toggleSidebar}
+          onToggleSuggestions={toggleSuggestions}
+        />
+        <div className="flex flex-1 overflow-hidden">
+          <div className={sidebarOpen ? "" : "hidden"}>
+            <DocumentsSidebar
+              open={sidebarOpen}
+              onToggle={toggleSidebar}
+              documents={documents}
+              selectedDocument={selectedDocument}
+              onSelectDocument={onSelectDocument}
+              onCreateDocument={onCreateDocument}
+              isLoading={isLoadingCreate}
+              isLoadingDelete={isLoadingDelete}
+              onDeleteDocument={onDeleteDocument}
+            />
+          </div>
+          <main className="flex-1 overflow-hidden">{children}</main>
+          <AiSuggestions
+            open={suggestionsOpen}
+            onToggle={toggleSuggestions}
+            onApplySuggestion={onApplySuggestion}
+            cancelGeneration={onStopStreaming}
+            applyDocAIAction={applyDocAIAction}
+            isApplySuggLoading={isApplySuggLoading}
           />
         </div>
-        <main className="flex-1 overflow-hidden">
-          <DocumentsLayoutContext.Provider
-            value={{
-              handleOnFocus,
-            }}
-          >
-            {children}
-          </DocumentsLayoutContext.Provider>
-        </main>
-        <AiSuggestions
-          open={suggestionsOpen}
-          onToggle={toggleSuggestions}
-          onApplySuggestion={onApplySuggestion}
-          cancelGeneration={onStopStreaming}
-          applyDocAIAction={applyDocAIAction}
-          isApplySuggLoading={isApplySuggLoading}
-        />
       </div>
-    </div>
+      {loginModalOpen && (
+        <Dialog open={loginModalOpen} onOpenChange={setLoginModalOpen}>
+          <DialogContent title="" onOpenAutoFocus={(e) => e.preventDefault()}>
+            <LoginPage isModal onSuccess={handleLoginSuccess} />
+          </DialogContent>
+        </Dialog>
+      )}
+    </>
   );
 };
 

@@ -8,6 +8,8 @@ import { DocumentsContext } from "@/hooks/useDocuments";
 import { IDocument } from "@/interface/IDocument";
 import { IDocVersion } from "@/interface/IDocVersion";
 import {
+  QueryObserverResult,
+  RefetchOptions,
   UseMutationResult,
   useQuery,
   useQueryClient,
@@ -20,6 +22,9 @@ export type TDocumentContextValue = {
   selectedVersion: IDocVersion | null;
   error: Error;
   isLoading: boolean;
+  refetch: (
+    options?: RefetchOptions
+  ) => Promise<QueryObserverResult<IDocument[], Error>>;
   handleSelectDocument: (_id: string) => void;
   handleChangeSelectedVersion: (_id: string, documentId: string) => void;
   updateSelectedDocumentById: (
@@ -47,6 +52,7 @@ const DocumentsProvider = ({ children }: { children: ReactNode }) => {
     error,
     isLoading,
     isFetched,
+    refetch,
   } = useQuery<IDocument[]>({
     queryKey: ["documents"],
     queryFn: getUserDocuments,
@@ -132,6 +138,7 @@ const DocumentsProvider = ({ children }: { children: ReactNode }) => {
       selectedVersion,
       error,
       isLoading,
+      refetch,
       handleSelectDocument,
       handleChangeSelectedVersion,
       updateSelectedDocumentById,
@@ -147,6 +154,7 @@ const DocumentsProvider = ({ children }: { children: ReactNode }) => {
     isLoading,
     selectedDocument,
     selectedVersion,
+    refetch,
     handleSelectDocument,
     handleChangeSelectedVersion,
     updateSelectedDocumentById,
