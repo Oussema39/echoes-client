@@ -11,6 +11,7 @@ import ProtectedRoute from "./auth/ProtectedRoute";
 import LoginPage from "./pages/Auth/Login/Login";
 import RegisterPage from "./pages/Auth/Register/Register";
 import { SocketProvider } from "./context/SocketProvider";
+import LexicalEditorPage from "./pages/LexicalEditor/LexicalEditorPage";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +24,7 @@ const App = () => (
         <AuthProvider>
           <SocketProvider>
             <Routes>
+              <Route path="/lexical" element={<LexicalEditorPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
               <Route>
