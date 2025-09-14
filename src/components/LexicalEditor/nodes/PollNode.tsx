@@ -1,12 +1,4 @@
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-
-import type {JSX} from 'react';
+import type { JSX } from "react";
 
 import {
   $getState,
@@ -21,8 +13,8 @@ import {
   Spread,
   StateConfigValue,
   type StateValueOrUpdater,
-} from 'lexical';
-import * as React from 'react';
+} from "lexical";
+import * as React from "react";
 
 export type Options = ReadonlyArray<Option>;
 
@@ -32,16 +24,16 @@ export type Option = Readonly<{
   votes: Array<number>;
 }>;
 
-const PollComponent = React.lazy(() => import('./PollComponent'));
+const PollComponent = React.lazy(() => import("./PollComponent"));
 
 function createUID(): string {
   return Math.random()
     .toString(36)
-    .replace(/[^a-z]+/g, '')
+    .replace(/[^a-z]+/g, "")
     .substring(0, 5);
 }
 
-export function createPollOption(text = ''): Option {
+export function createPollOption(text = ""): Option {
   return {
     text,
     uid: createUID(),
@@ -52,7 +44,7 @@ export function createPollOption(text = ''): Option {
 function cloneOption(
   option: Option,
   text: string,
-  votes?: Array<number>,
+  votes?: Array<number>
 ): Option {
   return {
     text,
@@ -70,13 +62,13 @@ export type SerializedPollNode = Spread<
 >;
 
 function $convertPollElement(
-  domNode: HTMLSpanElement,
+  domNode: HTMLSpanElement
 ): DOMConversionOutput | null {
-  const question = domNode.getAttribute('data-lexical-poll-question');
-  const options = domNode.getAttribute('data-lexical-poll-options');
+  const question = domNode.getAttribute("data-lexical-poll-question");
+  const options = domNode.getAttribute("data-lexical-poll-options");
   if (question !== null && options !== null) {
     const node = $createPollNode(question, JSON.parse(options));
-    return {node};
+    return { node };
   }
   return null;
 }
@@ -87,10 +79,10 @@ function parseOptions(json: unknown): Options {
     for (const row of json) {
       if (
         row &&
-        typeof row.text === 'string' &&
-        typeof row.uid === 'string' &&
+        typeof row.text === "string" &&
+        typeof row.uid === "string" &&
         Array.isArray(row.votes) &&
-        row.votes.every((v: unknown) => typeof v === 'number')
+        row.votes.every((v: unknown) => typeof v === "number")
       ) {
         options.push(row);
       }
@@ -99,10 +91,10 @@ function parseOptions(json: unknown): Options {
   return options;
 }
 
-const questionState = createState('question', {
-  parse: (v) => (typeof v === 'string' ? v : ''),
+const questionState = createState("question", {
+  parse: (v) => (typeof v === "string" ? v : ""),
 });
-const optionsState = createState('options', {
+const optionsState = createState("options", {
   isEqual: (a, b) =>
     a.length === b.length && JSON.stringify(a) === JSON.stringify(b),
   parse: parseOptions,
@@ -110,11 +102,11 @@ const optionsState = createState('options', {
 
 export class PollNode extends DecoratorNode<JSX.Element> {
   $config() {
-    return this.config('poll', {
+    return this.config("poll", {
       extends: DecoratorNode,
       importDOM: buildImportMap({
         span: (domNode) =>
-          domNode.getAttribute('data-lexical-poll-question') !== null
+          domNode.getAttribute("data-lexical-poll-question") !== null
             ? {
                 conversion: $convertPollElement,
                 priority: 2,
@@ -122,8 +114,8 @@ export class PollNode extends DecoratorNode<JSX.Element> {
             : null,
       }),
       stateConfigs: [
-        {flat: true, stateConfig: questionState},
-        {flat: true, stateConfig: optionsState},
+        { flat: true, stateConfig: questionState },
+        { flat: true, stateConfig: optionsState },
       ],
     });
   }
@@ -189,18 +181,18 @@ export class PollNode extends DecoratorNode<JSX.Element> {
   }
 
   exportDOM(): DOMExportOutput {
-    const element = document.createElement('span');
-    element.setAttribute('data-lexical-poll-question', this.getQuestion());
+    const element = document.createElement("span");
+    element.setAttribute("data-lexical-poll-question", this.getQuestion());
     element.setAttribute(
-      'data-lexical-poll-options',
-      JSON.stringify(this.getOptions()),
+      "data-lexical-poll-options",
+      JSON.stringify(this.getOptions())
     );
-    return {element};
+    return { element };
   }
 
   createDOM(): HTMLElement {
-    const elem = document.createElement('span');
-    elem.style.display = 'inline-block';
+    const elem = document.createElement("span");
+    elem.style.display = "inline-block";
     return elem;
   }
 
@@ -224,7 +216,7 @@ export function $createPollNode(question: string, options: Options): PollNode {
 }
 
 export function $isPollNode(
-  node: LexicalNode | null | undefined,
+  node: LexicalNode | null | undefined
 ): node is PollNode {
   return node instanceof PollNode;
 }

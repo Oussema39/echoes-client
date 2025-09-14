@@ -1,17 +1,8 @@
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
+import type { JSX } from "react";
 
-import type {JSX} from 'react';
+import "./ContentEditable.css";
 
-import './ContentEditable.css';
-
-import {ContentEditable} from '@lexical/react/LexicalContentEditable';
-import * as React from 'react';
+import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 
 type Props = {
   className?: string;
@@ -26,10 +17,10 @@ export default function LexicalContentEditable({
 }: Props): JSX.Element {
   return (
     <ContentEditable
-      className={className ?? 'ContentEditable__root'}
+      className={className ?? "ContentEditable__root"}
       aria-placeholder={placeholder}
       placeholder={
-        <div className={placeholderClassName ?? 'ContentEditable__placeholder'}>
+        <div className={placeholderClassName ?? "ContentEditable__placeholder"}>
           {placeholder}
         </div>
       }

@@ -1,20 +1,12 @@
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
+import type { EditorConfig, LexicalNode, SerializedTextNode } from "lexical";
 
-import type {EditorConfig, LexicalNode, SerializedTextNode} from 'lexical';
-
-import {$applyNodeReplacement, TextNode} from 'lexical';
+import { $applyNodeReplacement, TextNode } from "lexical";
 
 export type SerializedKeywordNode = SerializedTextNode;
 
 export class KeywordNode extends TextNode {
   static getType(): string {
-    return 'keyword';
+    return "keyword";
   }
 
   static clone(node: KeywordNode): KeywordNode {
@@ -27,8 +19,8 @@ export class KeywordNode extends TextNode {
 
   createDOM(config: EditorConfig): HTMLElement {
     const dom = super.createDOM(config);
-    dom.style.cursor = 'default';
-    dom.className = 'keyword';
+    dom.style.cursor = "default";
+    dom.className = "keyword";
     return dom;
   }
 
@@ -45,7 +37,7 @@ export class KeywordNode extends TextNode {
   }
 }
 
-export function $createKeywordNode(keyword: string = ''): KeywordNode {
+export function $createKeywordNode(keyword: string = ""): KeywordNode {
   return $applyNodeReplacement(new KeywordNode(keyword));
 }
 

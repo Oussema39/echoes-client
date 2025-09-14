@@ -1,20 +1,12 @@
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
+import type { EditorConfig, LexicalNode, SerializedTextNode } from "lexical";
 
-import type {EditorConfig, LexicalNode, SerializedTextNode} from 'lexical';
-
-import {addClassNamesToElement} from '@lexical/utils';
-import {$applyNodeReplacement, TextNode} from 'lexical';
+import { addClassNamesToElement } from "@lexical/utils";
+import { $applyNodeReplacement, TextNode } from "lexical";
 
 /** @noInheritDoc */
 export class SpecialTextNode extends TextNode {
   static getType(): string {
-    return 'specialText';
+    return "specialText";
   }
 
   static clone(node: SpecialTextNode): SpecialTextNode {
@@ -22,14 +14,14 @@ export class SpecialTextNode extends TextNode {
   }
 
   createDOM(config: EditorConfig): HTMLElement {
-    const dom = document.createElement('span');
+    const dom = document.createElement("span");
     addClassNamesToElement(dom, config.theme.specialText);
     dom.textContent = this.getTextContent();
     return dom;
   }
 
   updateDOM(prevNode: this, dom: HTMLElement, config: EditorConfig): boolean {
-    if (prevNode.__text.startsWith('[') && prevNode.__text.endsWith(']')) {
+    if (prevNode.__text.startsWith("[") && prevNode.__text.endsWith("]")) {
       const strippedText = this.__text.substring(1, this.__text.length - 1); // Strip brackets again
       dom.textContent = strippedText; // Update the text content
     }
@@ -56,7 +48,7 @@ export class SpecialTextNode extends TextNode {
  * @param text - Text content for the SpecialTextNode.
  * @returns A new SpecialTextNode instance.
  */
-export function $createSpecialTextNode(text = ''): SpecialTextNode {
+export function $createSpecialTextNode(text = ""): SpecialTextNode {
   return $applyNodeReplacement(new SpecialTextNode(text));
 }
 
@@ -66,7 +58,7 @@ export function $createSpecialTextNode(text = ''): SpecialTextNode {
  * @returns True if the node is a SpecialTextNode.
  */
 export function $isSpecialTextNode(
-  node: LexicalNode | null | undefined,
+  node: LexicalNode | null | undefined
 ): node is SpecialTextNode {
   return node instanceof SpecialTextNode;
 }

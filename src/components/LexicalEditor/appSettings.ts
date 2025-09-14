@@ -1,15 +1,7 @@
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-
 const hostName = window.location.hostname;
 export const isDevPlayground: boolean =
-  hostName !== 'playground.lexical.dev' &&
-  hostName !== 'lexical-playground.vercel.app';
+  hostName !== "playground.lexical.dev" &&
+  hostName !== "lexical-playground.vercel.app";
 
 export const DEFAULT_SETTINGS = {
   disableBeforeInput: false,
@@ -20,7 +12,7 @@ export const DEFAULT_SETTINGS = {
   isCharLimitUtf8: false,
   isCodeHighlighted: true,
   isCodeShiki: false,
-  isCollab: false,
+  isCollab: true,
   isMaxLength: false,
   isRichText: true,
   listStrictIndent: false,
@@ -30,8 +22,8 @@ export const DEFAULT_SETTINGS = {
   shouldPreserveNewLinesInMarkdown: false,
   shouldUseLexicalContextMenu: false,
   showNestedEditorTreeView: false,
-  showTableOfContents: false,
-  showTreeView: true,
+  showTableOfContents: true,
+  showTreeView: false,
   tableCellBackgroundColor: true,
   tableCellMerge: true,
   tableHorizontalScroll: true,

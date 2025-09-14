@@ -1,13 +1,5 @@
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-
-import type {LexicalEditor} from 'lexical';
-import type {JSX} from 'react';
+import type { LexicalEditor } from "lexical";
+import type { JSX } from "react";
 
 import {
   AutoEmbedOption,
@@ -15,18 +7,17 @@ import {
   EmbedMatchResult,
   LexicalAutoEmbedPlugin,
   URL_MATCHER,
-} from '@lexical/react/LexicalAutoEmbedPlugin';
-import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
-import {useMemo, useState} from 'react';
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+} from "@lexical/react/LexicalAutoEmbedPlugin";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { useMemo, useState } from "react";
+import * as ReactDOM from "react-dom";
 
-import useModal from '../../hooks/useModal';
-import Button from '../../ui/Button';
-import {DialogActions} from '../../ui/Dialog';
-import {INSERT_FIGMA_COMMAND} from '../FigmaPlugin';
-import {INSERT_TWEET_COMMAND} from '../TwitterPlugin';
-import {INSERT_YOUTUBE_COMMAND} from '../YouTubePlugin';
+import useModal from "../../hooks/useModal";
+import Button from "../../ui/Button";
+import { DialogActions } from "../../ui/Dialog";
+import { INSERT_FIGMA_COMMAND } from "../FigmaPlugin";
+import { INSERT_TWEET_COMMAND } from "../TwitterPlugin";
+import { INSERT_YOUTUBE_COMMAND } from "../YouTubePlugin";
 
 interface PlaygroundEmbedConfig extends EmbedConfig {
   // Human readable name of the embedded content e.g. Tweet or Google Map.
@@ -46,9 +37,9 @@ interface PlaygroundEmbedConfig extends EmbedConfig {
 }
 
 export const YoutubeEmbedConfig: PlaygroundEmbedConfig = {
-  contentName: 'Youtube Video',
+  contentName: "Youtube Video",
 
-  exampleUrl: 'https://www.youtube.com/watch?v=jNQXAC9IVRw',
+  exampleUrl: "https://www.youtube.com/watch?v=jNQXAC9IVRw",
 
   // Icon for display.
   icon: <i className="icon youtube" />,
@@ -57,7 +48,7 @@ export const YoutubeEmbedConfig: PlaygroundEmbedConfig = {
     editor.dispatchCommand(INSERT_YOUTUBE_COMMAND, result.id);
   },
 
-  keywords: ['youtube', 'video'],
+  keywords: ["youtube", "video"],
 
   // Determine if a given URL is a match and return url data.
   parseUrl: async (url: string) => {
@@ -76,14 +67,14 @@ export const YoutubeEmbedConfig: PlaygroundEmbedConfig = {
     return null;
   },
 
-  type: 'youtube-video',
+  type: "youtube-video",
 };
 
 export const TwitterEmbedConfig: PlaygroundEmbedConfig = {
   // e.g. Tweet or Google Map.
-  contentName: 'X(Tweet)',
+  contentName: "X(Tweet)",
 
-  exampleUrl: 'https://x.com/jack/status/20',
+  exampleUrl: "https://x.com/jack/status/20",
 
   // Icon for display.
   icon: <i className="icon x" />,
@@ -94,13 +85,13 @@ export const TwitterEmbedConfig: PlaygroundEmbedConfig = {
   },
 
   // For extra searching.
-  keywords: ['tweet', 'twitter', 'x'],
+  keywords: ["tweet", "twitter", "x"],
 
   // Determine if a given URL is a match and return url data.
   parseUrl: (text: string) => {
     const match =
       /^https:\/\/(twitter|x)\.com\/(#!\/)?(\w+)\/status(es)*\/(\d+)/.exec(
-        text,
+        text
       );
 
     if (match != null) {
@@ -113,13 +104,13 @@ export const TwitterEmbedConfig: PlaygroundEmbedConfig = {
     return null;
   },
 
-  type: 'tweet',
+  type: "tweet",
 };
 
 export const FigmaEmbedConfig: PlaygroundEmbedConfig = {
-  contentName: 'Figma Document',
+  contentName: "Figma Document",
 
-  exampleUrl: 'https://www.figma.com/file/LKQ4FJ4bTnCSjedbRpk931/Sample-File',
+  exampleUrl: "https://www.figma.com/file/LKQ4FJ4bTnCSjedbRpk931/Sample-File",
 
   icon: <i className="icon figma" />,
 
@@ -127,13 +118,13 @@ export const FigmaEmbedConfig: PlaygroundEmbedConfig = {
     editor.dispatchCommand(INSERT_FIGMA_COMMAND, result.id);
   },
 
-  keywords: ['figma', 'figma.com', 'mock-up'],
+  keywords: ["figma", "figma.com", "mock-up"],
 
   // Determine if a given URL is a match and return url data.
   parseUrl: (text: string) => {
     const match =
       /https:\/\/([\w.-]+\.)?figma.com\/(file|proto)\/([0-9a-zA-Z]{22,128})(?:\/.*)?$/.exec(
-        text,
+        text
       );
 
     if (match != null) {
@@ -146,7 +137,7 @@ export const FigmaEmbedConfig: PlaygroundEmbedConfig = {
     return null;
   },
 
-  type: 'figma',
+  type: "figma",
 };
 
 export const EmbedConfigs = [
@@ -168,9 +159,9 @@ function AutoEmbedMenuItem({
   onMouseEnter: () => void;
   option: AutoEmbedOption;
 }) {
-  let className = 'item';
+  let className = "item";
   if (isSelected) {
-    className += ' selected';
+    className += " selected";
   }
   return (
     <li
@@ -180,9 +171,10 @@ function AutoEmbedMenuItem({
       ref={option.setRefElement}
       role="option"
       aria-selected={isSelected}
-      id={'typeahead-item-' + index}
+      id={"typeahead-item-" + index}
       onMouseEnter={onMouseEnter}
-      onClick={onClick}>
+      onClick={onClick}
+    >
       <span className="text">{option.title}</span>
     </li>
   );
@@ -234,7 +226,7 @@ export function AutoEmbedDialog({
   embedConfig: PlaygroundEmbedConfig;
   onClose: () => void;
 }): JSX.Element {
-  const [text, setText] = useState('');
+  const [text, setText] = useState("");
   const [editor] = useLexicalComposerContext();
   const [embedResult, setEmbedResult] = useState<EmbedMatchResult | null>(null);
 
@@ -246,13 +238,13 @@ export function AutoEmbedDialog({
           Promise.resolve(embedConfig.parseUrl(inputText)).then(
             (parseResult) => {
               setEmbedResult(parseResult);
-            },
+            }
           );
         } else if (embedResult != null) {
           setEmbedResult(null);
         }
       }, 200),
-    [embedConfig, embedResult],
+    [embedConfig, embedResult]
   );
 
   const onClick = () => {
@@ -263,7 +255,7 @@ export function AutoEmbedDialog({
   };
 
   return (
-    <div style={{width: '600px'}}>
+    <div style={{ width: "600px" }}>
       <div className="Input__wrapper">
         <input
           type="text"
@@ -272,7 +264,7 @@ export function AutoEmbedDialog({
           value={text}
           data-test-id={`${embedConfig.type}-embed-modal-url`}
           onChange={(e) => {
-            const {value} = e.target;
+            const { value } = e.target;
             setText(value);
             validateText(value);
           }}
@@ -282,7 +274,8 @@ export function AutoEmbedDialog({
         <Button
           disabled={!embedResult}
           onClick={onClick}
-          data-test-id={`${embedConfig.type}-embed-modal-submit-btn`}>
+          data-test-id={`${embedConfig.type}-embed-modal-submit-btn`}
+        >
           Embed
         </Button>
       </DialogActions>
@@ -302,10 +295,10 @@ export default function AutoEmbedPlugin(): JSX.Element {
   const getMenuOptions = (
     activeEmbedConfig: PlaygroundEmbedConfig,
     embedFn: () => void,
-    dismissFn: () => void,
+    dismissFn: () => void
   ) => {
     return [
-      new AutoEmbedOption('Dismiss', {
+      new AutoEmbedOption("Dismiss", {
         onSelect: dismissFn,
       }),
       new AutoEmbedOption(`Embed ${activeEmbedConfig.contentName}`, {
@@ -323,7 +316,12 @@ export default function AutoEmbedPlugin(): JSX.Element {
         getMenuOptions={getMenuOptions}
         menuRenderFn={(
           anchorElementRef,
-          {selectedIndex, options, selectOptionAndCleanUp, setHighlightedIndex},
+          {
+            selectedIndex,
+            options,
+            selectOptionAndCleanUp,
+            setHighlightedIndex,
+          }
         ) =>
           anchorElementRef.current
             ? ReactDOM.createPortal(
@@ -332,10 +330,11 @@ export default function AutoEmbedPlugin(): JSX.Element {
                   style={{
                     marginLeft: `${Math.max(
                       parseFloat(anchorElementRef.current.style.width) - 200,
-                      0,
+                      0
                     )}px`,
                     width: 200,
-                  }}>
+                  }}
+                >
                   <AutoEmbedMenu
                     options={options}
                     selectedItemIndex={selectedIndex}
@@ -348,7 +347,7 @@ export default function AutoEmbedPlugin(): JSX.Element {
                     }}
                   />
                 </div>,
-                anchorElementRef.current,
+                anchorElementRef.current
               )
             : null
         }

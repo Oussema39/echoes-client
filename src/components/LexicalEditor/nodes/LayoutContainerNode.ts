@@ -1,11 +1,3 @@
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-
 import type {
   DOMConversionMap,
   DOMConversionOutput,
@@ -16,10 +8,10 @@ import type {
   NodeKey,
   SerializedElementNode,
   Spread,
-} from 'lexical';
+} from "lexical";
 
-import {addClassNamesToElement} from '@lexical/utils';
-import {ElementNode} from 'lexical';
+import { addClassNamesToElement } from "@lexical/utils";
+import { ElementNode } from "lexical";
 
 export type SerializedLayoutContainerNode = Spread<
   {
@@ -29,15 +21,15 @@ export type SerializedLayoutContainerNode = Spread<
 >;
 
 function $convertLayoutContainerElement(
-  domNode: HTMLElement,
+  domNode: HTMLElement
 ): DOMConversionOutput | null {
   const styleAttributes = window.getComputedStyle(domNode);
   const templateColumns = styleAttributes.getPropertyValue(
-    'grid-template-columns',
+    "grid-template-columns"
   );
   if (templateColumns) {
     const node = $createLayoutContainerNode(templateColumns);
-    return {node};
+    return { node };
   }
   return null;
 }
@@ -51,7 +43,7 @@ export class LayoutContainerNode extends ElementNode {
   }
 
   static getType(): string {
-    return 'layout-container';
+    return "layout-container";
   }
 
   static clone(node: LayoutContainerNode): LayoutContainerNode {
@@ -59,19 +51,19 @@ export class LayoutContainerNode extends ElementNode {
   }
 
   createDOM(config: EditorConfig): HTMLElement {
-    const dom = document.createElement('div');
+    const dom = document.createElement("div");
     dom.style.gridTemplateColumns = this.__templateColumns;
-    if (typeof config.theme.layoutContainer === 'string') {
+    if (typeof config.theme.layoutContainer === "string") {
       addClassNamesToElement(dom, config.theme.layoutContainer);
     }
     return dom;
   }
 
   exportDOM(): DOMExportOutput {
-    const element = document.createElement('div');
+    const element = document.createElement("div");
     element.style.gridTemplateColumns = this.__templateColumns;
-    element.setAttribute('data-lexical-layout-container', 'true');
-    return {element};
+    element.setAttribute("data-lexical-layout-container", "true");
+    return { element };
   }
 
   updateDOM(prevNode: this, dom: HTMLElement): boolean {
@@ -84,7 +76,7 @@ export class LayoutContainerNode extends ElementNode {
   static importDOM(): DOMConversionMap | null {
     return {
       div: (domNode: HTMLElement) => {
-        if (!domNode.hasAttribute('data-lexical-layout-container')) {
+        if (!domNode.hasAttribute("data-lexical-layout-container")) {
           return null;
         }
         return {
@@ -100,7 +92,7 @@ export class LayoutContainerNode extends ElementNode {
   }
 
   updateFromJSON(
-    serializedNode: LexicalUpdateJSON<SerializedLayoutContainerNode>,
+    serializedNode: LexicalUpdateJSON<SerializedLayoutContainerNode>
   ): this {
     return super
       .updateFromJSON(serializedNode)
@@ -134,13 +126,13 @@ export class LayoutContainerNode extends ElementNode {
 }
 
 export function $createLayoutContainerNode(
-  templateColumns: string = '',
+  templateColumns: string = ""
 ): LayoutContainerNode {
   return new LayoutContainerNode(templateColumns);
 }
 
 export function $isLayoutContainerNode(
-  node: LexicalNode | null | undefined,
+  node: LexicalNode | null | undefined
 ): node is LayoutContainerNode {
   return node instanceof LayoutContainerNode;
 }

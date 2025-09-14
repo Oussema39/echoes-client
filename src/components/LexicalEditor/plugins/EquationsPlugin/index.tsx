@@ -1,17 +1,9 @@
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
+import type { JSX } from "react";
 
-import type {JSX} from 'react';
+import "katex/dist/katex.css";
 
-import 'katex/dist/katex.css';
-
-import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
-import {$wrapNodeInElement} from '@lexical/utils';
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { $wrapNodeInElement } from "@lexical/utils";
 import {
   $createParagraphNode,
   $insertNodes,
@@ -20,12 +12,11 @@ import {
   createCommand,
   LexicalCommand,
   LexicalEditor,
-} from 'lexical';
-import {useCallback, useEffect} from 'react';
-import * as React from 'react';
+} from "lexical";
+import { useCallback, useEffect } from "react";
 
-import {$createEquationNode, EquationNode} from '../../nodes/EquationNode';
-import KatexEquationAlterer from '../../ui/KatexEquationAlterer';
+import { $createEquationNode, EquationNode } from "../../nodes/EquationNode";
+import KatexEquationAlterer from "../../ui/KatexEquationAlterer";
 
 type CommandPayload = {
   equation: string;
@@ -33,7 +24,7 @@ type CommandPayload = {
 };
 
 export const INSERT_EQUATION_COMMAND: LexicalCommand<CommandPayload> =
-  createCommand('INSERT_EQUATION_COMMAND');
+  createCommand("INSERT_EQUATION_COMMAND");
 
 export function InsertEquationDialog({
   activeEditor,
@@ -44,10 +35,13 @@ export function InsertEquationDialog({
 }): JSX.Element {
   const onEquationConfirm = useCallback(
     (equation: string, inline: boolean) => {
-      activeEditor.dispatchCommand(INSERT_EQUATION_COMMAND, {equation, inline});
+      activeEditor.dispatchCommand(INSERT_EQUATION_COMMAND, {
+        equation,
+        inline,
+      });
       onClose();
     },
-    [activeEditor, onClose],
+    [activeEditor, onClose]
   );
 
   return <KatexEquationAlterer onConfirm={onEquationConfirm} />;
@@ -59,14 +53,14 @@ export default function EquationsPlugin(): JSX.Element | null {
   useEffect(() => {
     if (!editor.hasNodes([EquationNode])) {
       throw new Error(
-        'EquationsPlugins: EquationsNode not registered on editor',
+        "EquationsPlugins: EquationsNode not registered on editor"
       );
     }
 
     return editor.registerCommand<CommandPayload>(
       INSERT_EQUATION_COMMAND,
       (payload) => {
-        const {equation, inline} = payload;
+        const { equation, inline } = payload;
         const equationNode = $createEquationNode(equation, inline);
 
         $insertNodes([equationNode]);
@@ -76,7 +70,7 @@ export default function EquationsPlugin(): JSX.Element | null {
 
         return true;
       },
-      COMMAND_PRIORITY_EDITOR,
+      COMMAND_PRIORITY_EDITOR
     );
   }, [editor]);
 

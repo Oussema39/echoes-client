@@ -1,11 +1,3 @@
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-
 import { INITIAL_SETTINGS, Settings } from "./appSettings";
 
 // Export a function so this is not tree-shaken,
@@ -28,11 +20,12 @@ export default (() => {
   }
 
   if (INITIAL_SETTINGS.disableBeforeInput) {
-    // @ts-expect-error
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     delete window.InputEvent.prototype.getTargetRanges;
   }
 
-  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   window.EXCALIDRAW_ASSET_PATH = import.meta.env.EXCALIDRAW_ASSET_PATH;
 
   return INITIAL_SETTINGS;

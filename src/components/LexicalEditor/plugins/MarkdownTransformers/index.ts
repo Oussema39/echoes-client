@@ -1,11 +1,3 @@
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-
 import {
   $convertFromMarkdownString,
   $convertToMarkdownString,
@@ -17,12 +9,12 @@ import {
   TEXT_MATCH_TRANSFORMERS,
   TextMatchTransformer,
   Transformer,
-} from '@lexical/markdown';
+} from "@lexical/markdown";
 import {
   $createHorizontalRuleNode,
   $isHorizontalRuleNode,
   HorizontalRuleNode,
-} from '@lexical/react/LexicalHorizontalRuleNode';
+} from "@lexical/react/LexicalHorizontalRuleNode";
 import {
   $createTableCellNode,
   $createTableNode,
@@ -34,27 +26,35 @@ import {
   TableCellNode,
   TableNode,
   TableRowNode,
-} from '@lexical/table';
+} from "@lexical/table";
 import {
   $createTextNode,
   $isParagraphNode,
   $isTextNode,
   LexicalNode,
-} from 'lexical';
+} from "lexical";
 
 import {
   $createEquationNode,
   $isEquationNode,
   EquationNode,
-} from '../../nodes/EquationNode';
-import {$createImageNode, $isImageNode, ImageNode} from '../../nodes/ImageNode';
-import {$createTweetNode, $isTweetNode, TweetNode} from '../../nodes/TweetNode';
-import emojiList from '../../utils/emoji-list';
+} from "../../nodes/EquationNode";
+import {
+  $createImageNode,
+  $isImageNode,
+  ImageNode,
+} from "../../nodes/ImageNode";
+import {
+  $createTweetNode,
+  $isTweetNode,
+  TweetNode,
+} from "../../nodes/TweetNode";
+import emojiList from "../../utils/emoji-list";
 
 export const HR: ElementTransformer = {
   dependencies: [HorizontalRuleNode],
   export: (node: LexicalNode) => {
-    return $isHorizontalRuleNode(node) ? '***' : null;
+    return $isHorizontalRuleNode(node) ? "***" : null;
   },
   regExp: /^(---|\*\*\*|___)\s?$/,
   replace: (parentNode, _1, _2, isImport) => {
@@ -69,7 +69,7 @@ export const HR: ElementTransformer = {
 
     line.selectNext();
   },
-  type: 'element',
+  type: "element",
 };
 
 export const IMAGE: TextMatchTransformer = {
@@ -92,8 +92,8 @@ export const IMAGE: TextMatchTransformer = {
     });
     textNode.replace(imageNode);
   },
-  trigger: ')',
-  type: 'text-match',
+  trigger: ")",
+  type: "text-match",
 };
 
 export const EMOJI: TextMatchTransformer = {
@@ -107,8 +107,8 @@ export const EMOJI: TextMatchTransformer = {
       textNode.replace($createTextNode(emoji));
     }
   },
-  trigger: ':',
-  type: 'text-match',
+  trigger: ":",
+  type: "text-match",
 };
 
 export const EQUATION: TextMatchTransformer = {
@@ -127,8 +127,8 @@ export const EQUATION: TextMatchTransformer = {
     const equationNode = $createEquationNode(equation, true);
     textNode.replace(equationNode);
   },
-  trigger: '$',
-  type: 'text-match',
+  trigger: "$",
+  type: "text-match",
 };
 
 export const TWEET: ElementTransformer = {
@@ -146,7 +146,7 @@ export const TWEET: ElementTransformer = {
     const tweetNode = $createTweetNode(id);
     textNode.replace(tweetNode);
   },
-  type: 'element',
+  type: "element",
 };
 
 // Very primitive table setup
@@ -174,8 +174,8 @@ export const TABLE: ElementTransformer = {
         if ($isTableCellNode(cell)) {
           rowOutput.push(
             $convertToMarkdownString(PLAYGROUND_TRANSFORMERS, cell)
-              .replace(/\n/g, '\\n')
-              .trim(),
+              .replace(/\n/g, "\\n")
+              .trim()
           );
           if (cell.__headerState === TableCellHeaderStates.ROW) {
             isHeaderRow = true;
@@ -183,13 +183,13 @@ export const TABLE: ElementTransformer = {
         }
       }
 
-      output.push(`| ${rowOutput.join(' | ')} |`);
+      output.push(`| ${rowOutput.join(" | ")} |`);
       if (isHeaderRow) {
-        output.push(`| ${rowOutput.map((_) => '---').join(' | ')} |`);
+        output.push(`| ${rowOutput.map((_) => "---").join(" | ")} |`);
       }
     }
 
-    return output.join('\n');
+    return output.join("\n");
   },
   regExp: TABLE_ROW_REG_EXP,
   replace: (parentNode, _1, match) => {
@@ -213,7 +213,7 @@ export const TABLE: ElementTransformer = {
         }
         cell.setHeaderStyles(
           TableCellHeaderStates.ROW,
-          TableCellHeaderStates.ROW,
+          TableCellHeaderStates.ROW
         );
       });
 
@@ -267,7 +267,7 @@ export const TABLE: ElementTransformer = {
       table.append(tableRow);
 
       for (let i = 0; i < maxCells; i++) {
-        tableRow.append(i < cells.length ? cells[i] : $createTableCell(''));
+        tableRow.append(i < cells.length ? cells[i] : $createTableCell(""));
       }
     }
 
@@ -284,7 +284,7 @@ export const TABLE: ElementTransformer = {
 
     table.selectEnd();
   },
-  type: 'element',
+  type: "element",
 };
 
 function getTableColumnsSize(table: TableNode) {
@@ -293,7 +293,7 @@ function getTableColumnsSize(table: TableNode) {
 }
 
 const $createTableCell = (textContent: string): TableCellNode => {
-  textContent = textContent.replace(/\\n/g, '\n');
+  textContent = textContent.replace(/\\n/g, "\n");
   const cell = $createTableCellNode(TableCellHeaderStates.NO_STATUS);
   $convertFromMarkdownString(textContent, PLAYGROUND_TRANSFORMERS, cell);
   return cell;
@@ -304,7 +304,7 @@ const mapToTableCells = (textContent: string): Array<TableCellNode> | null => {
   if (!match || !match[1]) {
     return null;
   }
-  return match[1].split('|').map((text) => $createTableCell(text));
+  return match[1].split("|").map((text) => $createTableCell(text));
 };
 
 export const PLAYGROUND_TRANSFORMERS: Array<Transformer> = [

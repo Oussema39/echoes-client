@@ -1,31 +1,28 @@
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-
 import type {
   AppState,
   BinaryFiles,
   ExcalidrawImperativeAPI,
   ExcalidrawInitialDataState,
-} from '@excalidraw/excalidraw/types';
-import type {JSX} from 'react';
+} from "@excalidraw/excalidraw/types";
+import type { JSX } from "react";
 
-import './ExcalidrawModal.css';
+import "./ExcalidrawModal.css";
 
-import {Excalidraw} from '@excalidraw/excalidraw';
-import {isDOMNode} from 'lexical';
-import * as React from 'react';
-import {ReactPortal, useEffect, useLayoutEffect, useRef, useState} from 'react';
-import {createPortal} from 'react-dom';
+import { Excalidraw } from "@excalidraw/excalidraw";
+import { isDOMNode } from "lexical";
+import {
+  ReactPortal,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
+import { createPortal } from "react-dom";
 
-import Button from './Button';
-import Modal from './Modal';
+import Button from "./Button";
+import Modal from "./Modal";
 
-export type ExcalidrawInitialElements = ExcalidrawInitialDataState['elements'];
+export type ExcalidrawInitialElements = ExcalidrawInitialDataState["elements"];
 
 type Props = {
   closeOnClickOutside?: boolean;
@@ -59,7 +56,7 @@ type Props = {
   onSave: (
     elements: ExcalidrawInitialElements,
     appState: Partial<AppState>,
-    files: BinaryFiles,
+    files: BinaryFiles
   ) => void;
 };
 
@@ -107,11 +104,11 @@ export default function ExcalidrawModal({
 
     if (excaliDrawModelRef.current !== null) {
       modalOverlayElement = excaliDrawModelRef.current?.parentElement;
-      modalOverlayElement?.addEventListener('click', clickOutsideHandler);
+      modalOverlayElement?.addEventListener("click", clickOutsideHandler);
     }
 
     return () => {
-      modalOverlayElement?.removeEventListener('click', clickOutsideHandler);
+      modalOverlayElement?.removeEventListener("click", clickOutsideHandler);
     };
   }, [closeOnClickOutside, onDelete]);
 
@@ -119,15 +116,15 @@ export default function ExcalidrawModal({
     const currentModalRef = excaliDrawModelRef.current;
 
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
+      if (event.key === "Escape") {
         onDelete();
       }
     };
 
-    currentModalRef?.addEventListener('keydown', onKeyDown);
+    currentModalRef?.addEventListener("keydown", onKeyDown);
 
     return () => {
-      currentModalRef?.removeEventListener('keydown', onKeyDown);
+      currentModalRef?.removeEventListener("keydown", onKeyDown);
     };
   }, [elements, files, onDelete]);
 
@@ -138,7 +135,7 @@ export default function ExcalidrawModal({
       const partialState: Partial<AppState> = {
         exportBackground: appState?.exportBackground,
         exportScale: appState?.exportScale,
-        exportWithDarkMode: appState?.theme === 'dark',
+        exportWithDarkMode: appState?.theme === "dark",
         isBindingEnabled: appState?.isBindingEnabled,
         isLoading: appState?.isLoading,
         name: appState?.name,
@@ -166,20 +163,23 @@ export default function ExcalidrawModal({
         onClose={() => {
           setDiscardModalOpen(false);
         }}
-        closeOnClickOutside={false}>
+        closeOnClickOutside={false}
+      >
         Are you sure you want to discard the changes?
         <div className="ExcalidrawModal__discardModal">
           <Button
             onClick={() => {
               setDiscardModalOpen(false);
               onClose();
-            }}>
+            }}
+          >
             Discard
-          </Button>{' '}
+          </Button>{" "}
           <Button
             onClick={() => {
               setDiscardModalOpen(false);
-            }}>
+            }}
+          >
             Cancel
           </Button>
         </div>
@@ -194,7 +194,7 @@ export default function ExcalidrawModal({
   const onChange = (
     els: ExcalidrawInitialElements,
     _: AppState,
-    fls: BinaryFiles,
+    fls: BinaryFiles
   ) => {
     setElements(els);
     setFiles(fls);
@@ -205,14 +205,15 @@ export default function ExcalidrawModal({
       <div
         className="ExcalidrawModal__modal"
         ref={excaliDrawModelRef}
-        tabIndex={-1}>
+        tabIndex={-1}
+      >
         <div className="ExcalidrawModal__row">
           {discardModalOpen && <ShowDiscardDialog />}
           <Excalidraw
             onChange={onChange}
             excalidrawAPI={setExcalidrawAPI}
             initialData={{
-              appState: initialAppState || {isLoading: false},
+              appState: initialAppState || { isLoading: false },
               elements: initialElements,
               files: initialFiles,
             }}
@@ -228,6 +229,6 @@ export default function ExcalidrawModal({
         </div>
       </div>
     </div>,
-    document.body,
+    document.body
   );
 }

@@ -1,11 +1,3 @@
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-
 import type {
   EditorConfig,
   ElementFormatType,
@@ -13,15 +5,14 @@ import type {
   LexicalNode,
   NodeKey,
   Spread,
-} from 'lexical';
-import type {JSX} from 'react';
+} from "lexical";
+import type { JSX } from "react";
 
-import {BlockWithAlignableContents} from '@lexical/react/LexicalBlockWithAlignableContents';
+import { BlockWithAlignableContents } from "@lexical/react/LexicalBlockWithAlignableContents";
 import {
   DecoratorBlockNode,
   SerializedDecoratorBlockNode,
-} from '@lexical/react/LexicalDecoratorBlockNode';
-import * as React from 'react';
+} from "@lexical/react/LexicalDecoratorBlockNode";
 
 type FigmaComponentProps = Readonly<{
   className: Readonly<{
@@ -43,7 +34,8 @@ function FigmaComponent({
     <BlockWithAlignableContents
       className={className}
       format={format}
-      nodeKey={nodeKey}>
+      nodeKey={nodeKey}
+    >
       <iframe
         width="560"
         height="315"
@@ -66,7 +58,7 @@ export class FigmaNode extends DecoratorBlockNode {
   __id: string;
 
   static getType(): string {
-    return 'figma';
+    return "figma";
   }
 
   static clone(node: FigmaNode): FigmaNode {
@@ -75,7 +67,7 @@ export class FigmaNode extends DecoratorBlockNode {
 
   static importJSON(serializedNode: SerializedFigmaNode): FigmaNode {
     return $createFigmaNode(serializedNode.documentID).updateFromJSON(
-      serializedNode,
+      serializedNode
     );
   }
 
@@ -101,7 +93,7 @@ export class FigmaNode extends DecoratorBlockNode {
 
   getTextContent(
     _includeInert?: boolean | undefined,
-    _includeDirectionless?: false | undefined,
+    _includeDirectionless?: false | undefined
   ): string {
     return `https://www.figma.com/file/${this.__id}`;
   }
@@ -109,8 +101,8 @@ export class FigmaNode extends DecoratorBlockNode {
   decorate(_editor: LexicalEditor, config: EditorConfig): JSX.Element {
     const embedBlockTheme = config.theme.embedBlock || {};
     const className = {
-      base: embedBlockTheme.base || '',
-      focus: embedBlockTheme.focus || '',
+      base: embedBlockTheme.base || "",
+      focus: embedBlockTheme.focus || "",
     };
     return (
       <FigmaComponent
@@ -128,7 +120,7 @@ export function $createFigmaNode(documentID: string): FigmaNode {
 }
 
 export function $isFigmaNode(
-  node: FigmaNode | LexicalNode | null | undefined,
+  node: FigmaNode | LexicalNode | null | undefined
 ): node is FigmaNode {
   return node instanceof FigmaNode;
 }

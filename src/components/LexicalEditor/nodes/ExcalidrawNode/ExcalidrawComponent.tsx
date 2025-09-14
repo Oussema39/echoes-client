@@ -1,33 +1,24 @@
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
+import type { ExcalidrawInitialElements } from "../../ui/ExcalidrawModal";
+import type { AppState, BinaryFiles } from "@excalidraw/excalidraw/types";
+import type { NodeKey } from "lexical";
+import type { JSX } from "react";
 
-import type {ExcalidrawInitialElements} from '../../ui/ExcalidrawModal';
-import type {AppState, BinaryFiles} from '@excalidraw/excalidraw/types';
-import type {NodeKey} from 'lexical';
-import type {JSX} from 'react';
-
-import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
-import {useLexicalEditable} from '@lexical/react/useLexicalEditable';
-import {useLexicalNodeSelection} from '@lexical/react/useLexicalNodeSelection';
-import {mergeRegister} from '@lexical/utils';
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { useLexicalEditable } from "@lexical/react/useLexicalEditable";
+import { useLexicalNodeSelection } from "@lexical/react/useLexicalNodeSelection";
+import { mergeRegister } from "@lexical/utils";
 import {
   $getNodeByKey,
   CLICK_COMMAND,
   COMMAND_PRIORITY_LOW,
   isDOMNode,
-} from 'lexical';
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import * as React from 'react';
+} from "lexical";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import ExcalidrawModal from '../../ui/ExcalidrawModal';
-import ImageResizer from '../../ui/ImageResizer';
-import {$isExcalidrawNode} from '.';
-import ExcalidrawImage from './ExcalidrawImage';
+import ExcalidrawModal from "../../ui/ExcalidrawModal";
+import ImageResizer from "../../ui/ImageResizer";
+import { $isExcalidrawNode } from ".";
+import ExcalidrawImage from "./ExcalidrawImage";
 
 export default function ExcalidrawComponent({
   nodeKey,
@@ -37,13 +28,13 @@ export default function ExcalidrawComponent({
 }: {
   data: string;
   nodeKey: NodeKey;
-  width: 'inherit' | number;
-  height: 'inherit' | number;
+  width: "inherit" | number;
+  height: "inherit" | number;
 }): JSX.Element {
   const [editor] = useLexicalComposerContext();
   const isEditable = useLexicalEditable();
   const [isModalOpen, setModalOpen] = useState<boolean>(
-    data === '[]' && editor.isEditable(),
+    data === "[]" && editor.isEditable()
   );
   const imageContainerRef = useRef<HTMLDivElement | null>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
@@ -87,8 +78,8 @@ export default function ExcalidrawComponent({
 
           return false;
         },
-        COMMAND_PRIORITY_LOW,
-      ),
+        COMMAND_PRIORITY_LOW
+      )
     );
   }, [clearSelection, editor, isSelected, isResizing, setSelected, isEditable]);
 
@@ -105,7 +96,7 @@ export default function ExcalidrawComponent({
   const setData = (
     els: ExcalidrawInitialElements,
     aps: Partial<AppState>,
-    fls: BinaryFiles,
+    fls: BinaryFiles
   ) => {
     return editor.update(() => {
       const node = $getNodeByKey(nodeKey);
@@ -116,7 +107,7 @@ export default function ExcalidrawComponent({
               appState: aps,
               elements: els,
               files: fls,
-            }),
+            })
           );
         } else {
           node.remove();
@@ -130,8 +121,8 @@ export default function ExcalidrawComponent({
   };
 
   const onResizeEnd = (
-    nextWidth: 'inherit' | number,
-    nextHeight: 'inherit' | number,
+    nextWidth: "inherit" | number,
+    nextHeight: "inherit" | number
   ) => {
     // Delay hiding the resize bars for click case
     setTimeout(() => {
@@ -190,7 +181,8 @@ export default function ExcalidrawComponent({
       {elements.length > 0 && (
         <button
           ref={buttonRef}
-          className={`excalidraw-button ${isSelected ? 'selected' : ''}`}>
+          className={`excalidraw-button ${isSelected ? "selected" : ""}`}
+        >
           <ExcalidrawImage
             imageContainerRef={imageContainerRef}
             className="image"

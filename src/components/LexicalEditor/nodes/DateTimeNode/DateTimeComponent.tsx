@@ -1,15 +1,7 @@
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
+import type { JSX } from "react";
 
-import type {JSX} from 'react';
-
-import 'react-day-picker/style.css';
-import './DateTimeNode.css';
+import "react-day-picker/style.css";
+import "./DateTimeNode.css";
 
 import {
   autoUpdate,
@@ -23,16 +15,16 @@ import {
   useFloating,
   useInteractions,
   useRole,
-} from '@floating-ui/react';
-import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
-import {useLexicalNodeSelection} from '@lexical/react/useLexicalNodeSelection';
-import {setHours, setMinutes} from 'date-fns';
-import {$getNodeByKey, NodeKey} from 'lexical';
-import * as React from 'react';
-import {useEffect, useRef, useState} from 'react';
-import {DayPicker} from 'react-day-picker';
+} from "@floating-ui/react";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { useLexicalNodeSelection } from "@lexical/react/useLexicalNodeSelection";
+import { setHours, setMinutes } from "date-fns";
+import { $getNodeByKey, NodeKey } from "lexical";
+import * as React from "react";
+import { useEffect, useRef, useState } from "react";
+import { DayPicker } from "react-day-picker";
 
-import {$isDateTimeNode, type DateTimeNode} from './DateTimeNode';
+import { $isDateTimeNode, type DateTimeNode } from "./DateTimeNode";
 
 const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
@@ -57,43 +49,43 @@ export default function DateTimeComponent({
   });
   const [timeValue, setTimeValue] = useState(() => {
     if (dateTime === undefined) {
-      return '00:00';
+      return "00:00";
     }
     const hours = dateTime?.getHours();
     const minutes = dateTime?.getMinutes();
     if (hours !== 0 || minutes !== 0) {
-      return `${hours?.toString().padStart(2, '0')}:${minutes
+      return `${hours?.toString().padStart(2, "0")}:${minutes
         ?.toString()
-        .padStart(2, '0')}`;
+        .padStart(2, "0")}`;
     }
-    return '00:00';
+    return "00:00";
   });
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isNodeSelected, setNodeSelected, clearNodeSelection] =
     useLexicalNodeSelection(nodeKey);
 
-  const {refs, floatingStyles, context} = useFloating({
+  const { refs, floatingStyles, context } = useFloating({
     elements: {
       reference: ref.current,
     },
     middleware: [
       offset(5),
       flip({
-        fallbackPlacements: ['top-start'],
+        fallbackPlacements: ["top-start"],
       }),
-      shift({padding: 10}),
+      shift({ padding: 10 }),
     ],
     onOpenChange: setIsOpen,
     open: isOpen,
-    placement: 'bottom-start',
-    strategy: 'fixed',
+    placement: "bottom-start",
+    strategy: "fixed",
     whileElementsMounted: autoUpdate,
   });
 
-  const role = useRole(context, {role: 'dialog'});
+  const role = useRole(context, { role: "dialog" });
   const dismiss = useDismiss(context);
 
-  const {getFloatingProps} = useInteractions([role, dismiss]);
+  const { getFloatingProps } = useInteractions([role, dismiss]);
 
   useEffect(() => {
     const dateTimePillRef = ref.current as HTMLElement | null;
@@ -103,19 +95,19 @@ export default function DateTimeComponent({
     }
 
     if (dateTimePillRef) {
-      dateTimePillRef.addEventListener('click', onClick);
+      dateTimePillRef.addEventListener("click", onClick);
     }
 
     return () => {
       if (dateTimePillRef) {
-        dateTimePillRef.removeEventListener('click', onClick);
+        dateTimePillRef.removeEventListener("click", onClick);
       }
     };
   }, [refs, editor]);
 
   const withDateTimeNode = (
     cb: (node: DateTimeNode) => void,
-    onUpdate?: () => void,
+    onUpdate?: () => void
   ): void => {
     editor.update(
       () => {
@@ -124,7 +116,7 @@ export default function DateTimeComponent({
           cb(node);
         }
       },
-      {onUpdate},
+      { onUpdate }
     );
   };
 
@@ -138,7 +130,7 @@ export default function DateTimeComponent({
           node.setDateTime(newSelectedDate);
         }
         setIncludeTime(false);
-        setTimeValue('00:00');
+        setTimeValue("00:00");
       }
     });
   };
@@ -151,7 +143,7 @@ export default function DateTimeComponent({
         return;
       }
       const [hours, minutes] = time
-        .split(':')
+        .split(":")
         .map((str: string) => parseInt(str, 10));
       const newSelectedDate = setHours(setMinutes(selected, minutes), hours);
       setSelected(newSelectedDate);
@@ -167,14 +159,14 @@ export default function DateTimeComponent({
         return;
       }
       const [hours, minutes] = timeValue
-        .split(':')
+        .split(":")
         .map((str) => parseInt(str, 10));
       const newDate = new Date(
         date.getFullYear(),
         date.getMonth(),
         date.getDate(),
         hours,
-        minutes,
+        minutes
       );
       node.setDateTime(newDate);
       setSelected(newDate);
@@ -183,20 +175,22 @@ export default function DateTimeComponent({
 
   return (
     <div
-      className={`dateTimePill ${isNodeSelected ? 'selected' : ''}`}
+      className={`dateTimePill ${isNodeSelected ? "selected" : ""}`}
       ref={ref}
-      style={{cursor: 'pointer', width: 'fit-content'}}>
-      {dateTime?.toDateString() + (includeTime ? ' ' + timeValue : '') ||
-        'Invalid Date'}
+      style={{ cursor: "pointer", width: "fit-content" }}
+    >
+      {dateTime?.toDateString() + (includeTime ? " " + timeValue : "") ||
+        "Invalid Date"}
       {isOpen && (
         <FloatingPortal>
           <FloatingOverlay lockScroll={true}>
             <FloatingFocusManager context={context} initialFocus={-1}>
               <div
-                className={'dateTimePicker'}
+                className={"dateTimePicker"}
                 ref={refs.setFloating}
                 style={floatingStyles}
-                {...getFloatingProps()}>
+                {...getFloatingProps()}
+              >
                 <DayPicker
                   captionLayout="dropdown"
                   navLayout="after"
@@ -210,14 +204,15 @@ export default function DateTimeComponent({
                   startMonth={new Date(1925, 0)}
                   endMonth={new Date(2042, 7)}
                 />
-                <form style={{marginBlockEnd: '1em'}}>
+                <form style={{ marginBlockEnd: "1em" }}>
                   <div
                     style={{
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                      width: '300px',
-                    }}>
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                      width: "300px",
+                    }}
+                  >
                     <input
                       type="checkbox"
                       id="option1"

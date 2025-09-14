@@ -1,12 +1,4 @@
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-
-import {IS_CHROME} from '@lexical/utils';
+import { IS_CHROME } from "@lexical/utils";
 import {
   $createParagraphNode,
   $isElementNode,
@@ -17,13 +9,13 @@ import {
   LexicalEditor,
   LexicalNode,
   RangeSelection,
-} from 'lexical';
+} from "lexical";
 
-import {$isCollapsibleContainerNode} from './CollapsibleContainerNode';
-import {$isCollapsibleContentNode} from './CollapsibleContentNode';
+import { $isCollapsibleContainerNode } from "./CollapsibleContainerNode";
+import { $isCollapsibleContentNode } from "./CollapsibleContentNode";
 
 export function $convertSummaryElement(
-  domNode: HTMLElement,
+  domNode: HTMLElement
 ): DOMConversionOutput | null {
   const node = $createCollapsibleTitleNode();
   return {
@@ -35,7 +27,7 @@ export function $convertSummaryElement(
 export class CollapsibleTitleNode extends ElementNode {
   /** @internal */
   $config() {
-    return this.config('collapsible-title', {
+    return this.config("collapsible-title", {
       $transform(node: CollapsibleTitleNode) {
         if (node.isEmpty()) {
           node.remove();
@@ -52,15 +44,15 @@ export class CollapsibleTitleNode extends ElementNode {
   }
 
   createDOM(config: EditorConfig, editor: LexicalEditor): HTMLElement {
-    const dom = document.createElement('summary');
-    dom.classList.add('Collapsible__title');
+    const dom = document.createElement("summary");
+    dom.classList.add("Collapsible__title");
     if (IS_CHROME) {
-      dom.addEventListener('click', () => {
+      dom.addEventListener("click", () => {
         editor.update(() => {
           const collapsibleContainer = this.getLatest().getParentOrThrow();
           if (!$isCollapsibleContainerNode(collapsibleContainer)) {
             throw new Error(
-              'Expected parent node to be a CollapsibleContainerNode',
+              "Expected parent node to be a CollapsibleContainerNode"
             );
           }
           collapsibleContainer.toggleOpen();
@@ -79,7 +71,7 @@ export class CollapsibleTitleNode extends ElementNode {
 
     if (!$isCollapsibleContainerNode(containerNode)) {
       throw new Error(
-        'CollapsibleTitleNode expects to be child of CollapsibleContainerNode',
+        "CollapsibleTitleNode expects to be child of CollapsibleContainerNode"
       );
     }
 
@@ -87,7 +79,7 @@ export class CollapsibleTitleNode extends ElementNode {
       const contentNode = this.getNextSibling();
       if (!$isCollapsibleContentNode(contentNode)) {
         throw new Error(
-          'CollapsibleTitleNode expects to have CollapsibleContentNode sibling',
+          "CollapsibleTitleNode expects to have CollapsibleContentNode sibling"
         );
       }
 
@@ -112,7 +104,7 @@ export function $createCollapsibleTitleNode(): CollapsibleTitleNode {
 }
 
 export function $isCollapsibleTitleNode(
-  node: LexicalNode | null | undefined,
+  node: LexicalNode | null | undefined
 ): node is CollapsibleTitleNode {
   return node instanceof CollapsibleTitleNode;
 }

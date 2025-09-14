@@ -1,11 +1,10 @@
-import { useState, useEffect, forwardRef, MutableRefObject } from "react";
-import ReactQuill from "react-quill";
+import { useState, useEffect, forwardRef } from "react";
 import "react-quill/dist/quill.snow.css";
 import { DocumentEditorProps } from "@/interface/IDocumentEditor";
 import DocumentFooter from "./DocumentFooter";
-import { formats, modules } from "./config";
 import { countEditorWords, getEstimatedReadTime } from "@/lib/utils";
 import Loader from "../ui/loader";
+import LexicalEditor from "../LexicalEditor";
 
 const DocumentEditor = forwardRef(
   (
@@ -50,7 +49,7 @@ const DocumentEditor = forwardRef(
               <Loader />
             </div>
           )}
-          <ReactQuill
+          {/* <ReactQuill
             ref={ref as MutableRefObject<ReactQuill>}
             theme="snow"
             value={value || ""}
@@ -60,7 +59,8 @@ const DocumentEditor = forwardRef(
             placeholder="Start writing something amazing..."
             className="h-full border-none focus:outline-none z-50 selection:bg-primary/15"
             {...rest}
-          />
+          /> */}
+          <LexicalEditor />
         </div>
 
         {!hideFooter && (

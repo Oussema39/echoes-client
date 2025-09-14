@@ -1,10 +1,3 @@
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
 const VERTICAL_GAP = 10;
 const HORIZONTAL_OFFSET = 5;
 
@@ -14,13 +7,13 @@ export function setFloatingElemPosition(
   anchorElem: HTMLElement,
   isLink: boolean = false,
   verticalGap: number = VERTICAL_GAP,
-  horizontalOffset: number = HORIZONTAL_OFFSET,
+  horizontalOffset: number = HORIZONTAL_OFFSET
 ): void {
   const scrollerElem = anchorElem.parentElement;
 
   if (targetRect === null || !scrollerElem) {
-    floatingElem.style.opacity = '0';
-    floatingElem.style.transform = 'translate(-10000px, -10000px)';
+    floatingElem.style.opacity = "0";
+    floatingElem.style.transform = "translate(-10000px, -10000px)";
     return;
   }
 
@@ -43,7 +36,7 @@ export function setFloatingElemPosition(
           : (textNode.parentElement as Element);
       const textAlign = window.getComputedStyle(textElement).textAlign;
 
-      if (textAlign === 'right' || textAlign === 'end') {
+      if (textAlign === "right" || textAlign === "end") {
         // For end-aligned text, position the toolbar relative to the text end
         left = targetRect.right - floatingElemRect.width + horizontalOffset;
       }
@@ -69,6 +62,6 @@ export function setFloatingElemPosition(
   top -= anchorElementRect.top;
   left -= anchorElementRect.left;
 
-  floatingElem.style.opacity = '1';
+  floatingElem.style.opacity = "1";
   floatingElem.style.transform = `translate(${left}px, ${top}px)`;
 }

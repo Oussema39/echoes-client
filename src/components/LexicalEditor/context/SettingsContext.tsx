@@ -1,15 +1,7 @@
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
+import type { SettingName } from "../appSettings";
+import type { JSX } from "react";
 
-import type {SettingName} from '../appSettings';
-import type {JSX} from 'react';
-
-import * as React from 'react';
+import * as React from "react";
 import {
   createContext,
   ReactNode,
@@ -17,9 +9,9 @@ import {
   useContext,
   useMemo,
   useState,
-} from 'react';
+} from "react";
 
-import {DEFAULT_SETTINGS, INITIAL_SETTINGS} from '../appSettings';
+import { DEFAULT_SETTINGS, INITIAL_SETTINGS } from "../appSettings";
 
 type SettingsContextShape = {
   setOption: (name: SettingName, value: boolean) => void;
@@ -49,7 +41,7 @@ export const SettingsContext = ({
   }, []);
 
   const contextValue = useMemo(() => {
-    return {setOption, settings};
+    return { setOption, settings };
   }, [setOption, settings]);
 
   return <Context.Provider value={contextValue}>{children}</Context.Provider>;
@@ -68,5 +60,5 @@ function setURLParam(param: SettingName, value: null | boolean) {
     params.delete(param);
   }
   url.search = params.toString();
-  window.history.pushState(null, '', url.toString());
+  window.history.pushState(null, "", url.toString());
 }

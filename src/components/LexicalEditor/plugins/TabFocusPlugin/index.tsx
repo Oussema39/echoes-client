@@ -1,20 +1,12 @@
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-
-import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import {
   $getSelection,
   $isRangeSelection,
   $setSelection,
   COMMAND_PRIORITY_LOW,
   FOCUS_COMMAND,
-} from 'lexical';
-import {useEffect} from 'react';
+} from "lexical";
+import { useEffect } from "react";
 
 const TAB_TO_FOCUS_INTERVAL = 100;
 
@@ -23,14 +15,14 @@ let hasRegisteredKeyDownListener = false;
 
 function registerKeyTimeStampTracker() {
   window.addEventListener(
-    'keydown',
+    "keydown",
     (event: KeyboardEvent) => {
       // Tab
-      if (event.key === 'Tab') {
+      if (event.key === "Tab") {
         lastTabKeyDownTimestamp = event.timeStamp;
       }
     },
-    true,
+    true
   );
 }
 
@@ -57,7 +49,7 @@ export default function TabFocusPlugin(): null {
         }
         return false;
       },
-      COMMAND_PRIORITY_LOW,
+      COMMAND_PRIORITY_LOW
     );
   }, [editor]);
 
