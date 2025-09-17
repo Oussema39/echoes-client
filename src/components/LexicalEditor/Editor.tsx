@@ -88,16 +88,21 @@ export default function Editor(): JSX.Element {
       listStrictIndent,
     },
   } = useSettings();
+
   const isEditable = useLexicalEditable();
+
   const placeholder = isCollab
     ? "Enter some collaborative rich text..."
     : isRichText
       ? "Enter some rich text..."
       : "Enter some plain text...";
+
   const [floatingAnchorElem, setFloatingAnchorElem] =
     useState<HTMLDivElement | null>(null);
+
   const [isSmallWidthViewport, setIsSmallWidthViewport] =
     useState<boolean>(false);
+
   const [editor] = useLexicalComposerContext();
   const [activeEditor, setActiveEditor] = useState(editor);
   const [isLinkEditMode, setIsLinkEditMode] = useState<boolean>(false);

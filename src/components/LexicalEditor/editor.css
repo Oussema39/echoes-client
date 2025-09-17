@@ -6,6 +6,7 @@
   position: relative;
   line-height: 1.7;
   font-weight: 400;
+  height: 100%;
 }
 
 .editor-shell .editor-container {
@@ -14,6 +15,7 @@
   display: block;
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
+  height: 100%;
 }
 
 .editor-shell .editor-container.tree-view {
@@ -1448,16 +1450,17 @@ button.action-button:disabled {
   display: flex;
   margin-bottom: 1px;
   background: #fff;
-  padding: 4px;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
+  border-radius: 10px;
   vertical-align: middle;
   overflow: auto;
-  height: 36px;
+  padding-inline: 10px;
+  padding-block: 4px;
+  /* height: 36px; */
   position: sticky;
   top: 0;
   z-index: 2;
   overflow-y: hidden; /* disable vertical scroll*/
+  background-color: #f3f3f390;
 }
 
 button.toolbar-item {

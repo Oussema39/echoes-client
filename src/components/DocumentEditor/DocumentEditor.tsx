@@ -43,23 +43,12 @@ const DocumentEditor = forwardRef(
 
     return (
       <>
-        <div className="flex-grow overflow-hidden px-6 pb-12 relative">
+        <div className="flex-grow overflow-hidden px-6 pb-12 pt-2 relative flex justify-center">
           {loading && (
             <div className="inset-0 flex items-center justify-center absolute backdrop-blur-[4px] z-50">
               <Loader />
             </div>
           )}
-          {/* <ReactQuill
-            ref={ref as MutableRefObject<ReactQuill>}
-            theme="snow"
-            value={value || ""}
-            onChange={handleChange}
-            modules={modules}
-            formats={formats}
-            placeholder="Start writing something amazing..."
-            className="h-full border-none focus:outline-none z-50 selection:bg-primary/15"
-            {...rest}
-          /> */}
           <LexicalEditor />
         </div>
 

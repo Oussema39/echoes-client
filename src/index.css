@@ -93,31 +93,6 @@
   }
 }
 
-/* Quill editor custom styles */
-.ql-container {
-  @apply font-sans text-base min-h-[200px] border-0 !important;
-}
-
-.ql-editor {
-  @apply px-0 py-4 focus:outline-none !important;
-}
-
-.ql-editor.ql-blank::before {
-  @apply text-muted-foreground !important;
-}
-
-.ql-toolbar {
-  @apply border-0 border-b border-border px-0 py-2 !important;
-}
-
-.ql-formats button {
-  @apply hover:bg-secondary rounded transition-colors !important;
-}
-
-.ql-toolbar .ql-active {
-  @apply bg-secondary text-foreground !important;
-}
-
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;

@@ -12,7 +12,7 @@
   display: block;
   position: relative;
   outline: 0;
-  padding: 8px 46px 40px;
+  padding: 4px;
   min-height: 150px;
 }
 @media (max-width: 1025px) {
@@ -28,8 +28,8 @@
   overflow: hidden;
   position: absolute;
   text-overflow: ellipsis;
-  top: 8px;
-  left: 46px;
+  top: 5px;
+  left: 4px;
   right: 28px;
   user-select: none;
   white-space: nowrap;
