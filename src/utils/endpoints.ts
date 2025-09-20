@@ -9,6 +9,7 @@ export const apiEndpoints = {
     getByUser: `${documentsBase}/by-user`,
     addDocument: documentsBase,
     shareDocument: `${documentsBase}/share`,
+    generateShareLink: `${documentsBase}/share-link`,
     generatePdf: `${documentsBase}/generate-pdf`,
     getVersionsMetadata: (id: string) => `${documentsBase}/${id}/versions`,
     updateDocument: (id: string) => `${documentsBase}/${id}`,

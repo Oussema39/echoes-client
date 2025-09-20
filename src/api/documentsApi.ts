@@ -5,6 +5,7 @@ import { IDocument } from "@/interface/IDocument";
 import { IBase } from "@/interface/IBase";
 import { ICollaborator } from "@/interface/ICollaborator";
 import { IDocVersion } from "@/interface/IDocVersion";
+import { TPermissionLevel } from "@/utils/constants";
 
 type GetUserDocsResponse = {
   owned: IDocument[];
@@ -81,6 +82,19 @@ export const deleteDocument = async (id: string) => {
 export const shareDocument = async (payload: {
   docId: string;
   collaborators: ICollaborator[];
+}) => {
+  const res = await apiClient.post(
+    apiEndpoints.documents.generateShareLink,
+    payload
+  );
+  const document = res.data?.data ? res.data.data : null;
+
+  return document;
+};
+
+export const generateDocShareLink = async (payload: {
+  docId: string;
+  permissonLevel: `${TPermissionLevel}`;
 }) => {
   const res = await apiClient.post(
     apiEndpoints.documents.shareDocument,
