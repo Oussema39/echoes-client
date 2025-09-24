@@ -1,11 +1,13 @@
+import SelectInput from "@/components/form/SelectInput";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
 import { ICollaborator } from "@/interface/ICollaborator";
 import { IDocument } from "@/interface/IDocument";
-import { CopyIcon } from "lucide-react";
-import { useMemo } from "react";
+import { TPermissionLevel } from "@/utils/constants";
+import { permissionLevels } from "@/utils/selectOptions";
+import { CopyIcon, LinkIcon } from "lucide-react";
+import { useState } from "react";
 
 interface ShareForm {
   selectedParticipant: string;
@@ -28,7 +30,13 @@ const ShareDocLinkDialog = ({
   shareDocument,
   selectedDocument,
 }: ShareDocLinkDialogProps) => {
-  const link = useMemo;
+  const [permission, setPermission] = useState<`${TPermissionLevel}`>(
+    TPermissionLevel.VIEWER
+  );
+
+  const handleChangePermission = (permission: string) => {
+    setPermission(permission as TPermissionLevel);
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -37,25 +45,29 @@ const ShareDocLinkDialog = ({
           <div className="flex justify-between items-center">
             <h2 className="font-medium">Share Link</h2>
           </div>
-          <div>
-            <Input type="text" />
+          <div className="flex gap-2">
+            <Input
+              type="text"
+              className="!ring-0 !shadow-none select-text"
+              value={crypto.randomUUID().toString()}
+              readOnly
+            />
             <Button>
               <CopyIcon className="w-24 h-24" />
             </Button>
           </div>
-          <div>
-            <Input type="text" />
-            <Button>
-              <CopyIcon className="w-24 h-24" />
-            </Button>
+          <div className="flex items-center bg-slate-100 p-2">
+            <LinkIcon className="w-24 h-24" />
+            <p className="flex-1">Everybody with the link:</p>
+            <div>
+              <SelectInput
+                options={permissionLevels}
+                value={permission}
+                onChange={handleChangePermission}
+              />
+            </div>
           </div>
         </div>
-        <div className="flex justify-end items-center gap-2 mt-4">
-          <Button type="button" onClick={() => {}} variant="secondary">
-            Generate
-          </Button>
-        </div>
-        <Separator className="mx-2 my-4 w-auto bg-sidebar-border" />
       </DialogContent>
     </Dialog>
   );

@@ -13,6 +13,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { ReactNode, useMemo, useState, useCallback, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 
 export type TDocumentContextValue = {
   documents: IDocument[];
@@ -35,6 +36,9 @@ export type TDocumentContextValue = {
 
 const DocumentsProvider = ({ children }: { children: ReactNode }) => {
   const queryClient = useQueryClient();
+  const [urlSearchParams, setURLSearchParams] = useSearchParams(
+    window.location.search
+  );
   const [selectedDocument, setSelectedDocument] = useState<IDocument | null>(
     null
   );
@@ -54,13 +58,22 @@ const DocumentsProvider = ({ children }: { children: ReactNode }) => {
     refetchOnWindowFocus: false,
   });
 
+  const handleSetSelected = useCallback(
+    (doc: IDocument) => {
+      setSelectedDocument(doc);
+      urlSearchParams.set("documentId", doc._id);
+      setURLSearchParams(urlSearchParams);
+    },
+    [setURLSearchParams, urlSearchParams]
+  );
+
   const handleSelectDocument = useCallback(
     (_id: string) => {
       const document = documents.find((doc) => doc._id === _id);
-      setSelectedDocument(document);
+      handleSetSelected(document);
       setSelectedVersion(document.versions?.at(-1));
     },
-    [documents]
+    [documents, handleSetSelected]
   );
 
   const updateSelectedDocumentById = useCallback(
@@ -78,10 +91,10 @@ const DocumentsProvider = ({ children }: { children: ReactNode }) => {
         typeof update === "function" ? update(existingDocument) : update;
 
       const updatedDocument = { ...existingDocument, ...nextUpdate };
-      setSelectedDocument(updatedDocument);
+      handleSetSelected(updatedDocument);
       return updatedDocument;
     },
-    [documents]
+    [documents, handleSetSelected]
   );
 
   const handleChangeSelectedVersion = useCallback(
@@ -106,17 +119,17 @@ const DocumentsProvider = ({ children }: { children: ReactNode }) => {
 
   const updateDocumentMutation = useUpdateDocumentMutation({
     queryClient,
-    setSelectedDocument,
+    setSelectedDocument: handleSetSelected,
   });
 
   const createDocumentMutation = useCreateDocumentMutation({
     queryClient,
-    setSelectedDocument,
+    setSelectedDocument: handleSetSelected,
   });
 
   const deleteDocumentMutation = useDeleteDocumentMutation({
     queryClient,
-    setSelectedDocument,
+    setSelectedDocument: handleSetSelected,
   });
 
   const shareDocumentMutation = useShareDocumentMutation({
@@ -159,7 +172,7 @@ const DocumentsProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (isFetched) {
-      setSelectedDocument(documents?.[0]);
+      handleSetSelected(documents?.[0]);
       setSelectedVersion(documents?.[0]?.versions?.at(-1));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
