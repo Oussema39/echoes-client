@@ -91,10 +91,13 @@ const DocumentsProvider = ({ children }: { children: ReactNode }) => {
         typeof update === "function" ? update(existingDocument) : update;
 
       const updatedDocument = { ...existingDocument, ...nextUpdate };
-      handleSetSelected(updatedDocument);
+      if (documentId === selectedDocument?._id) {
+        handleSetSelected(updatedDocument);
+      }
+
       return updatedDocument;
     },
-    [documents, handleSetSelected]
+    [documents, handleSetSelected, selectedDocument?._id]
   );
 
   const handleChangeSelectedVersion = useCallback(

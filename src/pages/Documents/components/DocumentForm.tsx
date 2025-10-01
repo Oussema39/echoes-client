@@ -164,13 +164,12 @@ const DocumentForm = forwardRef(
           </form>
         </Form>
 
-        <ShareDocLinkDialog
-          open={shareDialogOpen}
-          setOpen={setShareDialogOpen}
-          shareDocument={shareDocument}
-          selectedDocument={selectedDocument}
-          isLoading={isLoadingShare}
-        />
+        {shareDialogOpen ? (
+          <ShareDocLinkDialog
+            open={shareDialogOpen}
+            setOpen={setShareDialogOpen}
+          />
+        ) : null}
       </>
     );
   }

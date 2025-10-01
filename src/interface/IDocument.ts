@@ -8,6 +8,13 @@ type TCollaborator = {
   permissionLevel: TPermissionLevel;
 };
 
+interface IShareLink {
+  shareId: string;
+  permissionLevel: TPermissionLevel;
+  isActive?: boolean;
+  revokeAt?: number;
+}
+
 export interface IDocument extends IBase {
   title: string;
   content: string;
@@ -16,4 +23,5 @@ export interface IDocument extends IBase {
   owned?: boolean;
   sharedWithMe?: boolean;
   versions?: IDocVersion[];
+  shareLinks?: IShareLink[];
 }
