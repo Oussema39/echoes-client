@@ -13,7 +13,6 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { ReactNode, useMemo, useState, useCallback, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
 
 export type TDocumentContextValue = {
   documents: IDocument[];
@@ -36,9 +35,9 @@ export type TDocumentContextValue = {
 
 const DocumentsProvider = ({ children }: { children: ReactNode }) => {
   const queryClient = useQueryClient();
-  const [urlSearchParams, setURLSearchParams] = useSearchParams(
-    window.location.search
-  );
+  // const [urlSearchParams, setURLSearchParams] = useSearchParams(
+  //   window.location.search
+  // );
   const [selectedDocument, setSelectedDocument] = useState<IDocument | null>(
     null
   );
@@ -58,14 +57,11 @@ const DocumentsProvider = ({ children }: { children: ReactNode }) => {
     refetchOnWindowFocus: false,
   });
 
-  const handleSetSelected = useCallback(
-    (doc: IDocument) => {
-      setSelectedDocument(doc);
-      urlSearchParams.set("documentId", doc._id);
-      setURLSearchParams(urlSearchParams);
-    },
-    [setURLSearchParams, urlSearchParams]
-  );
+  const handleSetSelected = useCallback((doc: IDocument) => {
+    setSelectedDocument(doc);
+    // urlSearchParams.set("documentId", doc._id);
+    // setURLSearchParams(urlSearchParams);
+  }, []);
 
   const handleSelectDocument = useCallback(
     (_id: string) => {

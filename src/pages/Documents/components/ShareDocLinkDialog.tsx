@@ -76,7 +76,7 @@ const ShareDocLinkDialog = ({ open, setOpen }: ShareDocLinkDialogProps) => {
               placeholder="***********"
             />
             <Button onClick={handleCopy}>
-              <CopyIcon className="w-24 h-24" />
+              <CopyIcon className="w-24 h-24 cursor-pointer" />
             </Button>
           </div>
           <div className="flex items-center bg-slate-100 p-2 gap-2">
