@@ -72,9 +72,7 @@ const Documents = () => {
           />
         </div>
 
-        <div>
-          <Outlet />
-        </div>
+        <Outlet />
       </div>
     </div>
   );

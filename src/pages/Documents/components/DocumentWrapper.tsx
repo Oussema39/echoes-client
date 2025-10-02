@@ -129,7 +129,7 @@ const DocumentWrapper = () => {
 
   return (
     <>
-      <main className="flex-1 overflow-hidden">
+      <main className="flex-1 overflow-hidden ">
         {selectedDocument ? (
           <DocumentForm
             exportPdf={exportPdf}
