@@ -41,7 +41,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({
       </div>
 
       <div className="flex items-center gap-2 cursor-pointer">
-        <Link to="/login">
+        <Link to={isAuthenticated ? "" : "/login"}>
           <div className="flex items-center gap-2">
             <Avatar
               className="h-8 w-8 cursor-pointer"

@@ -6,11 +6,15 @@ export const DocumentLayoutContext =
 export type TDocumentLayoutContext = {
   handleOnFocus: (onFocusEditor?: () => void) => void;
   setLoginModalOpen: Dispatch<SetStateAction<boolean>>;
+  setIsDeleteDialogOpen: Dispatch<SetStateAction<boolean>>;
+  setDraftState: Dispatch<SetStateAction<unknown>>;
   toggleSidebar: () => void;
   toggleSuggestions: () => void;
   sidebarOpen: boolean;
+  isDeleteDialogOpen: boolean;
   suggestionsOpen: boolean;
   loginModalOpen: boolean;
+  draftState: unknown;
 };
 
 export const useDocumentLayoutContext = () => {

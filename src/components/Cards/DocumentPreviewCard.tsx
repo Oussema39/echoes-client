@@ -33,10 +33,15 @@ const DocumentPreviewCard = ({
     return document._id === selectedDocument?._id && isLoadingDelete;
   }, [document._id, isLoadingDelete, selectedDocument?._id]);
 
-  const handleDelete = useCallback(() => {
-    if (isDisabled) return; // Prevent multiple clicks
-    onDeleteDocument(document._id);
-  }, [document._id, isDisabled, onDeleteDocument]);
+  const handleDelete = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (e: any) => {
+      e.stopPropagation();
+      if (isDisabled) return; // Prevent multiple clicks
+      onDeleteDocument(document._id);
+    },
+    [document._id, isDisabled, onDeleteDocument]
+  );
 
   return (
     <div
@@ -59,6 +64,7 @@ const DocumentPreviewCard = ({
               variant="ghost"
               size="sm"
               className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+              onClick={(e) => e.stopPropagation()}
             >
               <Ellipsis className="text-muted-foreground" size={16} />
             </Button>

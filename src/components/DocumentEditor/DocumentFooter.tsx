@@ -45,8 +45,8 @@ const DocumentFooter = ({
   };
 
   return (
-    <footer className="flex justify-between items-center px-6 py-2 border-t text-sm text-muted-foreground">
-      <div className="flex items-center gap-2">
+    <footer className="flex justify-between flex-wrap items-center px-6 py-2 border-t text-sm text-muted-foreground">
+      <div className="flex flex-wrap items-center gap-2">
         <div className="flex items-center">
           <span>{wordCount} Words</span> <Dot />{" "}
           <span>{readMins} min read</span>
@@ -105,7 +105,7 @@ const DocumentFooter = ({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <Badge variant="outline" className="text-brand-blue bg-brand-light">
           {promptsLeft} Prompts Left
         </Badge>

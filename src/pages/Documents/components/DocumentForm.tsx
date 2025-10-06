@@ -79,7 +79,7 @@ const DocumentForm = forwardRef(
             onSubmit={form.handleSubmit(onSubmit)}
             className="flex flex-col h-full w-full bg-white rounded-lg shadow-subtle overflow-hidden animate-fade-in"
           >
-            <header className="flex justify-between items-center px-6 py-3 border-b">
+            <header className="flex justify-between items-center px-6 py-3 border-b overflow-x-auto">
               <div className="flex items-center gap-2">
                 {/* Title Field */}
                 <FormField

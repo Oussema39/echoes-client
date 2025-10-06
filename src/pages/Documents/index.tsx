@@ -13,9 +13,19 @@ import DocumentsLayout from "@/layout/DocumentsLayout";
 import { useAuth } from "@/hooks/useAuth";
 import DocumentLayoutProvider from "@/context/DocumentLayoutContext/DocumentLayoutProvider";
 import { useDocumentLayoutContext } from "@/context/DocumentLayoutContext/DocumentLayoutContext";
+import DeleteConfirmation from "./components/DeleteConfirmation";
+import { IDocument } from "@/interface/IDocument";
+import { flushSync } from "react-dom";
 
 const DocumentsPageContent = () => {
-  const { handleOnFocus, setLoginModalOpen } = useDocumentLayoutContext();
+  const {
+    handleOnFocus,
+    setLoginModalOpen,
+    isDeleteDialogOpen,
+    setIsDeleteDialogOpen,
+    draftState,
+    setDraftState,
+  } = useDocumentLayoutContext();
   const { isAuthenticated } = useAuth();
 
   const {
@@ -137,6 +147,29 @@ const DocumentsPageContent = () => {
     });
   };
 
+  // Handle Delete
+  const handleOpenDeleteDialog = (documentId: string) => {
+    const document = _documents.find((doc) => doc._id === documentId);
+    setDraftState(document);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleDeleteDocument = async () => {
+    const safeDraft = draftState as IDocument | null;
+    if (!safeDraft || !safeDraft?._id) {
+      console.error("No document was selected to delete");
+      return;
+    }
+
+    await deleteDocument.mutateAsync(safeDraft._id);
+
+    flushSync(() => setIsDeleteDialogOpen(false));
+
+    if (deleteDocument.isSuccess) {
+      setDraftState(null);
+    }
+  };
+
   // Apply AI suggestion to the editor
   const handleApplySuggestion = (text: string) => {
     // Implementation for applying AI suggestions
@@ -167,7 +200,7 @@ const DocumentsPageContent = () => {
       selectedDocument={selectedDocument}
       onSelectDocument={handleSelectDocument}
       onCreateDocument={handleCreateDocument}
-      onDeleteDocument={deleteDocument.mutate}
+      onDeleteDocument={handleOpenDeleteDialog}
       isLoadingCreate={createDocument.isPending}
       isLoadingDelete={deleteDocument.isPending}
       onApplySuggestion={handleApplySuggestion}
@@ -203,6 +236,15 @@ const DocumentsPageContent = () => {
           </div>
         </div>
       )}
+      <DeleteConfirmation
+        open={isDeleteDialogOpen}
+        isLoading={deleteDocument.isPending}
+        title="Delete Document"
+        description="Are you sure you want to delete this document? This action cannot be undone."
+        itemName={(draftState as IDocument)?.title}
+        onConfirm={handleDeleteDocument}
+        onCancel={() => setIsDeleteDialogOpen(false)}
+      />
     </DocumentsLayout>
   );
 };
