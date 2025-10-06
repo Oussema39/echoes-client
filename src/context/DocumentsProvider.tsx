@@ -15,6 +15,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { ReactNode, useMemo, useState, useCallback, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 
 export type TDocumentContextValue = {
   documents: IDocument[];
@@ -40,12 +41,20 @@ export type TDocumentContextValue = {
 
 const DocumentsProvider = ({ children }: { children: ReactNode }) => {
   const queryClient = useQueryClient();
+  const [searchParams] = useSearchParams();
+
   const [selectedDocument, setSelectedDocument] = useState<IDocument | null>(
     null
   );
   const [selectedVersion, setSelectedVersion] = useState<IDocVersion | null>(
     null
   );
+
+  const fetchUserDocuments = (): ReturnType<typeof getUserDocuments> => {
+    const params = Object.fromEntries(searchParams.entries());
+
+    return getUserDocuments({ params });
+  };
 
   const {
     data: documents = [],
@@ -55,7 +64,7 @@ const DocumentsProvider = ({ children }: { children: ReactNode }) => {
     refetch,
   } = useQuery<IDocument[]>({
     queryKey: ["documents"],
-    queryFn: getUserDocuments,
+    queryFn: fetchUserDocuments,
     retry: false,
     refetchOnWindowFocus: false,
   });

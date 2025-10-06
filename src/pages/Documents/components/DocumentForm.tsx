@@ -11,9 +11,9 @@ import {
 import DocumentEditor from "../../../components/DocumentEditor/DocumentEditor";
 import { IDocument } from "@/interface/IDocument";
 import { forwardRef, useEffect, useId, useState } from "react";
-import ShareDialog from "./ShareDialog";
 import { ICollaborator } from "@/interface/ICollaborator";
 import { TDocDefaultActions } from "@/utils/constants";
+import ShareDocLinkDialog from "./ShareDocLinkDialog";
 
 type DocumentFormProps = {
   selectedDocument: IDocument | null;
@@ -179,13 +179,19 @@ const DocumentForm = forwardRef(
             />
           </form>
         </Form>
-        {shareDialogOpen ? (
+        {/* {shareDialogOpen ? (
           <ShareDialog
             open={shareDialogOpen}
             setOpen={setShareDialogOpen}
             shareDocument={shareDocument}
             selectedDocument={selectedDocument}
             isLoading={isLoadingShare}
+          />
+        ) : null} */}
+        {shareDialogOpen ? (
+          <ShareDocLinkDialog
+            open={shareDialogOpen}
+            setOpen={setShareDialogOpen}
           />
         ) : null}
       </>

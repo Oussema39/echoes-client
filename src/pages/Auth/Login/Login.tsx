@@ -32,8 +32,8 @@ const LoginPage = ({ isModal = false, onSuccess }: LoginPageProps) => {
     formState: { errors },
   } = useForm<LoginFormInputs>({
     defaultValues: {
-      email: import.meta.env.VITE_TMP_EMAIL,
-      password: import.meta.env.VITE_TMP_PASSWORD,
+      email: "",
+      password: "",
     },
   });
 

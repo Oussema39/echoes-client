@@ -5,6 +5,7 @@ import { IDocument } from "@/interface/IDocument";
 import { IBase } from "@/interface/IBase";
 import { ICollaborator } from "@/interface/ICollaborator";
 import { IDocVersion } from "@/interface/IDocVersion";
+import { TPermissionLevel } from "@/utils/constants";
 
 type GetUserDocsResponse = {
   owned: IDocument[];
@@ -20,7 +21,7 @@ export const getAllDocuments = async (
 };
 
 export const getUserDocuments = async (
-  config: AxiosRequestConfig
+  config?: AxiosRequestConfig
 ): Promise<IDocument[] | null> => {
   const res = await apiClient.get<GetUserDocsResponse>(
     apiEndpoints.documents.getByUser,
@@ -39,6 +40,19 @@ export const getUserDocuments = async (
   ];
 
   return documents ?? [];
+};
+
+export const generateDocumentShareLink = async (
+  docId: string,
+  permissionLevel: `${TPermissionLevel}`
+): Promise<IDocument | null> => {
+  const res = await apiClient.post(apiEndpoints.documents.shareLink, {
+    docId,
+    permissionLevel,
+  });
+
+  const updatedDoc = res.data.data || null;
+  return updatedDoc;
 };
 
 export const getDocumentVersionsMetadata = async (
