@@ -167,7 +167,7 @@ const DocumentForm = forwardRef(
               name="content"
               render={({ field }) => {
                 return (
-                  <FormControl>
+                  <FormControl className="overflow-x-auto">
                     <DocumentEditor
                       loading={isLoadingAIAction}
                       {...field}

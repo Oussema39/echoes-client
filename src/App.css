@@ -7,6 +7,13 @@
   line-height: 1.5;
 }
 
+.ql-editor {
+  display: block;
+  max-width: 800px;
+  margin-inline: auto;
+  overflow-x: auto;
+}
+
 .ql-editor h1 {
   font-size: 2rem;
   font-weight: 700;
